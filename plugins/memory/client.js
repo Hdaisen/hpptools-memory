@@ -170,9 +170,10 @@ window.__ModuleLoader__.load({
           onOpen: () => ctx.get("layout")?.openDetails(),
         }),
       ));
-      // 嵌入宿主详情列（single slot：替换宿主工具详情面板）。
+      // 嵌入宿主详情列（single slot：以更低 priority shadow 宿主工具详情面板，
+      // lowest renders；priority 必须与宿主注册（0）不同，order 不是 priority）。
       slots.inject("details", () => slots.register(
-        { name: "details", id: "hpptools-memory", order: 10 },
+        { name: "details", id: "hpptools-memory", priority: -1 },
         () => React.createElement(MemoryPanel, {
           onClose: () => ctx.get("layout")?.closeDetails(),
         }),
