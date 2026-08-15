@@ -15,6 +15,7 @@
   header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
   header .root { color: var(--dim); font-size: 12px; font-family: ui-monospace, monospace; }
   .migrated { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--warn); margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .migrated[hidden] { display: none; }
   .migrated .muted { color: var(--dim); }
   nav { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
   nav button { background: none; border: none; color: var(--dim); font-size: 14px; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; }
@@ -265,7 +266,7 @@ async function loadOverview() {
       close.textContent = "✕";
       close.title = "不再显示（可清除浏览器缓存恢复）";
       close.addEventListener("click", () => {
-        localStorage.setItem("hpptools-migrated-dismissed", "1");
+        try { localStorage.setItem("hpptools-migrated-dismissed", "1"); } catch { /* 存储不可用时本次会话内仍可关闭 */ }
         mig.hidden = true;
       });
       mig.append(span, close);
@@ -281,9 +282,7 @@ async function loadOverview() {
       card("最近记忆整理", lm, "maintenance/") +
       card("运行中的子代理", d.activeRuns > 0 ? '<span class="badge run">' + d.activeRuns + " 个</span>" : "0 个", "固化 / 海马体") +
       card("固化模型", d.configured.extractor, "extractor") +
-      card("海马体模型", d.configured.cleaner, "cleaner") +
-      card("核心文件", badge(d.core && d.rules), "core-prompt.md / rules.md → 文件页查看编辑") +
-      card("会话小本本", badge(d.notebook), "notebook.md → 文件页查看编辑");
+      card("海马体模型", d.configured.cleaner, "cleaner");
   } catch (e) {
     $("errBanner").style.display = "block";
     $("errBanner").textContent = "⚠️ " + e.message;

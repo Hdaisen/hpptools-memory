@@ -99,89 +99,112 @@ window.__ModuleLoader__.load({
       );
     }
 
-    // ---------------- 右侧抽屉（iframe 嵌入控制台） ----------------
+    // ---------------- 右侧抽屉（非模态：无遮罩、点击外部不关闭、宽度可拖拽） ----------------
     function MemoryOverlay() {
       const open = useOpen();
+      const [width, setWidth] = React.useState(540);
+      const [dragging, setDragging] = React.useState(false);
       if (!open) return null;
+
+      // 拖拽左缘调整宽度（320–720px）。宿主 overlay 层点击穿透，
+      // 面板自身 pointer-events:auto，因此抽屉外的主界面始终可操作。
+      const startHandle = (e) => {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startWidth = width;
+        setDragging(true);
+        const move = (ev) => {
+          setWidth(Math.max(320, Math.min(720, startWidth + (startX - ev.clientX))));
+        };
+        const up = () => {
+          setDragging(false);
+          document.removeEventListener("mousemove", move);
+          document.removeEventListener("mouseup", up);
+          document.body.style.cursor = "";
+        };
+        document.addEventListener("mousemove", move);
+        document.addEventListener("mouseup", up);
+        document.body.style.cursor = "col-resize";
+      };
+
       return React.createElement(
-        React.Fragment,
-        null,
-        React.createElement("div", {
-          onClick: () => setOpen(false),
+        "div",
+        {
           style: {
-            position: "fixed", inset: 0,
-            background: "rgba(0,0,0,.45)",
-            zIndex: 999,
+            position: "fixed",
+            right: 0, top: 0, bottom: 0,
+            width: width,
+            maxWidth: "94vw",
+            display: "flex",
+            flexDirection: "column",
+            background: "#14161a",
+            borderLeft: "1px solid #2e3440",
+            boxShadow: "-12px 0 48px rgba(0,0,0,.5)",
+            zIndex: 20,
+            overflow: "hidden",
+          },
+        },
+        // 宽度拖拽手柄（面板左缘）
+        React.createElement("div", {
+          onMouseDown: startHandle,
+          title: "拖拽调整宽度",
+          style: {
+            position: "absolute",
+            left: -4, top: 0, bottom: 0,
+            width: 8,
+            cursor: "col-resize",
+            zIndex: 5,
           },
         }),
         React.createElement(
           "div",
           {
             style: {
-              position: "fixed",
-              right: 0, top: 0, bottom: 0,
-              width: 540,
-              maxWidth: "94vw",
               display: "flex",
-              flexDirection: "column",
-              background: "#14161a",
-              borderLeft: "1px solid #2e3440",
-              boxShadow: "-12px 0 48px rgba(0,0,0,.5)",
-              zIndex: 1000,
-              overflow: "hidden",
-              pointerEvents: "auto",
+              alignItems: "center",
+              gap: 8,
+              padding: "8px 14px",
+              background: "#1c1f26",
+              borderBottom: "1px solid #2e3440",
+              color: "#d8dee9",
+              fontSize: 13,
+              fontWeight: 600,
+              flexShrink: 0,
             },
           },
+          React.createElement("span", null, "🧠 hpptools-memory"),
+          React.createElement("span", { style: { flex: 1 } }),
           React.createElement(
-            "div",
+            "a",
             {
+              href: API_BASE + "/",
+              target: "_blank",
+              rel: "noreferrer",
+              style: { color: "#8b93a5", textDecoration: "none", fontSize: 12, marginRight: 8 },
+            },
+            "新标签页打开 ↗",
+          ),
+          React.createElement(
+            "button",
+            {
+              onClick: () => setOpen(false),
+              title: "关闭",
               style: {
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "8px 14px",
-                background: "#1c1f26",
-                borderBottom: "1px solid #2e3440",
-                color: "#d8dee9",
-                fontSize: 13,
-                fontWeight: 600,
-                flexShrink: 0,
+                background: "none",
+                border: "none",
+                color: "#8b93a5",
+                cursor: "pointer",
+                fontSize: 14,
+                padding: "2px 6px",
               },
             },
-            React.createElement("span", null, "🧠 hpptools-memory"),
-            React.createElement("span", { style: { flex: 1 } }),
-            React.createElement(
-              "a",
-              {
-                href: API_BASE + "/",
-                target: "_blank",
-                rel: "noreferrer",
-                style: { color: "#8b93a5", textDecoration: "none", fontSize: 12, marginRight: 8 },
-              },
-              "新标签页打开 ↗",
-            ),
-            React.createElement(
-              "button",
-              {
-                onClick: () => setOpen(false),
-                title: "关闭",
-                style: {
-                  background: "none",
-                  border: "none",
-                  color: "#8b93a5",
-                  cursor: "pointer",
-                  fontSize: 14,
-                  padding: "2px 6px",
-                },
-              },
-              "✕",
-            ),
+            "✕",
           ),
-          React.createElement("iframe", {
-            src: API_BASE + "/",
-            style: { flex: 1, border: "none", width: "100%", background: "#14161a" },
-          }),
         ),
+        React.createElement("iframe", {
+          src: API_BASE + "/",
+          style: { flex: 1, border: "none", width: "100%", background: "#14161a", pointerEvents: dragging ? "none" : "auto" },
+        }),
       );
     }
 
