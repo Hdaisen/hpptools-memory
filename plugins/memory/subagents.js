@@ -4,13 +4,19 @@
  * 用 DSH 的 ctx.subagents.start('fork', ...) 在进程内启动 one-shot 子代理，
  * 通过 toolFilter 限制其工具集（只读/写 + 记忆工具，禁止 shell）。
  * 子代理提示词来自 agents/*.md（随插件包分发，可独立编辑）。
+ *
+ * 模型：固化/海马体分开配置（models.json，见 models.js），UI 可视化可选。
+ * 进度：runs.js 通过 session/event 观察子代理活动（UI 轮询显示"正在干嘛"）；
+ *       终态最终报告写入日志文件（consolidation-*.log / clean-*.log）。
  */
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PATHS, getProjectName } from './config.js'
 import { lastSections } from './utils.js'
-import { getSubagentModel, buildNetworkHealthReport } from './memory-ops.js'
+import { getExtractorModel, getCleanerModel, modelAgentOptions } from './models.js'
+import { trackRun, updateRun } from './runs.js'
+import { buildNetworkHealthReport, updateMaintenanceRecords } from './memory-ops.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const AGENTS_DIR = path.resolve(__dirname, '..', '..', 'agents')
@@ -27,13 +33,25 @@ export function subagentPromptFromFile(name) {
   }
 }
 
-/** subagent-model.txt（如 "deepseek/deepseek-v4-flash"）→ AgentOptions。 */
-function modelAgentOptions() {
-  const model = getSubagentModel()
-  if (!model || model === '(default)') return undefined
-  const idx = model.indexOf('/')
-  if (idx > 0) return { provider: model.slice(0, idx), model: model.slice(idx + 1) }
-  return { model }
+function tsForFilename() {
+  return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+}
+
+/** 终态时把最终报告写入日志文件（持久化，UI 之外可追溯）。 */
+function persistFinalReport(logPath, stopReason, lastAssistantMessage) {
+  if (!logPath) return
+  try {
+    const text = Array.isArray(lastAssistantMessage)
+      ? lastAssistantMessage.filter((b) => b && b.type === 'text').map((b) => b.text).join('\n')
+      : ''
+    fs.appendFileSync(
+      logPath,
+      `\n---\n[${new Date().toISOString()}] ${stopReason === 'success' ? '✅ 完成' : `❌ ${stopReason}`}\n${text}\n`,
+      'utf-8',
+    )
+  } catch {
+    /* non-fatal */
+  }
 }
 
 /**
@@ -52,6 +70,11 @@ export async function spawnConsolidationSubagent(ctx, parent, sessionDir) {
   fs.writeFileSync(inputFile, lastSections(summary, 5), 'utf-8')
 
   const projectName = path.basename(path.dirname(path.dirname(path.dirname(sessionDir))))
+  const model = getExtractorModel()
+  const ts = tsForFilename()
+  const logPath = path.join(sessionDir, `consolidation-${ts}.log`)
+  fs.writeFileSync(logPath, `# Consolidation — ${new Date().toISOString()}\ncwd: ${sessionDir}\nmodel: ${model}\n\n`, 'utf-8')
+
   const promptText =
     `${extractorPrompt}\n\n---\n\n` +
     `当前任务：执行记忆固化。你的当前工作目录（cwd）是记忆会话目录：\n` +
@@ -67,8 +90,16 @@ export async function spawnConsolidationSubagent(ctx, parent, sessionDir) {
       parent,
       signal: new AbortController().signal,
       toolFilter: { allow: MEMORY_TOOLS },
-      agentOptions: modelAgentOptions(),
+      agentOptions: modelAgentOptions(model),
     })
+    trackRun(run.id, 'extractor', `固化子代理 (${projectName})`, logPath)
+    run.result.then(
+      (res) => {
+        updateRun(run.id, { status: res.stopReason === 'success' ? 'done' : res.stopReason, stopReason: res.stopReason })
+        persistFinalReport(logPath, res.stopReason, res.output)
+      },
+      () => updateRun(run.id, { status: 'error' }),
+    )
     return run
   } catch (e) {
     console.error('[memory] consolidation spawn failed:', e)
@@ -78,7 +109,7 @@ export async function spawnConsolidationSubagent(ctx, parent, sessionDir) {
 
 /**
  * 海马体（记忆整理）子代理：合并重复、修复污染、supersede 过期、补链、报告。
- * 手动 /memory-clean 触发。返回 SubagentRun（或 null）。
+ * 手动 /memory-clean 触发（或 UI 按钮）。返回 SubagentRun（或 null）。
  */
 export async function spawnCleanerSubagent(ctx, parent, cwd) {
   const cleanerPrompt = subagentPromptFromFile('memory-cleaner.md')
@@ -93,9 +124,15 @@ export async function spawnCleanerSubagent(ctx, parent, cwd) {
     /* best effort */
   }
 
+  const projectName = getProjectName(cwd)
+  const model = getCleanerModel()
+  const ts = tsForFilename()
+  const logPath = path.join(PATHS.maintenanceDir, `clean-${ts}.log`)
+  fs.writeFileSync(logPath, `# Memory cleaner — ${new Date().toISOString()}\ncwd: ${cwd}\nmodel: ${model}\n\n`, 'utf-8')
+
   const promptText =
     `${cleanerPrompt}\n\n---\n\n` +
-    `当前任务：记忆维护（海马体整理）。项目：${getProjectName(cwd)}（记忆在 ${PATHS.projectDir(cwd)}）\n` +
+    `当前任务：记忆维护（海马体整理）。项目：${projectName}（记忆在 ${PATHS.projectDir(cwd)}）\n` +
     (fs.existsSync(networkHealthPath)
       ? `先 read ${networkHealthPath} 了解记忆网络健康（孤立条目/枢纽节点），据此为孤立条目补 Related 链接（明确相关才补）或报告。\n`
       : '') +
@@ -103,13 +140,22 @@ export async function spawnCleanerSubagent(ctx, parent, cwd) {
 
   try {
     const run = await ctx.subagents.start('fork', {
-      label: `memory-cleaner (${getProjectName(cwd)})`,
+      label: `memory-cleaner (${projectName})`,
       prompt: [{ type: 'text', text: promptText }],
       parent,
       signal: new AbortController().signal,
       toolFilter: { allow: MEMORY_TOOLS },
-      agentOptions: modelAgentOptions(),
+      agentOptions: modelAgentOptions(model),
     })
+    trackRun(run.id, 'cleaner', `海马体整理 (${projectName})`, logPath)
+    updateMaintenanceRecords(logPath, projectName)
+    run.result.then(
+      (res) => {
+        updateRun(run.id, { status: res.stopReason === 'success' ? 'done' : res.stopReason, stopReason: res.stopReason })
+        persistFinalReport(logPath, res.stopReason, res.output)
+      },
+      () => updateRun(run.id, { status: 'error' }),
+    )
     return run
   } catch (e) {
     console.error('[memory] cleaner spawn failed:', e)

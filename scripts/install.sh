@@ -30,10 +30,10 @@ else
   ROWS='- insert:
     - id: hpptools-memory
       name: '\''hpptools-memory'\''
-      config:
-        root: '\''~/.pi/agent/memory'\'''
+      # config:
+      #   root: '\''D:/my-memory'\'''
   if grep -qE '^\[\s*\]\s*$' "$PATCH_PATH"; then
-    sed -i -E 's/^\[\s*\]\s*$/- insert:\n    - id: hpptools-memory\n      name: '\''hpptools-memory'\''\n      config:\n        root: '\''~\/.pi\/agent\/memory'\''/' "$PATCH_PATH"
+    sed -i -E 's/^\[\s*\]\s*$/- insert:\n    - id: hpptools-memory\n      name: '\''hpptools-memory'\''\n      # config:\n      #   root: '\''D:\/my-memory'\''/' "$PATCH_PATH"
   else
     printf '\n%s\n' "$ROWS" >> "$PATCH_PATH"
   fi

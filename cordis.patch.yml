@@ -6,10 +6,11 @@
 # 脚本会把 hpptools-memory 以 junction/符号链接装入 <DSH_HOME>/profiles/node_modules，
 # 并把下面这段 insert 合并进 <DSH_HOME>/profiles/web/cordis.patch.yml。
 #
-# config.root：记忆存储根目录（默认复用 ~/.pi/agent/memory，与 Pi Coding Agent 共享数据；
-# 换新位置后旧数据不迁移，需自行复制）。
+# config.root：记忆存储根目录。省略 = 默认 <DSH_HOME>/memory（社区版规范化路径）；
+# 首次启动自动把 ~/.pi/agent/memory 复制过去（幂等，Pi 数据保持原样）。
+# 如需自定义存储位置，取消下面 config 注释并改写 root。
 - insert:
     - id: hpptools-memory
       name: 'hpptools-memory'
-      config:
-        root: '~/.pi/agent/memory'
+      # config:
+      #   root: 'D:/my-memory'

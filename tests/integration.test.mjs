@@ -129,6 +129,61 @@ assert(fs.readFileSync(summary, 'utf-8').includes('**关键动作**'), 'dialogue
 const raw2 = path.join(sessionDir, 'raw-2.md')
 assert(fs.existsSync(raw2), 'raw-2.md written')
 
+// ---- models.js --------------------------------------------------------------
+const { getExtractorModel, getCleanerModel, setModel, modelAgentOptions } = await mod('models.js')
+assert(getExtractorModel() === '(default)' && getCleanerModel() === '(default)', 'models default to (default)')
+setModel('extractor', 'deepseek/deepseek-v4-flash')
+setModel('cleaner', '(default)')
+assert(getExtractorModel() === 'deepseek/deepseek-v4-flash', 'extractor model persisted')
+assert(getCleanerModel() === '(default)', 'cleaner model cleared to (default)')
+assert(JSON.stringify(modelAgentOptions('deepseek/deepseek-v4-flash')) === '{"provider":"deepseek","model":"deepseek-v4-flash"}', 'modelAgentOptions parses provider/model')
+assert(modelAgentOptions('(default)') === undefined, 'modelAgentOptions (default) → undefined')
+
+// ---- migration ---------------------------------------------------------------
+const { migrateFromPiIfNeeded, migrationInfo } = await mod('config.js')
+const legacyPi = path.join(tmpRoot, 'fake-pi', 'agent', 'memory')
+fs.mkdirSync(path.join(legacyPi, 'personal'), { recursive: true })
+fs.writeFileSync(path.join(legacyPi, 'core-prompt.md'), '# Core', 'utf-8')
+fs.writeFileSync(path.join(legacyPi, 'personal', 'facts.md'), '## F', 'utf-8')
+fs.writeFileSync(path.join(legacyPi, 'rules.md'), '## Rules', 'utf-8')
+// 迁移目标：临时把 PATHS.root 指到独立目录
+const migratedRoot = path.join(tmpRoot, 'migrated-store')
+const { configureMemory: reconfigure } = await mod('config.js')
+reconfigure({ root: migratedRoot })
+const mig = migrateFromPiIfNeeded(legacyPi)
+assert(mig !== null && mig.copiedItems === 3, `migration copied items (${mig && mig.copiedItems})`)
+assert(fs.existsSync(path.join(migratedRoot, 'core-prompt.md')), 'core-prompt.md migrated')
+assert(fs.existsSync(path.join(migratedRoot, 'personal', 'facts.md')), 'personal/facts.md migrated')
+assert(migrationInfo() !== null, 'migration marker written')
+assert(migrateFromPiIfNeeded(legacyPi) === null, 'migration idempotent (marker blocks re-run)')
+// 恢复原 tmpRoot 配置
+reconfigure({ root: tmpRoot })
+
+// ---- runs.js ------------------------------------------------------------------
+const { trackRun, updateRun, runEntries, registerRunEvents } = await mod('runs.js')
+const runId = 'session-run-1'
+trackRun(runId, 'extractor', '固化子代理 (demo)', '/tmp/x.log')
+assert(runEntries().length === 1 && runEntries()[0].status === 'running', 'trackRun registers running entry')
+updateRun(runId, { status: 'done', stopReason: 'success' })
+assert(runEntries()[0].status === 'done', 'updateRun transitions status')
+const runCtx = { on: (name, fn) => { registered.events.push({ name, fn }); return () => {} } }
+registerRunEvents(runCtx)
+assert(registered.events.some((e) => e.name === 'subagent/end'), 'subagent/end listener registered')
+assert(registered.events.some((e) => e.name === 'session/event'), 'session/event listener registered')
+
+// ---- webui.js -------------------------------------------------------------------
+const { registerWebUi } = await mod('webui.js')
+const routes = []
+const webCtx = {
+  get: (name) => name === 'webServer' ? { register: (r) => routes.push(r), port: 12345 } : undefined,
+  effect: (fn) => { const d = fn(); return d },
+}
+registerWebUi(webCtx)
+const routePaths = routes.map((r) => r.path)
+for (const want of ['/hpptools-memory', '/hpptools-memory/', '/hpptools-memory/api/overview', '/hpptools-memory/api/models', '/hpptools-memory/api/runs', '/hpptools-memory/api/model', '/hpptools-memory/api/clean']) {
+  assert(routePaths.includes(want), `webui route ${want}`)
+}
+
 // ---- cleanup ------------------------------------------------------------------
 fs.rmSync(tmpRoot, { recursive: true, force: true })
 console.log(`\n== temp root cleaned: ${tmpRoot}`)

@@ -6,8 +6,8 @@
  * - Session Notebook（projects/<name>/notebook.md）→ 主 LLM 独家维护
  * - Long-term Memory（projects/<name>/memories/ + personal/）→ 固化子代理写入
  *
- * 默认复用 ~/.pi/agent/memory 存储（与 Pi Coding Agent 共享记忆数据），
- * 可通过组合行 config.root 覆盖。
+ * 存储：默认 <DSH_HOME>/memory（社区版规范化路径，不再借用 Pi 的 ~/.pi/agent/memory），
+ * 可通过组合行 config.root 覆盖。首次启动自动把 ~/.pi/agent/memory 复制过来（非破坏）。
  *
  * 生命周期映射：
  *   pi before_agent_start  → systemPrompt.section（memory:core / memory:context）
@@ -17,21 +17,38 @@
  *   pi tool_result         → tools/post-execute（二进制 read 失败自动 MarkItDown）
  *   pi registerTool        → ctx.tools.register(defineTool(...))
  *   pi registerCommand     → ctx.commands.register(...)
+ *
+ * 可视化：webServer 同源路由 /hpptools-memory/（概览 / 模型配置 / 子代理运行状态），
+ * 见 webui.js + webui.html。入口：/memory-ui 命令。
  */
-import { configureMemory } from './config.js'
+import { configureMemory, migrateFromPiIfNeeded } from './config.js'
 import { registerTools } from './tools.js'
 import { registerCommands } from './commands.js'
 import { registerLifecycle } from './lifecycle.js'
 import { registerPromptSections } from './prompt.js'
+import { registerRunEvents } from './runs.js'
+import { registerWebUi } from './webui.js'
 
 export const name = 'hpptools-memory'
 
-export const inject = ['systemPrompt', 'tools', 'commands', 'subagents', 'userQuestions', 'timer']
+export const inject = [
+  'systemPrompt',
+  'tools',
+  'commands',
+  'subagents',
+  'userQuestions',
+  'timer',
+  'webServer',
+]
 
 export function apply(ctx, config = {}) {
   configureMemory(config)
+  // 首次启动：把 Pi agent 的记忆迁移到新 root（复制，非破坏；幂等）
+  migrateFromPiIfNeeded()
+  registerRunEvents(ctx)
   registerTools(ctx)
   registerCommands(ctx)
   registerLifecycle(ctx)
   registerPromptSections(ctx)
+  registerWebUi(ctx)
 }

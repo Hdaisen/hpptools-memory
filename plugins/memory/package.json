@@ -21,6 +21,10 @@
     "lifecycle.js",
     "subagents.js",
     "commands.js",
+    "models.js",
+    "runs.js",
+    "webui.js",
+    "webui.html",
     "cordis.patch.yml"
   ],
   "license": "MIT",

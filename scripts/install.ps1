@@ -40,8 +40,8 @@ if ($content -match 'hpptools-memory') {
 - insert:
     - id: hpptools-memory
       name: 'hpptools-memory'
-      config:
-        root: '~/.pi/agent/memory'
+      # config:
+      #   root: 'D:/my-memory'
 '@
   # The user patch file is a top-level YAML array; replace the empty '[]' marker.
   if ($content -match '(?m)^\[\s*\]\s*$') {

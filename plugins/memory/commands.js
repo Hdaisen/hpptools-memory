@@ -1,13 +1,15 @@
 /**
  * 命令 — 对应 pi 的 commands.ts。
  *   /memory-clean            手动触发海马体整理子代理
- *   /memory-subagent-model   设置固化/海马体子代理的模型（provider/model 或 (default)）
+ *   /memory-subagent-model   设置固化/海马体子代理的模型（provider/model 或 (default)）——命令形式；
+ *                             推荐用可视化控制台（/memory-ui）下拉选择
+ *   /memory-ui               打印记忆可视化控制台的 URL
  */
-import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { PATHS, getProjectName } from './config.js'
-import { getSubagentModel, updateMaintenanceRecords } from './memory-ops.js'
+import { PATHS } from './config.js'
+import { getExtractorModel, getCleanerModel, setModel } from './models.js'
 import { spawnCleanerSubagent } from './subagents.js'
+import { webUiUrl } from './webui.js'
 
 export function registerCommands(ctx) {
   ctx.commands.register({
@@ -25,13 +27,9 @@ export function registerCommands(ctx) {
           text: '❌ Failed to start memory cleaner (agents/memory-cleaner.md missing or spawn error).',
         }
       }
-
-      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-      const logPath = path.join(PATHS.maintenanceDir, `clean-${ts}.log`)
-      updateMaintenanceRecords(logPath, getProjectName(cwd))
       return {
         kind: 'success',
-        text: `🧠 Memory cleaner started (session child).\nLog index: ${path.join(PATHS.maintenanceDir, 'index.md')}`,
+        text: `🧠 Memory cleaner started (child ${run.id}).\nLog index: ${path.join(PATHS.maintenanceDir, 'index.md')}`,
       }
     },
   })
@@ -39,22 +37,29 @@ export function registerCommands(ctx) {
   ctx.commands.register({
     name: 'memory-subagent-model',
     description:
-      'Set the model for memory subagents. Usage: /memory-subagent-model <provider/model> | (default)',
+      'Set the model for memory subagents. Usage: /memory-subagent-model extractor|cleaner <provider/model> | (default)',
     handler: async (inv) => {
-      const input = inv.rawInput.trim()
-      if (!input) {
+      const parts = inv.rawInput.trim().split(/\s+/)
+      const kind = parts[0]
+      if (kind !== 'extractor' && kind !== 'cleaner') {
         return {
           kind: 'error',
-          text: `Usage: /memory-subagent-model <provider/model> | (default)\nCurrent: ${getSubagentModel()}`,
+          text: `Usage: /memory-subagent-model extractor|cleaner <provider/model> | (default)\nCurrent: extractor=${getExtractorModel()}, cleaner=${getCleanerModel()}`,
         }
       }
-      if (input === '(default)') {
-        fs.rmSync(PATHS.subagentModelFile, { force: true })
-      } else {
-        fs.mkdirSync(path.dirname(PATHS.subagentModelFile), { recursive: true })
-        fs.writeFileSync(PATHS.subagentModelFile, input, 'utf-8')
-      }
-      return { kind: 'success', text: `✅ Subagent model: ${input}` }
+      const value = parts.slice(1).join(' ') || '(default)'
+      const result = setModel(kind, value)
+      return { kind: 'success', text: `✅ ${result.kind} model: ${result.value}` }
+    },
+  })
+
+  ctx.commands.register({
+    name: 'memory-ui',
+    description: 'Print the URL of the memory visualization console (model config, subagent runs, overview)',
+    handler: async () => {
+      const webServer = ctx.get('webServer')
+      if (webServer === undefined) return { kind: 'error', text: 'webServer service unavailable.' }
+      return { kind: 'success', text: `🧠 Memory console: ${webUiUrl(webServer)}` }
     },
   })
 }

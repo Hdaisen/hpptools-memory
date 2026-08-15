@@ -52,25 +52,88 @@ export function getProjectName(cwd) {
 }
 
 /**
- * Set or correct the project name. Writes BOTH a .dsh-project and a
- * .pi-project marker, so Pi agent 和 DSH 共享同一项目名。The marker is found
- * by the walk-up detection in getProjectName() — writing to any directory
- * above the marker-less zone is sufficient.
+ * Set or correct the project name. Writes a .dsh-project marker
+ * (社区版只写 DSH 自己的标记；读取时兼容 .pi-project，方便从 Pi 迁移的用户)。
  */
 export function setProjectName(cwd, name) {
   const trimmed = name.trim();
   if (!trimmed) return;
-  // Write both markers to cwd (walk-up starts from cwd, so nearest wins)
   fs.writeFileSync(path.join(cwd, ".dsh-project"), trimmed, "utf-8");
-  fs.writeFileSync(path.join(cwd, ".pi-project"), trimmed, "utf-8");
   // Clear cache so next getProjectName re-computes with new state
   _projNameCache = null;
 }
 
+/** 递归复制目录（迁移用）。 */
+function copyDir(src, dst) {
+  fs.mkdirSync(dst, { recursive: true });
+  for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, item.name);
+    const d = path.join(dst, item.name);
+    if (item.isDirectory()) copyDir(s, d);
+    else if (item.isFile()) fs.copyFileSync(s, d);
+  }
+}
+
 /**
- * 内存存储根目录，默认 ~/.pi/agent/memory。可通过 configureMemory() 重设。
+ * 一次性迁移：把 Pi agent 的记忆（~/.pi/agent/memory）复制到新 root。
+ * - 只在新 root 为空且无迁移标记时执行（幂等）；
+ * - 复制而非移动——Pi agent 的数据保持原样，两个 agent 各自独立演进；
+ * - 完成后写 <root>/.migrated-from-pi.json 标记。
+ * @param {string=} legacyOverride 测试缝隙：指定旧存储路径（默认 ~/.pi/agent/memory）。
+ * @returns 迁移信息或 null（无需迁移）。
  */
-let root = path.join(HOME, ".pi", "agent", "memory");
+export function migrateFromPiIfNeeded(legacyOverride) {
+  const legacy = legacyOverride || path.join(HOME, ".pi", "agent", "memory");
+  const marker = path.join(root, ".migrated-from-pi.json");
+  try {
+    if (fs.existsSync(marker)) return null;
+    if (!fs.existsSync(legacy)) return null;
+    if (fs.existsSync(root) && fs.readdirSync(root).length > 0) return null; // 非空且无标记 → 手动管理
+
+    fs.mkdirSync(root, { recursive: true });
+    let copied = 0;
+    for (const name of ["core-prompt.md", "rules.md", "subagent-model.txt", "_index.md"]) {
+      const s = path.join(legacy, name);
+      if (fs.existsSync(s)) {
+        fs.copyFileSync(s, path.join(root, name));
+        copied++;
+      }
+    }
+    for (const dir of ["personal", "projects", "maintenance"]) {
+      const s = path.join(legacy, dir);
+      if (fs.existsSync(s)) {
+        copyDir(s, path.join(root, dir));
+        copied++;
+      }
+    }
+    const info = { from: legacy, at: new Date().toISOString(), copiedItems: copied };
+    fs.writeFileSync(marker, JSON.stringify(info, null, 2), "utf-8");
+    return info;
+  } catch {
+    return null; // 迁移失败不阻断启动
+  }
+}
+
+/** 读取迁移标记（供 UI/状态展示）。 */
+export function migrationInfo() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, ".migrated-from-pi.json"), "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 内存存储根目录。
+ * 社区版默认 = <DSH_HOME>/memory（DSH 自有存储，不再借用 Pi 的 ~/.pi/agent/memory），
+ * 可通过 configureMemory() 覆盖（组合行 config.root）。
+ */
+function defaultRoot() {
+  const dshHome = process.env.DSH_HOME || path.join(HOME, ".dsh");
+  return path.join(dshHome, "memory");
+}
+
+let root = defaultRoot();
 
 /**
  * Build the PATHS object from the current root. 每次 configureMemory() 重设
@@ -79,6 +142,7 @@ let root = path.join(HOME, ".pi", "agent", "memory");
  */
 function buildPaths() {
   return {
+    root,
     // Global (agent-level)
     corePrompt: path.join(root, "core-prompt.md"),
     rules: path.join(root, "rules.md"),
