@@ -9,20 +9,27 @@
 3. **Long-term Memory**（`projects/<name>/memories/` + `personal/`）— 固化子代理沉淀的事实/偏好/决策/事件
 
 **存储路径（社区版规范化）**：默认 `<DSH_HOME>/memory`（如 `~/.dsh/memory`），不借用 Pi 的 `~/.pi/agent/memory`。
-首次启动自动把 Pi 记忆**复制**过来（幂等、非破坏，Pi 数据保持原样），完成后写 `.migrated-from-pi.json` 标记。
+**Pi 记忆迁移是保守的**：只有当 `~/.pi/agent/memory` 存在**且含实质记忆内容**（core-prompt.md 或 personal/projects 下有 .md 文件）时才复制一次（幂等、非破坏、跳过符号链接，完成后写 `.migrated-from-pi.json` 标记）。99% 没有用过 Pi 记忆系统的用户完全零打扰。
 可通过组合行 `config.root` 自定义存储位置。
 
-## 🖥️ 可视化控制台（Web UI）
+## 🖥️ 可视化 — 直接嵌入 DSH Web UI
 
-插件内置一个同源 Web 控制台（`/memory-ui` 命令打印 URL，或直接访问 `http://127.0.0.1:<端口>/hpptools-memory/`）：
+不是独立页面，而是 **DSH 界面内的原生入口**（Client 半边插件）：
+
+- **侧边栏底部 🧠 按钮**（`sidebar.footer.action`）：点击开/关悬浮窗；有子代理运行时按钮右上角显示橙色活动点（5s 轮询）
+- **悬浮窗**（`shell.overlay`）：右下角浮层面板，iframe 嵌入控制台页面（同源，与独立访问同一实现），可拖拽关闭 / 新标签页打开
+
+面板内容（iframe 内控制台，与独立页面一致）：
 
 | 标签 | 内容 |
 |------|------|
-| **概览** | 存储根路径、迁移信息、core-prompt/rules/notebook 状态、项目/全局记忆统计、最近整理时间、活动子代理数、当前模型配置（每 5 秒刷新） |
+| **概览** | 存储根路径、迁移信息、core-prompt/rules/notebook 状态、项目/全局记忆统计（**已排除技能库**）、最近整理时间、活动子代理数、当前模型配置（每 5 秒刷新） |
 | **模型配置** | 固化子代理 / 海马体模型下拉选择——选项直接来自 **DeepSeek Harness 已配置的模型**（`llm.listProviders` + `listModels`），选 `(default)` 用会话默认模型 |
 | **子代理运行** | 最近运行列表（类型/状态/耗时/终态原因），点击行查看**实时活动日志**（子代理的每次工具调用、回复文本、最终报告；每 3 秒刷新），一键「运行记忆清理」 |
 
-实现：Host 端 `webui.js` 通过 `webServer` 注册同源路由（页面 + JSON API），页面为自包含 `webui.html`（无构建步骤、无外部依赖）。
+实现：Host 端 `webui.js` 通过 `webServer` 注册同源路由（页面 + JSON API）；Client 端 `client.js`（DSH `__ModuleLoader__` 入口格式）注册侧边栏按钮与悬浮窗。独立访问完整版：`/memory-ui` 命令打印 URL。
+
+> 记忆统计口径：`walkMarkdownFiles` 排除 `skills/` 技能库目录（SKILL.md 是程序性技能，有独立的注入机制），技能数量单独显示——避免把技能库文件算进"记忆条目"。
 
 ## 为什么是独立新项目（不是 pi-memory-system 的分支）
 
@@ -69,7 +76,8 @@ hpptools_memory/
 │   ├── models.js            # 固化/海马体模型分离配置（models.json）
 │   ├── runs.js              # 子代理运行登记 + 实时活动日志（session/event 观察）
 │   ├── webui.js             # webServer 路由（页面 + JSON API）
-│   ├── webui.html           # 可视化控制台（自包含单页）
+│   ├── webui.html           # 控制台页面（自包含单页，悬浮窗 iframe 嵌入）
+│   ├── client.js            # 浏览器半边：侧边栏 🧠 按钮 + 悬浮窗（__ModuleLoader__ 入口格式）
 │   └── cordis.patch.yml     # 插件行（安装脚本会合并进 profile）
 ├── agents/                  # 子代理提示词（memory-extractor / memory-cleaner，DSH 适配）
 ├── templates/               # core-prompt.md / rules.md / notebook.md / memories/*（初始化用）
@@ -117,11 +125,12 @@ node tests/integration.test.mjs
 
 ## 验证状态（2026-08-15）
 
-- ✅ 静态插件包集成测试 38/38（工具/提示段/命令/生命周期注册、remember/recall 真实读写、extract 管线、模型配置、迁移幂等、运行登记、Web 路由）
+- ✅ 静态插件包集成测试 41/41（工具/提示段/命令/生命周期注册、remember/recall 真实读写、extract 管线、模型配置、**迁移空壳判断**、**skills 排除统计**、运行登记、Web 路由、client 半边语法）
 - ✅ 本会话动态原型实测：
-  - `memory_status` 读到真实记忆库（Core Prompt ✅ / 项目 9 文件 38 条目 / 全局 811 文件 3494 条目）
-  - `remember` 写入记忆文件（磁盘验证，pi 格式一致）；`recall` 检索命中
+  - `memory_status` 读到真实记忆库；`remember` 写入记忆文件（磁盘验证，pi 格式一致）；`recall` 检索命中
   - 控制台页面 200 + API 全通：模型列表（2 provider / 18 模型，来自真实配置）、模型设置写入 `models.json`、**真实海马体子代理经 UI 按钮触发，runs 实时显示其工具活动（read/工具完成）与最终报告**
+  - 统计口径修正实测：全局记忆 811 文件/3494 条目（含技能库）→ **27 文件/62 条目 + 99 技能**（排除 `personal/skills/` 技能库后）
+- ⏳ Client 半边（侧边栏按钮 + 悬浮窗）需**安装后重启 DSH** 验证（动态 client 插件需要授权，本会话审批策略为 never）
 
 ## 已知限制
 

@@ -6,10 +6,20 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    }
   },
   "files": [
     "index.js",
+    "client.js",
     "config.js",
     "utils.js",
     "diversity.js",

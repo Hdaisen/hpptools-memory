@@ -110,6 +110,9 @@ export function resolveLink(link, cwd) {
   return null;
 }
 
+/** 递归遍历时跳过的目录：skills 是程序性技能库（SKILL.md，独立机制），不算记忆条目。 */
+const EXCLUDED_DIRS = new Set(["skills"]);
+
 /** Recursively find all .md files in a directory, excluding _index.md. */
 export function walkMarkdownFiles(dir) {
   const results = [];
@@ -118,7 +121,8 @@ export function walkMarkdownFiles(dir) {
     for (const item of items) {
       const full = path.join(dir, item.name);
       if (item.isDirectory()) {
-        results.push(...walkMarkdownFiles(full));
+        // Dirent.isDirectory 对符号链接返回 false（不跟随链接）；跳过技能库
+        if (!EXCLUDED_DIRS.has(item.name)) results.push(...walkMarkdownFiles(full));
       } else if (item.isFile() && item.name.endsWith(".md") && item.name !== "_index.md") {
         results.push(full);
       }

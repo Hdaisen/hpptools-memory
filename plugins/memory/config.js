@@ -63,10 +63,11 @@ export function setProjectName(cwd, name) {
   _projNameCache = null;
 }
 
-/** 递归复制目录（迁移用）。 */
+/** 递归复制目录（迁移用）。跳过符号链接/junction（避免把链接目标整个复制进来）。 */
 function copyDir(src, dst) {
   fs.mkdirSync(dst, { recursive: true });
   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+    if (item.isSymbolicLink()) continue; // 链接不跟随
     const s = path.join(src, item.name);
     const d = path.join(dst, item.name);
     if (item.isDirectory()) copyDir(s, d);
@@ -74,11 +75,31 @@ function copyDir(src, dst) {
   }
 }
 
+/** 旧 Pi 记忆是否"有实质内容"（99% 用户没有 Pi 记忆系统——空壳/不存在的路径一律不迁移）。 */
+function legacyHasRealContent(legacy) {
+  try {
+    if (!fs.existsSync(legacy)) return false;
+    if (fs.existsSync(path.join(legacy, "core-prompt.md"))) return true;
+    for (const sub of ["personal", "projects"]) {
+      const dir = path.join(legacy, sub);
+      if (!fs.existsSync(dir)) continue;
+      // 至少有一个 .md 记忆文件才算实质内容（空目录/只有目录结构不算）
+      const hasMd = fs.readdirSync(dir, { recursive: true, withFileTypes: true })
+        .some((e) => e.isFile() && e.name.endsWith(".md"));
+      if (hasMd) return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * 一次性迁移：把 Pi agent 的记忆（~/.pi/agent/memory）复制到新 root。
+ * - **只在旧路径存在且含实质记忆内容时执行**（没有 Pi 记忆系统的用户零打扰）；
  * - 只在新 root 为空且无迁移标记时执行（幂等）；
  * - 复制而非移动——Pi agent 的数据保持原样，两个 agent 各自独立演进；
- * - 完成后写 <root>/.migrated-from-pi.json 标记。
+ * - 跳过符号链接；完成后写 <root>/.migrated-from-pi.json 标记。
  * @param {string=} legacyOverride 测试缝隙：指定旧存储路径（默认 ~/.pi/agent/memory）。
  * @returns 迁移信息或 null（无需迁移）。
  */
@@ -88,6 +109,8 @@ export function migrateFromPiIfNeeded(legacyOverride) {
   try {
     if (fs.existsSync(marker)) return null;
     if (!fs.existsSync(legacy)) return null;
+    // 空壳判断：没有 core-prompt.md 且 personal/projects 下没有任何 .md → 视为无 Pi 记忆，不迁移
+    if (!legacyHasRealContent(legacy)) return null;
     if (fs.existsSync(root) && fs.readdirSync(root).length > 0) return null; // 非空且无标记 → 手动管理
 
     fs.mkdirSync(root, { recursive: true });

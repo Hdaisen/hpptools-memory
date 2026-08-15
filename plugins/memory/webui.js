@@ -60,16 +60,23 @@ function readBody(req) {
   })
 }
 
-/** 统计一个记忆目录的文件数 / 条目数（## 条目）。 */
+/** 统计一个记忆目录的文件数 / 条目数（## 条目）。skills 技能库单独统计。 */
 function fileStats(dir) {
-  if (!fs.existsSync(dir)) return { files: 0, entries: 0 }
-  const files = walkMarkdownFiles(dir)
-  let entries = 0
+  const stats = { files: 0, entries: 0, skillFiles: 0 }
+  if (!fs.existsSync(dir)) return stats
+  const files = walkMarkdownFiles(dir) // walkMarkdownFiles 已排除 skills 目录
   for (const f of files) {
     const content = safeRead(f)
-    if (content) entries += parseMemoryEntries(content, path.basename(f)).length
+    if (content) stats.entries += parseMemoryEntries(content, path.basename(f)).length
   }
-  return { files: files.length, entries }
+  stats.files = files.length
+  // 技能库单独计数（不混入"记忆条目"口径）
+  const skillsDir = path.join(dir, 'skills')
+  if (fs.existsSync(skillsDir)) {
+    const skills = walkMarkdownFiles(skillsDir)
+    stats.skillFiles = skills.filter((f) => f.endsWith('SKILL.md')).length || skills.length
+  }
+  return stats
 }
 
 /** 当前活动根 agent 的 cwd（UI 面板是根级，取第一个根会话）。 */

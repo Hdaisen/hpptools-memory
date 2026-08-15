@@ -146,10 +146,16 @@ fs.mkdirSync(path.join(legacyPi, 'personal'), { recursive: true })
 fs.writeFileSync(path.join(legacyPi, 'core-prompt.md'), '# Core', 'utf-8')
 fs.writeFileSync(path.join(legacyPi, 'personal', 'facts.md'), '## F', 'utf-8')
 fs.writeFileSync(path.join(legacyPi, 'rules.md'), '## Rules', 'utf-8')
+// 空壳判断：只有目录结构、无任何 .md → 不迁移（99% 无 Pi 记忆的用户零打扰）
+const emptyLegacy = path.join(tmpRoot, 'fake-pi-empty', 'agent', 'memory')
+fs.mkdirSync(path.join(emptyLegacy, 'personal'), { recursive: true })
+fs.mkdirSync(path.join(emptyLegacy, 'projects'), { recursive: true })
 // 迁移目标：临时把 PATHS.root 指到独立目录
 const migratedRoot = path.join(tmpRoot, 'migrated-store')
 const { configureMemory: reconfigure } = await mod('config.js')
 reconfigure({ root: migratedRoot })
+assert(migrateFromPiIfNeeded(emptyLegacy) === null, 'empty legacy (no md) → no migration')
+assert(fs.existsSync(path.join(migratedRoot, 'core-prompt.md')) === false, 'empty legacy copied nothing')
 const mig = migrateFromPiIfNeeded(legacyPi)
 assert(mig !== null && mig.copiedItems === 3, `migration copied items (${mig && mig.copiedItems})`)
 assert(fs.existsSync(path.join(migratedRoot, 'core-prompt.md')), 'core-prompt.md migrated')
@@ -158,6 +164,17 @@ assert(migrationInfo() !== null, 'migration marker written')
 assert(migrateFromPiIfNeeded(legacyPi) === null, 'migration idempotent (marker blocks re-run)')
 // 恢复原 tmpRoot 配置
 reconfigure({ root: tmpRoot })
+
+// ---- walkMarkdownFiles 排除 skills 目录 ----------------------------------------
+const { walkMarkdownFiles } = await mod('utils.js')
+const memTree = path.join(tmpRoot, 'mem-tree')
+fs.mkdirSync(path.join(memTree, 'memories'), { recursive: true })
+fs.mkdirSync(path.join(memTree, 'skills'), { recursive: true })
+fs.writeFileSync(path.join(memTree, 'memories', 'facts.md'), '## F', 'utf-8')
+fs.writeFileSync(path.join(memTree, 'skills', 'SKILL.md'), '## Steps', 'utf-8')
+fs.writeFileSync(path.join(memTree, 'skills', 'extra.md'), '## X', 'utf-8')
+const walked = walkMarkdownFiles(memTree)
+assert(walked.length === 1 && walked[0].endsWith('facts.md'), `walkMarkdownFiles excludes skills (${walked.map(f => f.slice(-12)).join(',')})`)
 
 // ---- runs.js ------------------------------------------------------------------
 const { trackRun, updateRun, runEntries, registerRunEvents } = await mod('runs.js')

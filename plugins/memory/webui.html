@@ -145,8 +145,8 @@ async function loadOverview() {
       $("migrated").hidden = false;
       $("migrated").textContent = "🔄 已从 Pi agent 迁移记忆（来源 " + d.migrated.from + "，" + d.migrated.copiedItems + " 项，" + fmtTime(d.migrated.at) + "）。Pi 的数据保持原样。";
     }
-    const pm = d.projectMem ? d.projectMem.files + " 文件 / " + d.projectMem.entries + " 条" : "无活动会话";
-    const gm = d.globalMem.files + " 文件 / " + d.globalMem.entries + " 条";
+    const pm = d.projectMem ? d.projectMem.files + " 文件 / " + d.projectMem.entries + " 条" + (d.projectMem.skillFiles ? " + " + d.projectMem.skillFiles + " 技能" : "") : "无活动会话";
+    const gm = d.globalMem.files + " 文件 / " + d.globalMem.entries + " 条" + (d.globalMem.skillFiles ? " + " + d.globalMem.skillFiles + " 技能" : "");
     const lm = d.lastMaintenance ? fmtTime(d.lastMaintenance.lastRun) + (d.lastMaintenance.project ? "（" + d.lastMaintenance.project + "）" : "") : "从未整理";
     $("cards").innerHTML =
       card("核心提示词", badge(d.core), "core-prompt.md") +
