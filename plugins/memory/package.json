@@ -7,6 +7,7 @@
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
+    "./package.json": "./package.json",
     "./cordis.patch.yml": "./cordis.patch.yml"
   },
   "dsh": {
