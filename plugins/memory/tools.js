@@ -3,27 +3,7 @@
 // Business logic and comments are preserved from the pi original.
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { defineTool as rawDefineTool } from "@deepseek-ai/dsh-tools";
-
-// 参数 DSL → wire 级标准 JSON Schema 编译。
-// 背景：插件的 @deepseek-ai/dsh-tools 解析到项目 node_modules 里的透传 stub，
-// 宿主运行时不做 DSL 编译，参数会以 { name: { type, required: true } } 形态直接发给
-// provider，被严格校验的 provider（如 Console Go）拒绝。宿主内置工具一律注册为
-// 标准 JSON Schema（type:'object' + properties + required 数组），这里保持同一形态。
-// 若未来改用宿主真实 defineTool（它会编译 DSL），删除本包装、恢复直接调用即可。
-function compileParameters(parameters) {
-  const properties = {};
-  const required = [];
-  for (const [name, spec] of Object.entries(parameters)) {
-    const { required: isRequired, ...rest } = spec;
-    properties[name] = rest;
-    if (isRequired) required.push(name);
-  }
-  return { type: "object", properties, ...(required.length > 0 ? { required } : {}) };
-}
-
-const defineTool = (def) =>
-  rawDefineTool({ ...def, parameters: compileParameters(def.parameters) });
+import { defineTool } from "@deepseek-ai/dsh-tools";
 import { PATHS, setProjectName } from "./config.js";
 import { safeRead, extractLinks, walkMarkdownFiles, extractKeywords } from "./utils.js";
 import { diversitySort } from "./diversity.js";
