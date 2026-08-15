@@ -174,7 +174,7 @@ export async function overviewData(ctx) {
   }
 }
 
-/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 所有项目记忆。 */
+/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 当前项目记忆（只列当前工作区项目）。 */
 export function filesData(ctx) {
   const cwd = firstAgentCwd(ctx)
   const groups = []
@@ -220,21 +220,17 @@ export function filesData(ctx) {
     })),
   })
 
-  // 所有项目的记忆（当前项目排在前面并标注）
+  // 当前工作区项目的记忆（只列当前项目，避免把全部项目记忆文件摆出来；
+  // 无活动会话时不输出项目记忆组——没有"当前工作区"可言）
   const currentProject = cwd ? getProjectName(cwd) : null
-  const projects = projectList().sort((a, b) => {
-    if (a === currentProject) return -1
-    if (b === currentProject) return 1
-    return a.localeCompare(b)
-  })
-  for (const name of projects) {
-    const dir = path.join(PATHS.projectsRoot, name, 'memories')
+  if (currentProject) {
+    const dir = path.join(PATHS.projectsRoot, currentProject, 'memories')
     groups.push({
-      id: 'project:' + name,
-      label: `项目记忆 · ${name}${name === currentProject ? '（当前）' : ''}`,
+      id: 'project:' + currentProject,
+      label: `项目记忆 · ${currentProject}（当前）`,
       files: listMdRel(dir).map((rel) => ({
         rel,
-        name: rel.replace(`projects/${name}/memories/`, ''),
+        name: rel.replace(`projects/${currentProject}/memories/`, ''),
         ...fileInfo(path.join(PATHS.root, rel)),
         entries: parseMemoryEntries(safeRead(path.join(PATHS.root, rel)) ?? '', rel).length,
       })),
