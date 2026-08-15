@@ -8,13 +8,18 @@
  *   POST /hpptools-memory/api/model      → 设置固化/海马体模型 { kind, value }
  *   GET  /hpptools-memory/api/runs       → 运行中的记忆子代理（含活动日志尾部）
  *   POST /hpptools-memory/api/clean      → 触发海马体整理（当前会话）
+ *   POST /hpptools-memory/api/migrate    → 手动触发 Pi 记忆迁移（检测到才可迁）
+ *   GET  /hpptools-memory/api/files      → 文件树（核心文件/全局记忆/项目记忆/小本本）
+ *   GET  /hpptools-memory/api/file?path= → 读取 root 内一个文件（path 为相对 root 的路径）
+ *   POST /hpptools-memory/api/file       → 保存 root 内一个文件 { path, content }
+ *   POST /hpptools-memory/api/settings   → 保存 UI 设置 { root?, copyData? }（重启生效）
  *
  * 打开方式：/memory-ui 命令打印 URL（或直接访问 http://127.0.0.1:<端口>/hpptools-memory/）。
  */
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { PATHS, migrationInfo } from './config.js'
+import { PATHS, HOME, migrationInfo, detectLegacyMemory, migrateFromPi, getSettings, saveSettings, copyDir } from './config.js'
 import { safeRead, walkMarkdownFiles, parseMemoryEntries } from './utils.js'
 import { getExtractorModel, getCleanerModel, setModel } from './models.js'
 import { runEntries, activeRunCount } from './runs.js'
@@ -89,25 +94,120 @@ function firstAgentCwd(ctx) {
   }
 }
 
+/**
+ * 把前端传来的相对路径安全解析到 root 内（防路径穿越）。
+ * @param {string} rel 相对 PATHS.root 的路径（正斜杠）。
+ * @returns 绝对路径或 null。
+ */
+function safeResolve(rel) {
+  if (typeof rel !== 'string' || rel.length === 0) return null
+  const target = path.resolve(PATHS.root, rel)
+  if (target !== PATHS.root && !target.startsWith(PATHS.root + path.sep)) return null
+  return target
+}
+
+/** 一个文件的基本信息（供文件树）。 */
+function fileInfo(fullPath) {
+  try {
+    const st = fs.statSync(fullPath)
+    return { exists: true, size: st.size, mtime: st.mtime.toISOString() }
+  } catch {
+    return { exists: false }
+  }
+}
+
+/** 列出目录下所有 .md 文件 → 相对 root 的 rel 列表（排除 skills 技能库与 _index.md）。 */
+function listMdRel(dir) {
+  if (!fs.existsSync(dir)) return []
+  return walkMarkdownFiles(dir)
+    .map((f) => path.relative(PATHS.root, f).replace(/\\/g, '/'))
+    .sort()
+}
+
 // ---------------------------------------------------------------- data
 
 /** 记忆概览数据（导出供测试/复用）。 */
 export async function overviewData(ctx) {
   const cwd = firstAgentCwd(ctx)
   const projectDir = cwd ? PATHS.memoriesDir(cwd) : null
+  const migrated = migrationInfo()
   return {
     root: PATHS.root,
-    migrated: migrationInfo(),
+    settings: getSettings(),
+    migrated,
+    // 检测到 Pi 旧记忆且尚未迁移 → 提示用户手动迁移（只检测，不自动迁移）
+    legacy: !migrated ? detectLegacyMemory() : null,
     core: fs.existsSync(PATHS.corePrompt),
     rules: fs.existsSync(PATHS.rules),
     notebook: cwd ? fs.existsSync(PATHS.notebook(cwd)) : false,
-    currentProject: cwd ? undefined : undefined,
     projectMem: projectDir ? fileStats(projectDir) : null,
     globalMem: fileStats(PATHS.personalDir),
     lastMaintenance: getLastMaintenance(),
     activeRuns: activeRunCount(),
     configured: { extractor: getExtractorModel(), cleaner: getCleanerModel() },
   }
+}
+
+/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 项目记忆。 */
+export function filesData(ctx) {
+  const cwd = firstAgentCwd(ctx)
+  const groups = []
+
+  const coreFiles = ['core-prompt.md', 'rules.md', 'subagent-model.txt']
+  groups.push({
+    id: 'core',
+    label: '核心文件',
+    files: coreFiles.map((name) => {
+      const full = path.join(PATHS.root, name)
+      const content = safeRead(full)
+      return {
+        rel: name,
+        name,
+        ...fileInfo(full),
+        entries: content ? parseMemoryEntries(content, name).length : 0,
+      }
+    }),
+  })
+
+  if (cwd) {
+    const nbFull = PATHS.notebook(cwd)
+    groups.push({
+      id: 'notebook',
+      label: '会话小本本',
+      files: [{
+        rel: path.relative(PATHS.root, nbFull).replace(/\\/g, '/'),
+        name: 'notebook.md',
+        ...fileInfo(nbFull),
+        entries: 0,
+      }],
+    })
+  }
+
+  groups.push({
+    id: 'personal',
+    label: '全局记忆 · personal/',
+    files: listMdRel(PATHS.personalDir).map((rel) => ({
+      rel,
+      name: rel.startsWith('personal/') ? rel.slice('personal/'.length) : rel,
+      ...fileInfo(path.join(PATHS.root, rel)),
+      entries: parseMemoryEntries(safeRead(path.join(PATHS.root, rel)) ?? '', rel).length,
+    })),
+  })
+
+  if (cwd) {
+    groups.push({
+      id: 'project',
+      label: '项目记忆 · memories/',
+      files: listMdRel(PATHS.memoriesDir(cwd)).map((rel) => ({
+        rel,
+        name: rel.replace(/^projects\/[^/]+\/memories\//, ''),
+        ...fileInfo(path.join(PATHS.root, rel)),
+        entries: parseMemoryEntries(safeRead(path.join(PATHS.root, rel)) ?? '', rel).length,
+      })),
+    })
+  }
+
+  return { currentProject: cwd ? PATHS.projectDir(cwd).split(path.sep).pop() : null, groups }
 }
 
 /** 已配置模型列表（导出供测试/复用）。 */
@@ -234,6 +334,123 @@ export function registerWebUi(ctx) {
           return
         }
         sendJson(res, 200, { ok: true, runId: run.id })
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
+  // 手动迁移：仅当检测到 Pi 旧记忆且未迁移时可执行
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/migrate`,
+    handler: async (_req, res) => {
+      try {
+        const result = migrateFromPi()
+        if (result && result.error) {
+          sendJson(res, 400, result)
+          return
+        }
+        sendJson(res, 200, result)
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
+  // 文件树
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/files`,
+    handler: (_req, res) => {
+      try {
+        sendJson(res, 200, filesData(ctx))
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
+  // 读取/保存文件（path 为相对 root 的路径）。GET 读，POST 写。
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/file`,
+    handler: async (req, res) => {
+      try {
+        if (req.method === 'GET') {
+          const url = new URL(req.url ?? '', 'http://x')
+          const rel = url.searchParams.get('path') ?? ''
+          const full = safeResolve(rel)
+          if (!full) {
+            sendJson(res, 400, { error: 'path 必须解析到记忆存储目录内。' })
+            return
+          }
+          const content = safeRead(full)
+          if (content === null) {
+            sendJson(res, 404, { error: `文件不存在：${rel}` })
+            return
+          }
+          sendJson(res, 200, { path: rel, content })
+          return
+        }
+        if (req.method === 'POST') {
+          const body = await readBody(req)
+          if (!body || typeof body.path !== 'string' || typeof body.content !== 'string') {
+            sendJson(res, 400, { error: 'body 需为 { path, content }' })
+            return
+          }
+          const full = safeResolve(body.path)
+          if (!full) {
+            sendJson(res, 400, { error: 'path 必须解析到记忆存储目录内。' })
+            return
+          }
+          fs.mkdirSync(path.dirname(full), { recursive: true })
+          fs.writeFileSync(full, body.content, 'utf-8')
+          sendJson(res, 200, { ok: true, path: body.path })
+          return
+        }
+        sendJson(res, 405, { error: '仅支持 GET（读）与 POST（写）。' })
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
+  // 保存 UI 设置（root 修改重启生效；copyData 可选：把现有数据复制到新路径）
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/settings`,
+    handler: async (req, res) => {
+      try {
+        const body = await readBody(req)
+        if (!body || typeof body !== 'object') {
+          sendJson(res, 400, { error: 'body 需为 JSON 对象' })
+          return
+        }
+        if (body.root === undefined) {
+          sendJson(res, 200, { saved: false, settings: getSettings(), root: PATHS.root })
+          return
+        }
+        if (typeof body.root !== 'string' || !body.root.trim()) {
+          sendJson(res, 400, { error: 'root 必须是非空字符串' })
+          return
+        }
+        let newRoot = body.root.trim()
+        if (newRoot === '~' || newRoot.startsWith('~/') || newRoot.startsWith('~\\')) {
+          newRoot = path.join(HOME, newRoot.slice(1))
+        }
+        newRoot = path.resolve(newRoot)
+        if (fs.existsSync(newRoot) && !fs.statSync(newRoot).isDirectory()) {
+          sendJson(res, 400, { error: '目标路径已存在且不是目录。' })
+          return
+        }
+        let copied = 0
+        if (body.copyData === true && fs.existsSync(PATHS.root) && PATHS.root !== newRoot) {
+          copyDir(PATHS.root, newRoot)
+          copied = fs.readdirSync(newRoot).length
+        }
+        saveSettings({ root: newRoot })
+        sendJson(res, 200, { saved: true, root: newRoot, copied, restart: true })
       } catch (e) {
         sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
       }

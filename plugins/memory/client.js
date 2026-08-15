@@ -3,7 +3,7 @@
  *
  * - sidebar.footer.action：侧边栏底部 🧠 按钮（宽侧边栏显示文字，rail 模式仅图标；
  *   有子代理运行时按钮上显示橙色活动点，5s 轮询）
- * - shell.overlay：点击按钮打开的悬浮面板，iframe 嵌入 Host 提供的控制台页面
+ * - shell.overlay：点击按钮打开的右侧抽屉，iframe 嵌入 Host 提供的控制台页面
  *   （/hpptools-memory/，与独立访问同一页面，零重复实现）
  *
  * 构建格式：DSH web 客户端入口的 __ModuleLoader__ 包装（与官方 client 包一致）。
@@ -99,80 +99,89 @@ window.__ModuleLoader__.load({
       );
     }
 
-    // ---------------- 悬浮面板（iframe 嵌入控制台） ----------------
+    // ---------------- 右侧抽屉（iframe 嵌入控制台） ----------------
     function MemoryOverlay() {
       const open = useOpen();
       if (!open) return null;
       return React.createElement(
-        "div",
-        {
+        React.Fragment,
+        null,
+        React.createElement("div", {
+          onClick: () => setOpen(false),
           style: {
-            position: "fixed",
-            right: 16,
-            bottom: 16,
-            width: 620,
-            maxWidth: "calc(100vw - 32px)",
-            height: "72vh",
-            maxHeight: 760,
-            display: "flex",
-            flexDirection: "column",
-            background: "#14161a",
-            border: "1px solid #2e3440",
-            borderRadius: 12,
-            boxShadow: "0 12px 48px rgba(0,0,0,.55)",
-            zIndex: 1000,
-            overflow: "hidden",
-            pointerEvents: "auto",
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,.45)",
+            zIndex: 999,
           },
-        },
+        }),
         React.createElement(
           "div",
           {
             style: {
+              position: "fixed",
+              right: 0, top: 0, bottom: 0,
+              width: 540,
+              maxWidth: "94vw",
               display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 14px",
-              background: "#1c1f26",
-              borderBottom: "1px solid #2e3440",
-              color: "#d8dee9",
-              fontSize: 13,
-              fontWeight: 600,
+              flexDirection: "column",
+              background: "#14161a",
+              borderLeft: "1px solid #2e3440",
+              boxShadow: "-12px 0 48px rgba(0,0,0,.5)",
+              zIndex: 1000,
+              overflow: "hidden",
+              pointerEvents: "auto",
             },
           },
-          React.createElement("span", null, "🧠 hpptools-memory"),
-          React.createElement("span", { style: { flex: 1 } }),
           React.createElement(
-            "a",
+            "div",
             {
-              href: API_BASE + "/",
-              target: "_blank",
-              rel: "noreferrer",
-              style: { color: "#8b93a5", textDecoration: "none", fontSize: 12, marginRight: 8 },
-            },
-            "新标签页打开 ↗",
-          ),
-          React.createElement(
-            "button",
-            {
-              onClick: () => setOpen(false),
-              title: "关闭",
               style: {
-                background: "none",
-                border: "none",
-                color: "#8b93a5",
-                cursor: "pointer",
-                fontSize: 14,
-                padding: "2px 6px",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 14px",
+                background: "#1c1f26",
+                borderBottom: "1px solid #2e3440",
+                color: "#d8dee9",
+                fontSize: 13,
+                fontWeight: 600,
+                flexShrink: 0,
               },
             },
-            "✕",
+            React.createElement("span", null, "🧠 hpptools-memory"),
+            React.createElement("span", { style: { flex: 1 } }),
+            React.createElement(
+              "a",
+              {
+                href: API_BASE + "/",
+                target: "_blank",
+                rel: "noreferrer",
+                style: { color: "#8b93a5", textDecoration: "none", fontSize: 12, marginRight: 8 },
+              },
+              "新标签页打开 ↗",
+            ),
+            React.createElement(
+              "button",
+              {
+                onClick: () => setOpen(false),
+                title: "关闭",
+                style: {
+                  background: "none",
+                  border: "none",
+                  color: "#8b93a5",
+                  cursor: "pointer",
+                  fontSize: 14,
+                  padding: "2px 6px",
+                },
+              },
+              "✕",
+            ),
           ),
+          React.createElement("iframe", {
+            src: API_BASE + "/",
+            style: { flex: 1, border: "none", width: "100%", background: "#14161a" },
+          }),
         ),
-        React.createElement("iframe", {
-          src: API_BASE + "/",
-          style: { flex: 1, border: "none", width: "100%", background: "#14161a" },
-        }),
       );
     }
 

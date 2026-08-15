@@ -63,8 +63,8 @@ export function setProjectName(cwd, name) {
   _projNameCache = null;
 }
 
-/** 递归复制目录（迁移用）。跳过符号链接/junction（避免把链接目标整个复制进来）。 */
-function copyDir(src, dst) {
+/** 递归复制目录（迁移/设置改路径用）。跳过符号链接/junction（避免把链接目标整个复制进来）。 */
+export function copyDir(src, dst) {
   fs.mkdirSync(dst, { recursive: true });
   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
     if (item.isSymbolicLink()) continue; // 链接不跟随
@@ -95,23 +95,36 @@ function legacyHasRealContent(legacy) {
 }
 
 /**
- * 一次性迁移：把 Pi agent 的记忆（~/.pi/agent/memory）复制到新 root。
- * - **只在旧路径存在且含实质记忆内容时执行**（没有 Pi 记忆系统的用户零打扰）；
- * - 只在新 root 为空且无迁移标记时执行（幂等）；
+ * 检测 Pi agent 的旧记忆（~/.pi/agent/memory）是否存在实质内容。
+ * **只检测、不迁移**——是否迁移由用户在 UI 里手动触发（见 migrateFromPi）。
+ * 结果缓存（undefined=未检测，null=无，string=路径）——UI 每 5 秒轮询时不重复扫盘。
+ * @returns 旧记忆路径（有实质内容）或 null。
+ */
+let legacyDetected = undefined;
+export function detectLegacyMemory() {
+  if (legacyDetected !== undefined) return legacyDetected;
+  const legacy = path.join(HOME, ".pi", "agent", "memory");
+  legacyDetected = fs.existsSync(legacy) && legacyHasRealContent(legacy) ? legacy : null;
+  return legacyDetected;
+}
+
+/**
+ * 手动迁移：把 Pi agent 的记忆（~/.pi/agent/memory）复制到当前 root。
+ * - 仅在旧路径存在且含实质记忆内容时执行；
+ * - 只在新 root 为空且无迁移标记时执行（幂等，目标非空一律拒绝）；
  * - 复制而非移动——Pi agent 的数据保持原样，两个 agent 各自独立演进；
  * - 跳过符号链接；完成后写 <root>/.migrated-from-pi.json 标记。
- * @param {string=} legacyOverride 测试缝隙：指定旧存储路径（默认 ~/.pi/agent/memory）。
- * @returns 迁移信息或 null（无需迁移）。
+ * @returns 迁移信息；{ already: true } 表示此前已迁移过；{ error } 表示拒绝。
  */
-export function migrateFromPiIfNeeded(legacyOverride) {
-  const legacy = legacyOverride || path.join(HOME, ".pi", "agent", "memory");
+export function migrateFromPi() {
+  const legacy = detectLegacyMemory();
+  if (!legacy) return { error: "未检测到 Pi agent 记忆（" + legacy + " 不存在或无实质内容）。" };
   const marker = path.join(root, ".migrated-from-pi.json");
   try {
-    if (fs.existsSync(marker)) return null;
-    if (!fs.existsSync(legacy)) return null;
-    // 空壳判断：没有 core-prompt.md 且 personal/projects 下没有任何 .md → 视为无 Pi 记忆，不迁移
-    if (!legacyHasRealContent(legacy)) return null;
-    if (fs.existsSync(root) && fs.readdirSync(root).length > 0) return null; // 非空且无标记 → 手动管理
+    if (fs.existsSync(marker)) return { ...migrationInfo(), already: true };
+    if (fs.existsSync(root) && fs.readdirSync(root).length > 0) {
+      return { error: "目标目录非空且无迁移标记——为避免覆盖现有数据已跳过。请清空 <root> 后重试，或手动合并。" };
+    }
 
     fs.mkdirSync(root, { recursive: true });
     let copied = 0;
@@ -132,8 +145,8 @@ export function migrateFromPiIfNeeded(legacyOverride) {
     const info = { from: legacy, at: new Date().toISOString(), copiedItems: copied };
     fs.writeFileSync(marker, JSON.stringify(info, null, 2), "utf-8");
     return info;
-  } catch {
-    return null; // 迁移失败不阻断启动
+  } catch (e) {
+    return { error: "迁移失败：" + (e instanceof Error ? e.message : String(e)) };
   }
 }
 
@@ -148,8 +161,8 @@ export function migrationInfo() {
 
 /**
  * 内存存储根目录。
- * 社区版默认 = <DSH_HOME>/memory（DSH 自有存储，不再借用 Pi 的 ~/.pi/agent/memory），
- * 可通过 configureMemory() 覆盖（组合行 config.root）。
+ * 优先级：UI 设置（<DSH_HOME>/hpptools-memory.settings.json 的 root，用户最新意图）
+ *        > 组合行 config.root（部署配置） > 默认 <DSH_HOME>/memory。
  */
 function defaultRoot() {
   const dshHome = process.env.DSH_HOME || path.join(HOME, ".dsh");
@@ -157,6 +170,37 @@ function defaultRoot() {
 }
 
 let root = defaultRoot();
+
+// ---------------------------------------------------------------- settings
+
+function settingsPath() {
+  const dshHome = process.env.DSH_HOME || path.join(HOME, ".dsh");
+  return path.join(dshHome, "hpptools-memory.settings.json");
+}
+
+function loadSettingsFile() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(settingsPath(), "utf-8"));
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+let settings = loadSettingsFile();
+
+/** 读取 UI 设置（存储路径等）。 */
+export function getSettings() {
+  return { ...settings };
+}
+
+/** 保存 UI 设置（写 <DSH_HOME>/hpptools-memory.settings.json）。root 修改重启后生效。 */
+export function saveSettings(patch) {
+  settings = { ...settings, ...patch };
+  fs.mkdirSync(path.dirname(settingsPath()), { recursive: true });
+  fs.writeFileSync(settingsPath(), JSON.stringify(settings, null, 2), "utf-8");
+  return { ...settings };
+}
 
 /**
  * Build the PATHS object from the current root. 每次 configureMemory() 重设
@@ -193,20 +237,17 @@ function buildPaths() {
 export const PATHS = buildPaths();
 
 /**
- * Configure the memory root directory. config 形如 `{ root?: string }`；
+ * Configure the memory root directory. config 形如 `{ root?: string }`。
+ * root 优先级：UI 设置（settings.root，用户最新意图） > 组合行 config.root > 默认。
  * 设置 root 后重新计算 PATHS（PATHS 的属性会被替换为基于新 root 的布局）。
- * 默认 root 保持 ~/.pi/agent/memory。
  * @param {{ root?: string }} config
  */
 export function configureMemory(config) {
-  if (
-    config &&
-    typeof config === "object" &&
-    typeof config.root === "string" &&
-    config.root.trim()
-  ) {
+  // UI 设置优先于组合行 config（用户最新意图）；组合行是兜底
+  const chosen = settings.root || config?.root;
+  if (typeof chosen === "string" && chosen.trim()) {
     // Expand a leading '~' (e.g. '~/.pi/agent/memory' from cordis.yml config)
-    let p = config.root.trim();
+    let p = chosen.trim();
     if (p === "~" || p.startsWith("~/") || p.startsWith("~\\")) {
       p = path.join(HOME, p.slice(1));
     }

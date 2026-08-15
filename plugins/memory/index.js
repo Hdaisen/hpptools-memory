@@ -21,7 +21,7 @@
  * 可视化：webServer 同源路由 /hpptools-memory/（概览 / 模型配置 / 子代理运行状态），
  * 见 webui.js + webui.html。入口：/memory-ui 命令。
  */
-import { configureMemory, migrateFromPiIfNeeded } from './config.js'
+import { configureMemory, detectLegacyMemory } from './config.js'
 import { registerTools } from './tools.js'
 import { registerCommands } from './commands.js'
 import { registerLifecycle } from './lifecycle.js'
@@ -43,8 +43,8 @@ export const inject = [
 
 export function apply(ctx, config = {}) {
   configureMemory(config)
-  // 首次启动：把 Pi agent 的记忆迁移到新 root（复制，非破坏；幂等）
-  migrateFromPiIfNeeded()
+  // 只检测不迁移：检测到旧 Pi 记忆时，由用户在可视化控制台（/memory-ui）手动触发迁移
+  detectLegacyMemory()
   registerRunEvents(ctx)
   registerTools(ctx)
   registerCommands(ctx)
