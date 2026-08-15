@@ -146,7 +146,9 @@ window.__ModuleLoader__.load({
     }
 
     // ---------------- 主题同步：把宿主 --dsw-* token 推给 iframe ----------------
-    function syncTheme(theme) {
+    // theme 是业务服务（getTheme/setTheme），事件挂在插件 ctx 上监听
+    // （ui-layout 的 theme-presenter 同款用法：ctx.on('theme/change', ...)）。
+    function syncTheme(ctx, theme) {
       const push = (snapshot) => {
         for (const f of document.querySelectorAll("iframe[data-hpptools-memory]")) {
           f.contentWindow?.postMessage(
@@ -156,7 +158,7 @@ window.__ModuleLoader__.load({
         }
       };
       push(theme.getTheme());
-      theme.on("theme/change", push);
+      ctx.on("theme/change", push);
     }
 
     // ---------------- 插件入口 ----------------
@@ -179,7 +181,7 @@ window.__ModuleLoader__.load({
         }),
       ));
       const theme = ctx.get("theme");
-      if (theme !== undefined) syncTheme(theme);
+      if (theme !== undefined) syncTheme(ctx, theme);
     }
 
     exports.inject = ["slots"];
