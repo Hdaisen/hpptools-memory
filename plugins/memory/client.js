@@ -106,15 +106,16 @@ window.__ModuleLoader__.load({
       const [dragging, setDragging] = React.useState(false);
       if (!open) return null;
 
-      // 拖拽左缘调整宽度（320–720px）。宿主 overlay 层点击穿透，
+      // 拖拽左缘调整宽度（320px ～ 视口 85%，上限 1400px）。宿主 overlay 层点击穿透，
       // 面板自身 pointer-events:auto，因此抽屉外的主界面始终可操作。
+      const maxDrawer = () => Math.min(1400, Math.round(window.innerWidth * 0.85));
       const startHandle = (e) => {
         e.preventDefault();
         const startX = e.clientX;
         const startWidth = width;
         setDragging(true);
         const move = (ev) => {
-          setWidth(Math.max(320, Math.min(720, startWidth + (startX - ev.clientX))));
+          setWidth(Math.max(320, Math.min(maxDrawer(), startWidth + (startX - ev.clientX))));
         };
         const up = () => {
           setDragging(false);

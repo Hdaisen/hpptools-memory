@@ -50,8 +50,10 @@
   .mono { font-family: ui-monospace, monospace; font-size: 12px; color: var(--dim); word-break: break-all; }
 
   /* ---------- 文件 tab ---------- */
-  .files-layout { display: flex; gap: 14px; align-items: stretch; height: calc(100vh - 190px); min-height: 420px; }
-  .file-tree { width: 280px; min-width: 240px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: auto; padding: 8px; }
+  .files-layout { display: flex; gap: 0; align-items: stretch; height: calc(100vh - 190px); min-height: 420px; }
+  .file-tree { width: 220px; min-width: 140px; flex-shrink: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: auto; padding: 8px; }
+  .tree-resizer, .nav-resizer { width: 7px; flex-shrink: 0; cursor: col-resize; background: transparent; }
+  .tree-resizer:hover, .nav-resizer:hover, .tree-resizer.dragging, .nav-resizer.dragging { background: var(--border); }
   .file-tree h4 { font-size: 11px; color: var(--dim); font-weight: 600; letter-spacing: .05em; padding: 8px 8px 4px; }
   .file-tree .fitem { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; }
   .file-tree .fitem:hover { background: var(--panel2); }
@@ -63,11 +65,13 @@
   .file-body { flex: 1; display: flex; overflow: hidden; }
   .file-content { flex: 1; overflow: auto; padding: 14px 18px; font-family: ui-monospace, monospace; font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; }
   .file-content textarea { width: 100%; height: 100%; background: #101216; color: var(--text); border: none; resize: none; font: inherit; padding: 0; outline: none; }
-  .entry-nav { width: 220px; min-width: 180px; border-left: 1px solid var(--border); overflow: auto; padding: 8px; background: var(--panel); }
+  .entry-nav { width: 200px; min-width: 110px; flex-shrink: 0; border-left: 1px solid var(--border); overflow: auto; padding: 8px; background: var(--panel); }
   .entry-nav h4 { font-size: 11px; color: var(--dim); font-weight: 600; padding: 6px 6px 4px; }
   .entry-nav .en { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); font-size: 12px; padding: 4px 6px; border-radius: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .entry-nav .en:hover { background: var(--panel2); }
   .entry-nav .en.sup { color: var(--dim); text-decoration: line-through; }
+  /* 窄抽屉下隐藏条目导航（内容区优先） */
+  @media (max-width: 620px) { .entry-nav, .nav-resizer { display: none; } }
   .file-pane .status { padding: 6px 14px; font-size: 12px; color: var(--dim); border-top: 1px solid var(--border); }
   .file-pane .status.ok { color: var(--ok); }
   .file-pane .status.err { color: var(--err); }
@@ -97,6 +101,7 @@
 <section id="tab-files" hidden>
   <div class="files-layout">
     <div class="file-tree" id="fileTree"></div>
+    <div class="tree-resizer" id="treeResizer" title="拖拽调整文件树宽度"></div>
     <div class="file-pane" id="filePane" hidden>
       <header>
         <span class="fname" id="fileTitle"></span>
@@ -107,15 +112,13 @@
       </header>
       <div class="file-body">
         <div class="file-content" id="fileContent"></div>
+        <div class="nav-resizer" id="navResizer" title="拖拽调整条目导航宽度"></div>
         <div class="entry-nav" id="entryNav" hidden>
           <h4>条目导航</h4>
           <div id="entryList"></div>
         </div>
       </div>
       <div class="status" id="fileStatus">选择一个文件查看内容；✏️ 编辑可快捷修改。</div>
-    </div>
-    <div class="file-pane" id="fileEmpty" style="align-items:center;justify-content:center;color:var(--dim);font-size:13px">
-      左侧选择文件：核心文件 / 会话小本本 / 全局记忆 / 项目记忆
     </div>
   </div>
 </section>
@@ -382,7 +385,6 @@ async function selectFile(rel) {
     currentFile = { rel };
     currentContent = d.content;
     editing = false;
-    $("fileEmpty").hidden = true;
     $("filePane").hidden = false;
     $("fileTitle").textContent = rel;
     $("btnEditFile").hidden = false;
@@ -478,6 +480,49 @@ async function loadFiles() {
     $("fileTree").innerHTML = '<div class="hint" style="padding:8px">❌ ' + esc(e.message) + "</div>";
   }
 }
+
+// ---- 宽度拖拽：文件树 / 条目导航 ----
+let treeWidth = 220;
+$("treeResizer").addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  const startX = e.clientX;
+  const startW = treeWidth;
+  $("treeResizer").classList.add("dragging");
+  const move = (ev) => {
+    treeWidth = Math.max(140, Math.min(460, startW + (ev.clientX - startX)));
+    $("fileTree").style.width = treeWidth + "px";
+  };
+  const up = () => {
+    $("treeResizer").classList.remove("dragging");
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+    document.body.style.cursor = "";
+  };
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
+  document.body.style.cursor = "col-resize";
+});
+
+let navWidth = 200;
+$("navResizer").addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  const startX = e.clientX;
+  const startW = navWidth;
+  $("navResizer").classList.add("dragging");
+  const move = (ev) => {
+    navWidth = Math.max(110, Math.min(340, startW + (startX - ev.clientX)));
+    $("entryNav").style.width = navWidth + "px";
+  };
+  const up = () => {
+    $("navResizer").classList.remove("dragging");
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+    document.body.style.cursor = "";
+  };
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
+  document.body.style.cursor = "col-resize";
+});
 
 $("btnEditFile").addEventListener("click", startEdit);
 $("btnSaveFile").addEventListener("click", saveFile);
