@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo
+# 本地安装痕迹（junction 等）
+scripts/.installed-*
+# 运行时产物
+.tmp/

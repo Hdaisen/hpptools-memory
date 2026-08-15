@@ -1,0 +1,35 @@
+{
+  "name": "hpptools-memory",
+  "version": "0.1.0",
+  "description": "Pi Memory System port for DeepSeek Harness — layered Markdown memory (core-prompt / session notebook / long-term memories) with consolidation & hippocampus subagents",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "index.js",
+    "config.js",
+    "utils.js",
+    "diversity.js",
+    "memory-ops.js",
+    "extract.js",
+    "tools.js",
+    "markitdown.js",
+    "prompt.js",
+    "lifecycle.js",
+    "subagents.js",
+    "commands.js",
+    "cordis.patch.yml"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/dsh-system-prompt": "*",
+    "@deepseek-ai/dsh-commands": "*",
+    "@deepseek-ai/dsh-subagent": "*",
+    "@deepseek-ai/dsh-user-questions": "*"
+  }
+}

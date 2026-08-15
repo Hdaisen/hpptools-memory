@@ -1,0 +1,17 @@
+{
+  "name": "hpptools-memory",
+  "version": "0.1.0",
+  "description": "Pi Memory System 迁移到 DeepSeek Harness 的插件项目（core + 固化/海马体子代理管线）",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "plugins/*"
+  ],
+  "scripts": {
+    "install:plugin": "powershell -ExecutionPolicy Bypass -File scripts/install.ps1"
+  },
+  "license": "MIT"
+}
