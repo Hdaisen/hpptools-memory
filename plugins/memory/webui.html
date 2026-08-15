@@ -88,6 +88,9 @@
   .entry-nav .en.sup { color: var(--dim); text-decoration: line-through; }
   /* 窄抽屉下隐藏条目导航、收窄文件树（内容区优先） */
   @media (max-width: 700px) { .entry-nav, .nav-resizer { display: none; } .file-tree { width: 160px; } }
+  /* 专注模式：隐藏文件树与条目导航，内容区铺满整个面板宽度 */
+  .files-layout.focus .file-tree, .files-layout.focus .tree-resizer,
+  .files-layout.focus .entry-nav, .files-layout.focus .nav-resizer { display: none; }
   .file-pane .status { padding: 6px 14px; font-size: 12px; color: var(--dim); border-top: 1px solid var(--border); }
   .file-pane .status.ok { color: var(--ok); }
   .file-pane .status.err { color: var(--err); }
@@ -139,6 +142,7 @@
       <header>
         <span class="fname" id="fileTitle"></span>
         <span class="spacer"></span>
+        <button id="btnFocus" title="专注模式：隐藏文件树与条目导航，内容区铺满整个面板宽度">⛶ 全宽</button>
         <button id="btnEditFile" hidden>✏️ 编辑</button>
         <button id="btnPreviewFile" hidden>👁 预览</button>
         <button id="btnSaveFile" hidden class="primary">💾 保存</button>
@@ -315,10 +319,16 @@ async function loadOverview() {
     const pm = ps && ps.count > 0
       ? ps.count + " 个项目 / " + ps.files + " 文件 / " + ps.entries + " 条" + (ps.skillFiles ? " + " + ps.skillFiles + " 技能" : "")
       : "暂无项目记忆";
+    // 当前项目记忆：有活动会话绑定项目时显示该项目统计，否则提示无会话
+    const cur = (d.projects || []).find((p) => p.current);
+    const cm = cur
+      ? cur.files + " 文件 / " + cur.entries + " 条" + (cur.skillFiles ? " + " + cur.skillFiles + " 技能" : "")
+      : "无活动会话";
     const gm = d.globalMem.files + " 文件 / " + d.globalMem.entries + " 条" + (d.globalMem.skillFiles ? " + " + d.globalMem.skillFiles + " 技能" : "");
     const lm = d.lastMaintenance ? fmtTime(d.lastMaintenance.lastRun) + (d.lastMaintenance.project ? "（" + d.lastMaintenance.project + "）" : "") : "从未整理";
     $("cards").innerHTML =
-      card("项目记忆", pm, d.currentProject ? "当前项目：" + d.currentProject + " → 文件页查看明细" : "当前无会话") +
+      card("当前项目记忆", cm, cur ? cur.name + "（当前项目）→ 文件页查看明细" : "打开会话后可见") +
+      card("全部项目记忆", pm, "所有项目汇总 → 文件页查看明细") +
       card("全局记忆", gm, "personal/") +
       card("最近记忆整理", lm, "maintenance/") +
       card("运行中的子代理", d.activeRuns > 0 ? '<span class="badge run">' + d.activeRuns + " 个</span>" : "0 个", "固化 / 海马体") +
@@ -661,6 +671,17 @@ $("btnEditFile").addEventListener("click", startEdit);
 $("btnPreviewFile").addEventListener("click", startPreview);
 $("btnSaveFile").addEventListener("click", saveFile);
 $("btnCancelEdit").addEventListener("click", cancelEdit);
+
+// 专注模式：文件内容区铺满整个面板宽度（隐藏文件树 / 条目导航）
+$("btnFocus").addEventListener("click", () => {
+  const layout = document.querySelector(".files-layout");
+  const focus = layout.classList.toggle("focus");
+  $("btnFocus").textContent = focus ? "↩ 恢复" : "⛶ 全宽";
+  $("btnFocus").title = focus
+    ? "退出专注模式，恢复文件树与条目导航"
+    : "专注模式：隐藏文件树与条目导航，内容区铺满整个面板宽度";
+  setStatus(focus ? "专注模式：内容区已铺满整个面板宽度。" : "已恢复文件树与条目导航。");
+});
 
 // ---------------------------------------------------------------- models
 async function loadModels() {
