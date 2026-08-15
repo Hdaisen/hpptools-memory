@@ -86,8 +86,8 @@
   .entry-nav .en { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); font-size: 12px; padding: 4px 6px; border-radius: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .entry-nav .en:hover { background: var(--panel2); }
   .entry-nav .en.sup { color: var(--dim); text-decoration: line-through; }
-  /* 窄抽屉下隐藏条目导航（内容区优先） */
-  @media (max-width: 620px) { .entry-nav, .nav-resizer { display: none; } }
+  /* 窄抽屉下隐藏条目导航、收窄文件树（内容区优先） */
+  @media (max-width: 700px) { .entry-nav, .nav-resizer { display: none; } .file-tree { width: 160px; } }
   .file-pane .status { padding: 6px 14px; font-size: 12px; color: var(--dim); border-top: 1px solid var(--border); }
   .file-pane .status.ok { color: var(--ok); }
   .file-pane .status.err { color: var(--err); }
@@ -202,10 +202,10 @@
   <h2 style="font-size:15px;margin:22px 0 4px">Pi 记忆迁移</h2>
   <div id="migrateZone" class="hint">检测中…</div>
 
-  <h2 style="font-size:15px;margin:22px 0 4px">Obsidian</h2>
-  <div class="hint" style="margin-bottom:8px">记忆是 Obsidian 兼容的 Markdown vault（[[双向链接]]、## 条目均为 Obsidian 语法）。可以直接在 Obsidian 中打开，或用内置的「文件」页浏览。</div>
+  <h2 style="font-size:15px;margin:22px 0 4px">Obsidian / 文件管理</h2>
+  <div class="hint" style="margin-bottom:8px">记忆是 Obsidian 兼容的 Markdown vault（[[双向链接]]、## 条目均为 Obsidian 语法）。可在 Obsidian 中把存储目录添加为 vault，或用内置的「文件」页浏览。</div>
   <div class="row">
-    <button id="btnObsidian" class="primary">📓 在 Obsidian 中打开</button>
+    <button id="btnOpenFolder" class="primary">📂 打开存储文件夹</button>
     <span class="hint" id="obsidianHint"></span>
   </div>
 </section>
@@ -222,6 +222,7 @@ const API = {
   files:    "/hpptools-memory/api/files",
   file:     "/hpptools-memory/api/file",
   settings: "/hpptools-memory/api/settings",
+  openFolder: "/hpptools-memory/api/open-folder",
 };
 const $ = (id) => document.getElementById(id);
 let selectedRunId = null;
@@ -310,11 +311,14 @@ async function loadOverview() {
     } else {
       mig.hidden = true;
     }
-    const pm = d.projectMem ? d.projectMem.files + " 文件 / " + d.projectMem.entries + " 条" + (d.projectMem.skillFiles ? " + " + d.projectMem.skillFiles + " 技能" : "") : "无活动会话";
+    const ps = d.projectSummary;
+    const pm = ps && ps.count > 0
+      ? ps.count + " 个项目 / " + ps.files + " 文件 / " + ps.entries + " 条" + (ps.skillFiles ? " + " + ps.skillFiles + " 技能" : "")
+      : "暂无项目记忆";
     const gm = d.globalMem.files + " 文件 / " + d.globalMem.entries + " 条" + (d.globalMem.skillFiles ? " + " + d.globalMem.skillFiles + " 技能" : "");
     const lm = d.lastMaintenance ? fmtTime(d.lastMaintenance.lastRun) + (d.lastMaintenance.project ? "（" + d.lastMaintenance.project + "）" : "") : "从未整理";
     $("cards").innerHTML =
-      card("项目记忆", pm, d.projectMem ? "memories/（当前项目）" : "打开会话后可见") +
+      card("项目记忆", pm, d.currentProject ? "当前项目：" + d.currentProject + " → 文件页查看明细" : "当前无会话") +
       card("全局记忆", gm, "personal/") +
       card("最近记忆整理", lm, "maintenance/") +
       card("运行中的子代理", d.activeRuns > 0 ? '<span class="badge run">' + d.activeRuns + " 个</span>" : "0 个", "固化 / 海马体") +
@@ -333,13 +337,17 @@ let currentContent = null;
 let mode = "preview";        // preview | edit | previewing
 let draft = "";              // 编辑中的临时内容（预览/保存用）
 
-// 分组折叠状态（localStorage 持久化；core/notebook 默认展开，记忆组默认折叠）
+// 分组折叠状态（localStorage 持久化；首次使用按默认规则：
+// 记忆组（personal 与全部项目组）折叠，核心文件/小本本展开）
+function isDefaultCollapsed(id) {
+  return id === "personal" || id.startsWith("project:");
+}
 function collapsedState() {
   try {
     const raw = localStorage.getItem("hpptools-tree-collapsed");
     if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr)) return arr; }
   } catch { /* ignore */ }
-  return ["personal", "project"];
+  return null; // null → 用默认规则
 }
 function saveCollapsed(arr) {
   try { localStorage.setItem("hpptools-tree-collapsed", JSON.stringify(arr)); } catch { /* ignore */ }
@@ -351,13 +359,13 @@ function renderTree(d) {
   const collapsed = collapsedState();
   for (const g of d.groups) {
     const head = document.createElement("h4");
-    const isCollapsed = collapsed.includes(g.id);
+    const isCollapsed = collapsed ? collapsed.includes(g.id) : isDefaultCollapsed(g.id);
     head.textContent = (isCollapsed ? "▸ " : "▾ ") + g.label + (g.files.length ? " (" + g.files.length + ")" : "");
     head.title = isCollapsed ? "展开" : "折叠";
     const body = document.createElement("div");
     body.hidden = isCollapsed;
     head.addEventListener("click", () => {
-      const arr = collapsedState();
+      const arr = collapsedState() || [];
       const idx = arr.indexOf(g.id);
       if (body.hidden) { if (idx !== -1) arr.splice(idx, 1); }
       else if (idx === -1) arr.push(g.id);
@@ -606,7 +614,8 @@ async function loadFiles() {
 }
 
 // ---- 宽度拖拽：文件树 / 条目导航 ----
-let treeWidth = 220;
+// 初始宽度读取实际渲染宽度（窄抽屉下 media query 会收窄到 160）
+let treeWidth = $("fileTree").offsetWidth || 220;
 $("treeResizer").addEventListener("mousedown", (e) => {
   e.preventDefault();
   const startX = e.clientX;
@@ -756,7 +765,7 @@ async function loadSettingsTab() {
     overviewCache = d;
     $("curRoot").textContent = d.root;
     $("newRoot").placeholder = "当前: " + d.root;
-    $("obsidianHint").textContent = "vault 路径: " + d.root;
+    $("obsidianHint").textContent = "存储根: " + d.root;
     // 迁移状态
     const zone = $("migrateZone");
     if (d.migrated) {
@@ -805,10 +814,14 @@ $("btnSaveRoot").addEventListener("click", async () => {
   }
 });
 
-$("btnObsidian").addEventListener("click", () => {
+$("btnOpenFolder").addEventListener("click", async () => {
   const d = overviewCache;
-  const root = d ? d.root : "";
-  if (root) location.href = "obsidian://open?path=" + encodeURIComponent(root);
+  if (!d) return;
+  try {
+    await fetchJson(API.openFolder + "?path=" + encodeURIComponent("."));
+  } catch (e) {
+    $("obsidianHint").textContent = "❌ " + e.message;
+  }
 });
 
 // ---------------------------------------------------------------- theme

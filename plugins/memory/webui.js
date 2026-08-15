@@ -19,7 +19,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { PATHS, HOME, migrationInfo, detectLegacyMemory, migrateFromPi, getSettings, saveSettings, copyDir } from './config.js'
+import { PATHS, HOME, migrationInfo, detectLegacyMemory, migrateFromPi, getSettings, saveSettings, copyDir, getProjectName } from './config.js'
 import { safeRead, walkMarkdownFiles, parseMemoryEntries } from './utils.js'
 import { getExtractorModel, getCleanerModel, setModel } from './models.js'
 import { runEntries, activeRunCount } from './runs.js'
@@ -126,10 +126,30 @@ function listMdRel(dir) {
 
 // ---------------------------------------------------------------- data
 
+/** 列出 root 下所有项目（projects/ 的子目录，排除隐藏目录如 .obsidian）。 */
+function projectList() {
+  if (!fs.existsSync(PATHS.projectsRoot)) return []
+  return fs.readdirSync(PATHS.projectsRoot, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
+    .map((e) => e.name)
+    .sort()
+}
+
 /** 记忆概览数据（导出供测试/复用）。 */
 export async function overviewData(ctx) {
   const cwd = firstAgentCwd(ctx)
-  const projectDir = cwd ? PATHS.memoriesDir(cwd) : null
+  const projects = projectList()
+  // 汇总所有项目的记忆（不再只统计当前会话项目）
+  let totalFiles = 0
+  let totalEntries = 0
+  let skillFiles = 0
+  for (const name of projects) {
+    const s = fileStats(path.join(PATHS.projectsRoot, name, 'memories'))
+    totalFiles += s.files
+    totalEntries += s.entries
+    skillFiles += s.skillFiles
+  }
+  const currentProject = cwd ? getProjectName(cwd) : null
   const migrated = migrationInfo()
   return {
     root: PATHS.root,
@@ -140,7 +160,13 @@ export async function overviewData(ctx) {
     core: fs.existsSync(PATHS.corePrompt),
     rules: fs.existsSync(PATHS.rules),
     notebook: cwd ? fs.existsSync(PATHS.notebook(cwd)) : false,
-    projectMem: projectDir ? fileStats(projectDir) : null,
+    projects: projects.map((name) => ({
+      name,
+      current: name === currentProject,
+      ...fileStats(path.join(PATHS.projectsRoot, name, 'memories')),
+    })),
+    projectSummary: { count: projects.length, files: totalFiles, entries: totalEntries, skillFiles },
+    currentProject,
     globalMem: fileStats(PATHS.personalDir),
     lastMaintenance: getLastMaintenance(),
     activeRuns: activeRunCount(),
@@ -148,7 +174,7 @@ export async function overviewData(ctx) {
   }
 }
 
-/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 项目记忆。 */
+/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 所有项目记忆。 */
 export function filesData(ctx) {
   const cwd = firstAgentCwd(ctx)
   const groups = []
@@ -173,7 +199,7 @@ export function filesData(ctx) {
     const nbFull = PATHS.notebook(cwd)
     groups.push({
       id: 'notebook',
-      label: '会话小本本',
+      label: '会话小本本（当前项目）',
       files: [{
         rel: path.relative(PATHS.root, nbFull).replace(/\\/g, '/'),
         name: 'notebook.md',
@@ -194,20 +220,28 @@ export function filesData(ctx) {
     })),
   })
 
-  if (cwd) {
+  // 所有项目的记忆（当前项目排在前面并标注）
+  const currentProject = cwd ? getProjectName(cwd) : null
+  const projects = projectList().sort((a, b) => {
+    if (a === currentProject) return -1
+    if (b === currentProject) return 1
+    return a.localeCompare(b)
+  })
+  for (const name of projects) {
+    const dir = path.join(PATHS.projectsRoot, name, 'memories')
     groups.push({
-      id: 'project',
-      label: '项目记忆 · memories/',
-      files: listMdRel(PATHS.memoriesDir(cwd)).map((rel) => ({
+      id: 'project:' + name,
+      label: `项目记忆 · ${name}${name === currentProject ? '（当前）' : ''}`,
+      files: listMdRel(dir).map((rel) => ({
         rel,
-        name: rel.replace(/^projects\/[^/]+\/memories\//, ''),
+        name: rel.replace(`projects/${name}/memories/`, ''),
         ...fileInfo(path.join(PATHS.root, rel)),
         entries: parseMemoryEntries(safeRead(path.join(PATHS.root, rel)) ?? '', rel).length,
       })),
     })
   }
 
-  return { currentProject: cwd ? PATHS.projectDir(cwd).split(path.sep).pop() : null, groups }
+  return { currentProject, groups }
 }
 
 /** 已配置模型列表（导出供测试/复用）。 */
@@ -334,6 +368,36 @@ export function registerWebUi(ctx) {
           return
         }
         sendJson(res, 200, { ok: true, runId: run.id })
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
+  // 在系统文件管理器中打开目录（Obsidian 打开文件夹的 URI 不受支持，改用资源管理器；
+  // 用户可把该目录添加为 Obsidian vault 后在 Obsidian 中浏览）
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/open-folder`,
+    handler: async (req, res) => {
+      try {
+        const url = new URL(req.url ?? '', 'http://x')
+        const rel = url.searchParams.get('path') ?? ''
+        const full = safeResolve(rel)
+        if (!full || !fs.existsSync(full) || !fs.statSync(full).isDirectory()) {
+          sendJson(res, 400, { error: 'path 必须解析到记忆存储目录内的一个文件夹。' })
+          return
+        }
+        const { spawn } = await import('node:child_process')
+        const platform = process.platform
+        if (platform === 'win32') {
+          spawn('explorer.exe', [full], { detached: true, stdio: 'ignore' }).unref()
+        } else if (platform === 'darwin') {
+          spawn('open', [full], { detached: true, stdio: 'ignore' }).unref()
+        } else {
+          spawn('xdg-open', [full], { detached: true, stdio: 'ignore' }).unref()
+        }
+        sendJson(res, 200, { ok: true, path: full })
       } catch (e) {
         sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
       }

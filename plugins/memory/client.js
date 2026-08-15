@@ -111,16 +111,6 @@ window.__ModuleLoader__.load({
           React.createElement("span", null, "🧠 hpptools-memory"),
           React.createElement("span", { style: { flex: 1 } }),
           React.createElement(
-            "a",
-            {
-              href: API_BASE + "/",
-              target: "_blank",
-              rel: "noreferrer",
-              style: { color: "var(--dsw-alias-label-secondary, #8b93a5)", textDecoration: "none", fontSize: 12, marginRight: 8 },
-            },
-            "新标签页打开 ↗",
-          ),
-          React.createElement(
             "button",
             {
               onClick: props.onClose,
@@ -148,16 +138,27 @@ window.__ModuleLoader__.load({
     // ---------------- 主题同步：把宿主 --dsw-* token 推给 iframe ----------------
     // theme 是业务服务（getTheme/setTheme），事件挂在插件 ctx 上监听
     // （ui-layout 的 theme-presenter 同款用法：ctx.on('theme/change', ...)）。
+    // iframe 加载完成后会发 hpptools-theme-request，这里响应初始主题，
+    // 避免 iframe 在推送之后才加载导致一直用深色默认值。
     function syncTheme(ctx, theme) {
-      const push = (snapshot) => {
+      let snapshot = theme.getTheme();
+      const push = (s) => {
+        snapshot = s;
         for (const f of document.querySelectorAll("iframe[data-hpptools-memory]")) {
           f.contentWindow?.postMessage(
-            { type: "hpptools-theme", colorScheme: snapshot.colorScheme, tokens: snapshot.tokens },
+            { type: "hpptools-theme", colorScheme: s.colorScheme, tokens: s.tokens },
             "*",
           );
         }
       };
-      push(theme.getTheme());
+      push(snapshot);
+      window.addEventListener("message", (e) => {
+        if (!e.data || e.data.type !== "hpptools-theme-request") return;
+        e.source?.postMessage(
+          { type: "hpptools-theme", colorScheme: snapshot.colorScheme, tokens: snapshot.tokens },
+          "*",
+        );
+      });
       ctx.on("theme/change", push);
     }
 
