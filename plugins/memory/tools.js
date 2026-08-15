@@ -81,7 +81,7 @@ export function registerTools(ctx) {
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -212,7 +212,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -348,7 +348,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -418,7 +418,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -487,7 +487,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -537,7 +537,7 @@ ${args.content}${relatedLine}
     description: "View the current memory system file status and entry counts.",
     parameters: {},
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(_args, exec) {
@@ -566,7 +566,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -617,7 +617,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
@@ -667,7 +667,7 @@ ${args.content}${relatedLine}
       },
     },
     output: {
-      schema: { type: "json" },
+      schema: { type: "object", properties: { text: { type: "string" } }, additionalProperties: true },
       render: (_args, value) => [{ type: "text", text: value.text }],
     },
     async execute(args, exec) {
