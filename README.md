@@ -94,37 +94,71 @@
 
 ## 安装
 
-### Windows
+### 组件构成
 
+hpptools-memory 由**两个包**组成：
+
+| 包 | 角色 | 发布状态 |
+|---|---|---|
+| `hpptools-memory` | **记忆后端**：9 个记忆工具、提示词注入、生命周期管线、固化/海马体子代理、记忆 API | ✅ 已发布 npm `0.1.0` |
+| `dsh-better-sidebar` | **面板容器**：右侧栏 + 🧠 记忆管理 tab（五个视图） | 面板已 PR 至上游 `omdsh-dev/DSH-better-sidebar`（[#143](https://github.com/omdsh-dev/DSH-better-sidebar/pull/143)），合并前官方包暂无记忆 tab |
+
+> **只装后端**（工具/子代理/提示词注入，无可视化面板）：
+> ```bash
+> cd ~/.dsh && dsh plugin --profile web add hpptools-memory
+> ```
+
+### 方式一：完整安装（后端 + 面板）——从源码（当前可用）
+
+上游 PR 合并前，完整记忆控制台需从本仓库安装（内置 vendored 面板）：
+
+**Windows**
 ```powershell
 .\scripts\install.ps1        # 默认 DSH_HOME = $env:DSH_HOME 或 ~/.dsh
 ```
 
-### Linux / macOS
-
+**Linux / macOS**
 ```bash
 ./scripts/install.sh
 ```
 
-脚本将 `plugins/memory` 装入 `<DSH_HOME>/profiles/node_modules/hpptools-memory`，并把插件行合并进 `<DSH_HOME>/profiles/web/cordis.patch.yml`。**重启 DeepSeek Harness 后生效**——验证：agent 工具列表出现 `remember` / `recall` / `memory_status` 等，prompt 中出现 `memory:core` / `memory:context` 段。
+脚本将后端（`plugins/memory`）与面板（`plugins/better-sidebar`）一起装入 `<DSH_HOME>/profiles/node_modules/`，并把插件行合并进 `<DSH_HOME>/profiles/web/cordis.patch.yml`。**重启 DeepSeek Harness 后生效**。
 
-存储位置可通过 `config.root` 自定义（见 `cordis.patch.yml` 内注释）。
+### 方式二：完整安装——上游 PR 合并后（两个官方包）
 
-## 发布 / 给其他人安装
+```bash
+cd ~/.dsh
+dsh plugin --profile web add dsh-better-sidebar     # 面板（官方包，合并后自带记忆 tab）
+dsh plugin --profile web add hpptools-memory        # 记忆后端
+```
+
+### 安装后验证
+
+- agent 工具列表出现 `remember` / `recall` / `memory_status` / `notebook` 等
+- prompt 中出现 `memory:core` / `memory:context` 段
+- 右侧栏「+」菜单出现 🧠 记忆管理 tab（概览 / 文件 / 模型 / 运行 / 设置）
+- 运行 `/memory-clean` 验证海马体子代理，`recall` 验证检索
+
+存储位置默认 `<DSH_HOME>/memory`，可通过 `cordis.patch.yml` 的 `config.root` 自定义。
+
+## 发布状态与分发
 
 DeepSeek Harness **没有官方中央插件市场**——插件通过 npm / GitHub 分发，靠社区目录发现：
 
-| 途径 | 命令 | 说明 |
-|---|---|---|
-| **npm 发布**（推荐） | `cd plugins/memory && npm publish` | 包名 `hpptools-memory`（已含 `agents/` 提示词目录与 `cordis.patch.yml`，`npm pack --dry-run` 可预览内容） |
-| **GitHub 直装** | `cd ~/.dsh && dsh plugin --profile web add github:<user>/hpptools_memory#v0.1.0` | 需先推仓库并打 tag |
-| **npm 安装** | `cd ~/.dsh && dsh plugin --profile web add hpptools-memory` | 用户侧 `dsh plugin` 会转发 pnpm 安装并把插件行写入 profile 的 `cordis.patch.yml` |
-| **社区发现目录** | 提交 PR 到 `omdsh-dev/DSH-better-sidebar` 的 `src/client/plugins-tabs.ts` | better-sidebar 设置页「添加插件」弹窗的内置目录——事实上的"插件市场"入口，条目 = npm 包名 + GitHub 链接 + 一键安装脚本（数据完整性由 `tests/plugin-list.spec.ts` 守护） |
+- **npm**：`hpptools-memory@0.1.0` 已发布（latest），用户侧安装：`cd ~/.dsh && dsh plugin --profile web add hpptools-memory`
+- **GitHub**：`Hdaisen/hpptools-memory`（public，tag `v0.1.0`），直装：`cd ~/.dsh && dsh plugin --profile web add github:Hdaisen/hpptools-memory#v0.1.0`
+- **面板上游 PR**：记忆管理 tab 已提交 [omdsh-dev/DSH-better-sidebar#143](https://github.com/omdsh-dev/DSH-better-sidebar/pull/143)（含推荐插件目录条目——合并后官方 better-sidebar 设置页「添加插件」弹窗可一键发现 hpptools-memory）
+
+**维护者发布流程**：
+
+```bash
+cd plugins/memory && npm publish    # 发布后端（files 白名单已含 agents/）
+```
 
 发布前检查清单：
 - [ ] `plugins/memory/package.json` 的 `files` 含 `agents/`（固化子代理提示词，缺失会导致固化静默失败）
 - [ ] `npm pack --dry-run` 确认 tarball 含全部运行时文件
-- [ ] 内存面板依赖 better-sidebar 的 memory tab——使用方需同时安装 dsh-better-sidebar（面板）与 hpptools-memory（后端）
+- [ ] 面板改动需在 `.tmp-test/DSH-better-sidebar` 克隆构建 lib 后同步 vendored + profile
 
 ## 本地测试（脱离宿主）
 
