@@ -278,7 +278,7 @@ export function filesData(ctx) {
       const anchor = path.basename(sessionDir).slice(-12)
       groups.push({
         id: 'session:' + anchor,
-        label: `当前会话 · raw + 对话摘要`,
+        label: '当前会话 · raw + 对话摘要',
         files: sessionFiles.map((rel) => {
           const full = path.join(PATHS.root, rel)
           return {
