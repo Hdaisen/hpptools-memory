@@ -67,14 +67,15 @@ assert(html.includes('body[data-embed] .tabbar'), 'embed hides inner tabbar')
 const client = fs.readFileSync(path.join(pkgDir, 'client.js'), 'utf-8')
 for (const want of [
   'PanelBoundary', 'hpptools-locale', 'sidebar.footer.action', 'data-hpptools-memory',
-  'hpptools-pulse', 'hpptools-panel', 'hpptools-tabbar', 'hpptools-split',
-  'moveTabToEdge', 'insertLeafAt', 'removeLeafAt', 'resizeSplit', 'openView',
-  'STORE-START', 'ViewFrame', 'TAB_DRAG_TYPE',
+  'hpptools-pulse', 'registerTab', 'waitForService', 'TAB_ID', 'openConsole',
+  'hpptools-memory:console', 'ctx.get("betterSidebar")', 'hpptools-memory-console',
 ]) {
   assert(client.includes(want), `client.js has ${want}`)
 }
-// 不再注册宿主 details slot（面板自主管理）
-assert(!client.includes('slots.inject("details"'), 'client no longer shadows host details slot')
+// 不再自研侧边栏壳（betterSidebar 提供框架）
+for (const gone of ['moveTabToEdge', 'insertLeafAt', 'hpptools-split', 'hpptools-tabbar', 'STORE-START', 'react-dom/client']) {
+  assert(!client.includes(gone), `client.js no longer has ${gone}`)
+}
 
 if (failures.length > 0) {
   console.error(`\nFAILED (${failures.length}):\n  - ${failures.join('\n  - ')}`)
