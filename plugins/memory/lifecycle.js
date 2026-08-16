@@ -66,14 +66,35 @@ function isSubagent(agent) {
 }
 
 /**
- * DSH session 事件 → pi 风格消息（提取管线输入）。
- * 容错转换：只取叶字段，坏事件跳过。toolCall 并入 assistant 消息
- * （extract_key_actions 依赖），tool/result → role: toolResult。
+ * DSH session 事件 → extract 管线消息（增量提取）。
+ *
+ * 与 pi 的差异（根因修复）：pi 的 agent_end 自带本轮 `messages`，DSH 的
+ * `agent/turn-stopping` 只有累积的 `session`。这里用**增量 seq**（记录每会话
+ * 已转换到的最大 event seq）只提取本轮新增事件，转为 extract 期望的消息格式：
+ *   - `user/message`（source.kind==='user'）→ role 'user'
+ *   - `assistant/message`（DSH 事件名！旧代码误用 pi 的 'agent/message'）→
+ *     role 'assistant'，块映射：text / reasoning→thinking / tool-call→toolCall
+ *   - `tool/result` → role 'toolResult'（toolName 由 assistant 的 tool-call
+ *     callId→name 关联取回）
+ * `tool/call` 是 trace 事件不再单独产出（assistant/message 已含 tool-call 块）。
+ *
+ * DSH 消息契约（packages/llm/llm/src/message.ts, types.ts）:
+ *   - Message.role ∈ 'system'|'user'|'assistant'；tool result 也是 'user'
+ *     （靠 source.kind==='tool' 区分）
+ *   - ContentBlock.type ∈ 'text'|'reasoning'|'image'|'tool-call'|'tool-result'
+ *   - ToolCallBlock.arguments 是 JSON 字符串；toolName 靠 callId 关联
  */
-export function convertSessionToMessages(session) {
+export function convertSessionToMessages(session, sessionId) {
   const messages = []
   const events = session?.events ?? []
+  const lastSeq = sessionId ? extractedUpTo.get(sessionId) ?? -1 : -1
+  if (typeof lastSeq !== 'number' || lastSeq < -1) return messages
+
+  const callNames = new Map() // callId → toolName（本轮 assistant tool-call 登记）
+  let maxSeq = lastSeq
   for (const ev of events) {
+    if (typeof ev?.seq !== 'number' || ev.seq <= lastSeq) continue
+    if (ev.seq > maxSeq) maxSeq = ev.seq
     try {
       switch (ev.type) {
         case 'user/message': {
@@ -84,32 +105,52 @@ export function convertSessionToMessages(session) {
           }
           break
         }
-        case 'agent/message': {
+        case 'assistant/message': {
           const data = ev.data ?? {}
-          const content = data.message?.content ?? data.content
-          if (content) messages.push({ role: 'assistant', content })
-          break
-        }
-        case 'tool/call': {
-          const data = ev.data ?? {}
-          const call = data.message ?? data
-          const toolName = call.toolName ?? data.toolName ?? call.name ?? 'unknown'
-          const arguments_ = call.arguments ?? data.arguments ?? {}
-          messages.push({
-            role: 'assistant',
-            content: [{ type: 'toolCall', name: toolName, arguments: arguments_ }],
-          })
+          const msg = data.message ?? {}
+          const content = Array.isArray(msg.content) ? msg.content : []
+          const mapped = []
+          for (const b of content) {
+            if (!b || typeof b !== 'object') continue
+            switch (b.type) {
+              case 'text':
+                mapped.push({ type: 'text', text: b.text ?? '' })
+                break
+              case 'reasoning':
+                // extract 对 thinking 块做工作记忆过滤 → 映射为 thinking
+                mapped.push({ type: 'thinking', thinking: b.text ?? '' })
+                break
+              case 'tool-call': {
+                mapped.push({ type: 'toolCall', name: b.name ?? '', arguments: parseToolArguments(b.arguments) })
+                if (b.id) callNames.set(b.id, b.name)
+                break
+              }
+              case 'image':
+                mapped.push({ type: 'image', mimeType: b.attachment?.mimeType })
+                break
+              default:
+                break
+            }
+          }
+          if (mapped.length > 0) messages.push({ role: 'assistant', content: mapped })
           break
         }
         case 'tool/result': {
           const data = ev.data ?? {}
           const msg = data.message ?? {}
-          const first = Array.isArray(msg.content) ? msg.content[0] : undefined
+          const content = Array.isArray(msg.content) ? msg.content : []
+          const block = content.find((b) => b && b.type === 'tool-result') ?? content[0]
+          const callId = block?.toolCallId ?? msg.source?.callId
+          const toolName =
+            (callId && callNames.get(callId)) ||
+            msg.source?.toolName ||
+            data.toolName ||
+            'unknown'
           messages.push({
             role: 'toolResult',
-            toolName: msg.source?.toolName ?? data.toolName ?? 'unknown',
-            content: first?.content ?? msg.content ?? [],
-            isError: first?.isError === true,
+            toolName,
+            content: Array.isArray(block?.content) ? block.content : content,
+            isError: block?.isError === true,
           })
           break
         }
@@ -120,8 +161,23 @@ export function convertSessionToMessages(session) {
       /* skip malformed event — never break the pipeline */
     }
   }
+  if (sessionId && maxSeq > lastSeq) extractedUpTo.set(sessionId, maxSeq)
   return messages
 }
+
+/** DSH 的 ToolCallBlock.arguments 是 JSON 字符串 → 解析为对象（供 extract_key_actions 用 path）；失败保留原串。 */
+function parseToolArguments(raw) {
+  if (typeof raw !== 'string') return raw
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : raw
+  } catch {
+    return raw
+  }
+}
+
+/** 增量提取水位：sessionId → 已转换到的最大 event seq（进程内）。 */
+const extractedUpTo = new Map()
 
 export function registerLifecycle(ctx) {
   // ============================================================
@@ -160,7 +216,8 @@ export function registerLifecycle(ctx) {
         setSessionDir(agent.session.id, sessionDir)
       }
 
-      const messages = convertSessionToMessages(agent.session)
+      const sessionId = agent.session?.id
+      const messages = convertSessionToMessages(agent.session, sessionId)
       const nonSystem = messages.filter(
         (m) => m.role !== 'system' && m.role !== 'developer',
       )
