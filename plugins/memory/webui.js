@@ -9,7 +9,7 @@
  *   GET  /hpptools-memory/api/runs       → 运行中的记忆子代理（含活动日志尾部）
  *   POST /hpptools-memory/api/clean      → 触发海马体整理（当前会话）
  *   POST /hpptools-memory/api/migrate    → 手动触发 Pi 记忆迁移（检测到才可迁）
- *   GET  /hpptools-memory/api/files      → 文件树（核心文件/全局记忆/项目记忆/小本本）
+ *   GET  /hpptools-memory/api/files      → 文件树（核心/小本本/全局/项目记忆/当前会话 raw + 子代理日志）
  *   GET  /hpptools-memory/api/file?path= → 读取 root 内一个文件（path 为相对 root 的路径）
  *   POST /hpptools-memory/api/file       → 保存 root 内一个文件 { path, content }
  *   POST /hpptools-memory/api/settings   → 保存 UI 设置 { root?, copyData? }（重启生效）
@@ -25,6 +25,7 @@ import { getExtractorModel, getCleanerModel, setModel } from './models.js'
 import { runEntries, activeRunCount } from './runs.js'
 import { getLastMaintenance } from './memory-ops.js'
 import { spawnCleanerSubagent } from './subagents.js'
+import { getSessionDir } from './prompt.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PAGE_PATH = path.join(__dirname, 'webui.html')
@@ -91,6 +92,63 @@ function firstAgentCwd(ctx) {
     return roots[0]?.session?.header?.cwd
   } catch {
     return undefined
+  }
+}
+
+/** 当前活动根 agent 对象（面板是根级，取第一个根会话）。 */
+function firstAgent(ctx) {
+  try {
+    return (ctx.get('agents')?.roots?.() ?? [])[0]
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * 当前会话的短期记忆目录（turns/sessions/<id>/）。
+ * 优先取内存中 lifecycle 登记的会话目录（最准确）；进程内无登记时回退到
+ * 当前项目下 mtime 最新（即 ISO 前缀最大）的会话目录。
+ * @returns {string|null} 目录路径或 null。
+ */
+function currentSessionDir(ctx) {
+  let rootId = null
+  let rootCwd = null
+  const agent = firstAgent(ctx)
+  if (agent?.session) {
+    rootId = agent.session.id
+    rootCwd = agent.session.header?.cwd
+  }
+  try {
+    if (rootId) {
+      const mapped = getSessionDir(rootId)
+      if (mapped && fs.existsSync(mapped)) return mapped
+    }
+  } catch { /* fall through */ }
+  if (rootCwd) {
+    const sessBase = path.join(PATHS.projectDir(rootCwd), 'turns', 'sessions')
+    try {
+      if (fs.existsSync(sessBase)) {
+        const dirs = fs.readdirSync(sessBase, { withFileTypes: true })
+          .filter((e) => e.isDirectory())
+          .map((e) => e.name)
+          .sort()
+        if (dirs.length) return path.join(sessBase, dirs[dirs.length - 1])
+      }
+    } catch { /* ignore */ }
+  }
+  return null
+}
+
+/** 列出目录下的普通文件 → 相对 root 的 rel（正斜杠），排除隐藏/临时文件。 */
+function listSessionFiles(dir) {
+  if (!fs.existsSync(dir)) return []
+  try {
+    return fs.readdirSync(dir, { withFileTypes: true })
+      .filter((e) => e.isFile() && !e.name.startsWith('.'))
+      .map((e) => path.relative(PATHS.root, path.join(dir, e.name)).replace(/\\/g, '/'))
+      .sort()
+  } catch {
+    return []
   }
 }
 
@@ -206,6 +264,56 @@ export function filesData(ctx) {
         ...fileInfo(nbFull),
         entries: 0,
       }],
+    })
+  }
+
+  // 当前会话的短期记忆（turns/sessions/<id>/）：raw-<n>.md 每轮备份 + dialogue-summary.md 对话摘要。
+  // 固化子代理日志（consolidation-*.log）不属于长期工作记忆，单独归入「子代理日志」组。
+  // 只在存在当前会话目录且有文件时输出该组。
+  const sessionDir = currentSessionDir(ctx)
+  if (sessionDir) {
+    const sessionFiles = listSessionFiles(sessionDir)
+      .filter((rel) => /^(raw-\d+\.md|dialogue-summary\.md)$/.test(path.basename(rel)))
+    if (sessionFiles.length > 0) {
+      const anchor = path.basename(sessionDir).slice(-12)
+      groups.push({
+        id: 'session:' + anchor,
+        label: `当前会话 · raw + 对话摘要`,
+        files: sessionFiles.map((rel) => {
+          const full = path.join(PATHS.root, rel)
+          return {
+            rel,
+            name: path.basename(rel),
+            ...fileInfo(full),
+            entries: 0,
+          }
+        }),
+      })
+    }
+  }
+
+  // 子代理日志：固化/海马体子代理的最终报告（consolidation-*.log / clean-*.log）。
+  // 固化日志留在当前会话目录里；海马体日志集中在 maintenance/。
+  const subagentLogs = []
+  if (sessionDir) {
+    for (const rel of listSessionFiles(sessionDir)) {
+      const base = path.basename(rel)
+      if (/^consolidation-.*\.log$/.test(base)) subagentLogs.push(rel)
+    }
+  }
+  const maintenanceLogs = listSessionFiles(PATHS.maintenanceDir)
+    .filter((rel) => /clean-.*\.log$/.test(path.basename(rel)))
+  for (const rel of maintenanceLogs) subagentLogs.push(rel)
+  if (subagentLogs.length > 0) {
+    groups.push({
+      id: 'subagent-logs',
+      label: '子代理日志',
+      files: subagentLogs.map((rel) => ({
+        rel,
+        name: path.basename(rel),
+        ...fileInfo(path.join(PATHS.root, rel)),
+        entries: 0,
+      })),
     })
   }
 
