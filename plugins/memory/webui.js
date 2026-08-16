@@ -130,7 +130,9 @@ function sessionDirsUnder(projectCwd) {
 
 /**
  * 解析「当前会话」的短期记忆目录（turns/sessions/<id>/）。优先级：
- *   1. lifecycle 内存登记（getSessionDir）—— 最新且最准，即使目录为空也是真·当前会话；
+ *   1. lifecycle 内存登记（getSessionDir）—— 最新且最准；但目录为空
+ *      （从未写过 raw / dialogue-summary）说明是占位/未激活会话
+ *      （如 GUI 重启瞬间新建的会话），继续走后续匹配；
  *   2. 按根 agent session id 锚点匹配的会话目录（进程内无登记时，沿用 lifecycle 的锚点复用规则）；
  *   3. 锚点无匹配 → 取 raw-<n>.md 最近写入（真正在活动）的会话目录，无则取名称序最大目录。
  * 目录不存在则返回 null。
@@ -144,18 +146,21 @@ function currentSessionDir(ctx) {
   try {
     if (rootId) {
       const mapped = getSessionDir(rootId)
-      if (mapped && fs.existsSync(mapped)) return mapped
+      if (mapped && fs.existsSync(mapped) && sessionDirHasContent(mapped)) return mapped
     }
   } catch { /* fall through */ }
 
   if (agentCwd) {
     const dirs = sessionDirsUnder(agentCwd)
     if (dirs.length) {
-      // 2. 锚点匹配（优先最新）
+      // 2. 锚点匹配（优先最新）；命中但目录无内容（占位/未激活）→ 继续 fallback
       const a = sessionAnchor(rootId || '')
       const anchorMatch = a ? dirs.filter((d) => path.basename(d).endsWith('-' + a)) : []
-      if (anchorMatch.length) return anchorMatch[anchorMatch.length - 1]
-      // 3. 无锚点匹配 → 取最近写入 raw 的会话目录（真正活动）；都没有 → 取最新目录。
+      if (anchorMatch.length) {
+        const matched = anchorMatch[anchorMatch.length - 1]
+        if (sessionDirHasContent(matched)) return matched
+      }
+      // 3. 无有效锚点匹配 → 取最近写入 raw 的会话目录（真正活动）；都没有 → 取最新目录。
       const newest = { dir: null, mtime: -1 }
       for (const dir of dirs) {
         try {
@@ -185,6 +190,19 @@ function listSessionFiles(dir) {
       .sort()
   } catch {
     return []
+  }
+}
+
+/**
+ * 会话目录是否已有实质内容（写过 raw 或 dialogue-summary）。
+ * 空目录 = 会话刚建、尚未写任何轮次（GUI 重启瞬间的占位目录也在此列）——
+ * 定位「当前会话」时应跳过，避免把刚重启的空白会话当成当前对话。
+ */
+function sessionDirHasContent(dir) {
+  try {
+    return fs.readdirSync(dir).some((f) => /^(raw-\d+\.md|dialogue-summary\.md)$/.test(f))
+  } catch {
+    return false
   }
 }
 

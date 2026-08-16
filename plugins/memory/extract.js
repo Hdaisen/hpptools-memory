@@ -341,17 +341,22 @@ export function extractKeyActions(messages) {
 /**
  * 追加本轮完整对话摘要一节(带轮次序号)到 dialogue-summary.md。
  *
- * 收录本轮**所有**用户消息与**所有**助手回复(文本部分)——不削减用户信息。
- * 每轮 append,永久保留(不归档不覆盖);轮次 = 节数,固化点由节数判定。
- * 无助手文本则跳过。
+ * 收录本轮**所有**用户消息与**助手最终答复**——不收录工具调用间隙的
+ * 中间叙述(如"现在看 X"、"需求都理清了"这类过程性文本,用户视为
+ * 思考过程不应进入工作记忆;2026-08-16 修复)。区分方式:assistant
+ * 消息含 tool-call 块 = 工具调用前的过渡叙述 → 跳过;纯文本消息 =
+ * 最终答复 → 收录。每轮 append,永久保留(不归档不覆盖);
+ * 轮次 = 节数,固化点由节数判定。无助手最终答复则跳过。
  */
 export function appendDialogueSummary(messages, turnsDir, roundNo) {
-  // 只取 text 块,过滤 thinking(工作记忆不注入思考内容)
+  // 只取 text 块,过滤 thinking(工作记忆不注入思考内容);
+  // 含 tool-call 的 assistant 消息是工具间隙叙述,不收录。
   const userTexts = messages
     .filter((m) => m.role === "user")
     .map((m) => extractText(m.content ?? "", false).trim());
   const asstTexts = messages
     .filter((m) => m.role === "assistant")
+    .filter((m) => extractToolCalls(m.content ?? []).length === 0)
     .map((m) => extractText(m.content ?? "", false).trim())
     .filter((t) => t);
   if (asstTexts.length === 0) return;
