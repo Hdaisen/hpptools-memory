@@ -73,5 +73,21 @@ if (logGroup) {
 ok(data.groups.some((g) => g.id === 'notebook'), 'notebook group present')
 ok(data.groups.some((g) => g.id === 'core'), 'core group present')
 
+// ---- empty session dir still emits the group (dir exists even without raw yet) ----
+const sessDir2 = path.join(projectDir, 'turns', 'sessions', `2026-08-17T00-00-00-yyyy-${anchor}`)
+fs.mkdirSync(sessDir2, { recursive: true })
+setSessionDir('session-' + anchor, sessDir2) // register the EMPTY dir as current
+const data2 = filesData(ctx)
+const sess2 = data2.groups.find((g) => g.id === 'session:' + anchor)
+ok(!!sess2, 'empty session dir still emits current-session group')
+if (sess2) ok(sess2.files.length === 0, 'empty session dir → empty files list')
+
+// ---- anchor fallback: no in-memory registration → matches dir by session-id anchor ----
+const promptMod = await mod('prompt.js')
+promptMod.dropSessionDir('session-' + anchor) // clear in-memory registration
+const data3 = filesData(ctx)
+const sess3 = data3.groups.find((g) => g.id === 'session:' + anchor)
+ok(!!sess3, 'anchor fallback emits group without in-memory registration')
+
 console.log(failed === 0 ? '\nALL OK' : `\n${failed} FAILED`)
 process.exit(failed === 0 ? 0 : 1)

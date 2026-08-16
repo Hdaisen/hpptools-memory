@@ -104,37 +104,73 @@ function firstAgent(ctx) {
   }
 }
 
+/** DSH session id → 会话目录锚点（末 12 位，与 lifecycle.js 一致）。 */
+function sessionAnchor(sessionId) {
+  if (!sessionId) return ''
+  return String(sessionId)
+    .replace(/^session-/, '')
+    .replace(/[^a-zA-Z0-9-]/g, '')
+    .slice(-12)
+}
+
+/** 当前项目下所有会话目录（turns/sessions/ 的子目录，按名称升序）。 */
+function sessionDirsUnder(projectCwd) {
+  const sessBase = path.join(PATHS.projectDir(projectCwd), 'turns', 'sessions')
+  try {
+    if (!fs.existsSync(sessBase)) return []
+    return fs.readdirSync(sessBase, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name)
+      .sort()
+      .map((name) => path.join(sessBase, name))
+  } catch {
+    return []
+  }
+}
+
 /**
- * 当前会话的短期记忆目录（turns/sessions/<id>/）。
- * 优先取内存中 lifecycle 登记的会话目录（最准确）；进程内无登记时回退到
- * 当前项目下 mtime 最新（即 ISO 前缀最大）的会话目录。
+ * 解析「当前会话」的短期记忆目录（turns/sessions/<id>/）。优先级：
+ *   1. lifecycle 内存登记（getSessionDir）—— 最新且最准，即使目录为空也是真·当前会话；
+ *   2. 按根 agent session id 锚点匹配的会话目录（进程内无登记时，沿用 lifecycle 的锚点复用规则）；
+ *   3. 锚点无匹配 → 取 raw-<n>.md 最近写入（真正在活动）的会话目录，无则取名称序最大目录。
+ * 目录不存在则返回 null。
  * @returns {string|null} 目录路径或 null。
  */
 function currentSessionDir(ctx) {
   let rootId = null
-  let rootCwd = null
-  const agent = firstAgent(ctx)
-  if (agent?.session) {
-    rootId = agent.session.id
-    rootCwd = agent.session.header?.cwd
-  }
+  const anchor = firstAgent(ctx)?.session?.id
+  if (anchor) rootId = anchor
+  const agentCwd = firstAgent(ctx)?.session?.header?.cwd
   try {
     if (rootId) {
       const mapped = getSessionDir(rootId)
       if (mapped && fs.existsSync(mapped)) return mapped
     }
   } catch { /* fall through */ }
-  if (rootCwd) {
-    const sessBase = path.join(PATHS.projectDir(rootCwd), 'turns', 'sessions')
-    try {
-      if (fs.existsSync(sessBase)) {
-        const dirs = fs.readdirSync(sessBase, { withFileTypes: true })
-          .filter((e) => e.isDirectory())
-          .map((e) => e.name)
-          .sort()
-        if (dirs.length) return path.join(sessBase, dirs[dirs.length - 1])
+
+  if (agentCwd) {
+    const dirs = sessionDirsUnder(agentCwd)
+    if (dirs.length) {
+      // 2. 锚点匹配（优先最新）
+      const a = sessionAnchor(rootId || '')
+      const anchorMatch = a ? dirs.filter((d) => path.basename(d).endsWith('-' + a)) : []
+      if (anchorMatch.length) return anchorMatch[anchorMatch.length - 1]
+      // 3. 无锚点匹配 → 取最近写入 raw 的会话目录（真正活动）；都没有 → 取最新目录。
+      const newest = { dir: null, mtime: -1 }
+      for (const dir of dirs) {
+        try {
+          const raws = fs.readdirSync(dir)
+            .filter((f) => /^raw-\d+\.md$/.test(f))
+            .map((f) => fs.statSync(path.join(dir, f)).mtimeMs)
+          const last = raws.length ? Math.max(...raws) : -1
+          if (last > newest.mtime) {
+            newest.mtime = last
+            newest.dir = dir
+          }
+        } catch { /* skip unreadable dir */ }
       }
-    } catch { /* ignore */ }
+      return newest.dir ?? dirs[dirs.length - 1]
+    }
   }
   return null
 }
@@ -269,27 +305,25 @@ export function filesData(ctx) {
 
   // 当前会话的短期记忆（turns/sessions/<id>/）：raw-<n>.md 每轮备份 + dialogue-summary.md 对话摘要。
   // 固化子代理日志（consolidation-*.log）不属于长期工作记忆，单独归入「子代理日志」组。
-  // 只在存在当前会话目录且有文件时输出该组。
+  // 当前会话目录存在即输出该组（尚未写入 raw 时为空组——仍提示"当前会话"存在）。
   const sessionDir = currentSessionDir(ctx)
   if (sessionDir) {
+    const anchor = path.basename(sessionDir).slice(-12)
     const sessionFiles = listSessionFiles(sessionDir)
       .filter((rel) => /^(raw-\d+\.md|dialogue-summary\.md)$/.test(path.basename(rel)))
-    if (sessionFiles.length > 0) {
-      const anchor = path.basename(sessionDir).slice(-12)
-      groups.push({
-        id: 'session:' + anchor,
-        label: '当前会话 · raw + 对话摘要',
-        files: sessionFiles.map((rel) => {
-          const full = path.join(PATHS.root, rel)
-          return {
-            rel,
-            name: path.basename(rel),
-            ...fileInfo(full),
-            entries: 0,
-          }
-        }),
-      })
-    }
+    groups.push({
+      id: 'session:' + anchor,
+      label: '当前会话 · raw + 对话摘要',
+      files: sessionFiles.map((rel) => {
+        const full = path.join(PATHS.root, rel)
+        return {
+          rel,
+          name: path.basename(rel),
+          ...fileInfo(full),
+          entries: 0,
+        }
+      }),
+    })
   }
 
   // 子代理日志：固化/海马体子代理的最终报告（consolidation-*.log / clean-*.log）。
