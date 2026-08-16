@@ -1,47 +1,74 @@
 #!/usr/bin/env bash
 # hpptools-memory — install script (Linux/macOS)
-# 1) symlink plugins/memory -> $DSH_HOME/profiles/node_modules/hpptools-memory
-# 2) merge the plugin row into $DSH_HOME/profiles/web/cordis.patch.yml
+# Installs BOTH plugins of the memory console:
+#   1) hpptools-memory      — the memory backend (API + agent tools + lifecycle)
+#   2) dsh-better-sidebar   — the visual panel (VSCode-style sidebar with the
+#                             built-in memory tab, vendored from the
+#                             DSH-better-sidebar fork under plugins/better-sidebar)
+# Per plugin: symlink plugins/<pkg> -> $DSH_HOME/profiles/node_modules/<name>
+#             merge the plugin row into $DSH_HOME/profiles/web/cordis.patch.yml
 set -euo pipefail
 
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PKG_DIR="$REPO_ROOT/plugins/memory"
 PROFILES="$DSH_HOME/profiles"
 PATCH_PATH="$PROFILES/web/cordis.patch.yml"
 
-[ -d "$PKG_DIR" ] || { echo "plugin package not found: $PKG_DIR" >&2; exit 1; }
 [ -d "$PROFILES" ] || { echo "DSH profiles not found at $PROFILES" >&2; exit 1; }
 echo "==> DSH_HOME: $DSH_HOME"
 
-# 1. link package
-LINK_PATH="$PROFILES/node_modules/hpptools-memory"
-if [ -e "$LINK_PATH" ]; then
-  echo "==> package already linked: $LINK_PATH"
-else
-  ln -s "$PKG_DIR" "$LINK_PATH"
-  echo "==> linked $LINK_PATH -> $PKG_DIR"
-fi
+install_package() {
+  local pkg_dir="$1" name="$2"
+  [ -d "$pkg_dir" ] || { echo "plugin package not found: $pkg_dir" >&2; exit 1; }
+  local dest="$PROFILES/node_modules/$name"
+  if [ -e "$dest" ]; then
+    echo "==> refreshing copy: $dest"
+    rm -rf "$dest"
+  fi
+  # Copy the runtime surface only (lib + package metadata + vendored deps);
+  # src / tests / build configs stay in the repo. Copying (not symlinking)
+  # keeps the resolved module path inside the profile, so node_modules
+  # hoisting resolves the plugin's runtime dependencies.
+  mkdir -p "$dest"
+  cp -r "$pkg_dir"/lib "$pkg_dir"/node_modules "$dest"/ 2>/dev/null || true
+  cp -r "$pkg_dir"/*.js "$pkg_dir"/*.html "$pkg_dir"/*.json "$pkg_dir"/*.yml "$pkg_dir"/LICENSE "$dest"/ 2>/dev/null || true
+  echo "==> installed $name -> $dest"
+}
 
-# 2. merge plugin row
-if grep -q 'hpptools-memory' "$PATCH_PATH" 2>/dev/null; then
-  echo "==> patch already contains hpptools-memory: $PATCH_PATH"
-else
-  ROWS='- insert:
+add_patch_row() {
+  local marker="$1" rows="$2"
+  if grep -q "$marker" "$PATCH_PATH" 2>/dev/null; then
+    echo "==> patch already contains $marker"
+    return
+  fi
+  if grep -qE '^\[\s*\]\s*$' "$PATCH_PATH"; then
+    printf '%s\n' "$rows" > /tmp/hpptools-patch-row.yml
+    sed -i -E "/^\[\s*\]\s*$/r /tmp/hpptools-patch-row.yml" "$PATCH_PATH"
+    sed -i -E '/^\[\s*\]\s*$/d' "$PATCH_PATH"
+    rm -f /tmp/hpptools-patch-row.yml
+  else
+    printf '\n%s\n' "$rows" >> "$PATCH_PATH"
+  fi
+  echo "==> inserted $marker row into $PATCH_PATH"
+}
+
+# 1. hpptools-memory (backend)
+install_package "$REPO_ROOT/plugins/memory" "hpptools-memory"
+add_patch_row "hpptools-memory" '- insert:
     - id: hpptools-memory
       name: '\''hpptools-memory'\''
       # config:
       #   root: '\''D:/my-memory'\'''
-  if grep -qE '^\[\s*\]\s*$' "$PATCH_PATH"; then
-    sed -i -E 's/^\[\s*\]\s*$/- insert:\n    - id: hpptools-memory\n      name: '\''hpptools-memory'\''\n      # config:\n      #   root: '\''D:\/my-memory'\''/' "$PATCH_PATH"
-  else
-    printf '\n%s\n' "$ROWS" >> "$PATCH_PATH"
-  fi
-  echo "==> inserted plugin row into $PATCH_PATH"
-fi
+
+# 2. dsh-better-sidebar (visual panel, vendored fork)
+install_package "$REPO_ROOT/plugins/better-sidebar" "dsh-better-sidebar"
+add_patch_row "better-sidebar" '- insert:
+    - id: better-sidebar
+      name: '\''dsh-better-sidebar'\'''
 
 echo
 echo '==> Done. Next steps:'
 echo '    1. Restart DeepSeek Harness (plugins load at startup).'
-echo '    2. Verify memory tools and injected prompt sections.'
-echo '    3. Run /memory-clean once as a sanity check.'
+echo '    2. Verify backend: memory tools (remember/recall/memory_status/...) and injected prompt sections.'
+echo '    3. Verify panel: the right sidebar workbench with the 🧠 Memory tab (Overview / Files / Models / Runs / Settings).'
+echo '    4. Run /memory-clean once as a sanity check.'

@@ -1,4 +1,7 @@
 node_modules/
+# vendored 运行时依赖（内置侧边栏面板所需，随仓库交付使安装脚本无需网络）
+!plugins/better-sidebar/node_modules/
+!plugins/better-sidebar/node_modules/**
 dist/
 *.log
 .DS_Store
