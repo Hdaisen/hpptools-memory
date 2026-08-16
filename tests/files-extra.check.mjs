@@ -52,13 +52,23 @@ const data = filesData(ctx)
 const labels = data.groups.map((g) => g.id)
 console.log('\ngroups:', labels.join(', '))
 
-// The session group should exist with the two raw files + dialogue-summary, but NOT consolidation-input/log
-const sessGroup = data.groups.find((g) => g.id === 'session:' + anchor)
-ok(!!sessGroup, 'current-session group present')
-if (sessGroup) {
-  const names = sessGroup.files.map((f) => path.basename(f.rel)).sort()
-  ok(JSON.stringify(names) === JSON.stringify(['dialogue-summary.md', 'raw-1.md', 'raw-2.md']), `session group files = raw-1/raw-2/dialogue-summary (got ${names.join(',')})`)
+// Session groups are split into dialogue-summary and raw (per 5c2e2d8):
+// `session-summary:<anchor>` + `session-raw:<anchor>`.
+const sessSummary = data.groups.find((g) => g.id === 'session-summary:' + anchor)
+const sessRaw = data.groups.find((g) => g.id === 'session-raw:' + anchor)
+ok(!!sessSummary, 'session-summary group present')
+ok(!!sessRaw, 'session-raw group present')
+if (sessSummary) {
+  const names = sessSummary.files.map((f) => path.basename(f.rel))
+  ok(JSON.stringify(names) === JSON.stringify(['dialogue-summary.md']), `summary group = dialogue-summary.md (got ${names.join(',')})`)
 }
+if (sessRaw) {
+  const names = sessRaw.files.map((f) => path.basename(f.rel)).sort()
+  ok(JSON.stringify(names) === JSON.stringify(['raw-1.md', 'raw-2.md']), `raw group = raw-1/raw-2 (got ${names.join(',')})`)
+}
+// consolidation-input.md must not leak into either session group
+const sessAll = [...(sessSummary?.files ?? []), ...(sessRaw?.files ?? [])].map((f) => path.basename(f.rel))
+ok(!sessAll.includes('consolidation-input.md'), 'consolidation-input.md not in session groups')
 
 // subagent-logs group: consolidation (session) + clean (maintenance)
 const logGroup = data.groups.find((g) => g.id === 'subagent-logs')
@@ -73,21 +83,30 @@ if (logGroup) {
 ok(data.groups.some((g) => g.id === 'notebook'), 'notebook group present')
 ok(data.groups.some((g) => g.id === 'core'), 'core group present')
 
-// ---- empty session dir still emits the group (dir exists even without raw yet) ----
+// ---- empty session dir is skipped (a40b1d4): registered dir with no raw/summary
+//      is a placeholder (e.g. fresh session right after GUI restart) → falls back
+//      to the content-bearing session dir ----
 const sessDir2 = path.join(projectDir, 'turns', 'sessions', `2026-08-17T00-00-00-yyyy-${anchor}`)
 fs.mkdirSync(sessDir2, { recursive: true })
 setSessionDir('session-' + anchor, sessDir2) // register the EMPTY dir as current
 const data2 = filesData(ctx)
-const sess2 = data2.groups.find((g) => g.id === 'session:' + anchor)
-ok(!!sess2, 'empty session dir still emits current-session group')
-if (sess2) ok(sess2.files.length === 0, 'empty session dir → empty files list')
+const sum2 = data2.groups.find((g) => g.id === 'session-summary:' + anchor)
+const raw2 = data2.groups.find((g) => g.id === 'session-raw:' + anchor)
+ok(!!sum2 && !!raw2, 'session groups emitted when registered dir is empty (falls back)')
+if (sum2 && raw2) {
+  const sNames = sum2.files.map((f) => path.basename(f.rel))
+  const rNames = raw2.files.map((f) => path.basename(f.rel)).sort()
+  ok(JSON.stringify(sNames) === JSON.stringify(['dialogue-summary.md']), 'empty registered dir → summary falls back to content dir')
+  ok(JSON.stringify(rNames) === JSON.stringify(['raw-1.md', 'raw-2.md']), 'empty registered dir → raw falls back to content dir')
+}
 
 // ---- anchor fallback: no in-memory registration → matches dir by session-id anchor ----
 const promptMod = await mod('prompt.js')
 promptMod.dropSessionDir('session-' + anchor) // clear in-memory registration
 const data3 = filesData(ctx)
-const sess3 = data3.groups.find((g) => g.id === 'session:' + anchor)
-ok(!!sess3, 'anchor fallback emits group without in-memory registration')
+const sum3 = data3.groups.find((g) => g.id === 'session-summary:' + anchor)
+const raw3 = data3.groups.find((g) => g.id === 'session-raw:' + anchor)
+ok(!!sum3 && !!raw3, 'anchor fallback emits session groups without in-memory registration')
 
 console.log(failed === 0 ? '\nALL OK' : `\n${failed} FAILED`)
 process.exit(failed === 0 ? 0 : 1)

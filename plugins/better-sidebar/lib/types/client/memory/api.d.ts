@@ -84,9 +84,9 @@ export interface MemoryFileContent {
     path: string;
     content: string;
 }
-/** The memory console API surface (plugin-global; no session scope). */
+/** The memory console API surface (session-scoped when sessionId given). */
 export declare const memoryApi: {
-    overview: (signal?: AbortSignal) => Promise<MemoryOverview>;
+    overview: (sessionId?: string, signal?: AbortSignal) => Promise<MemoryOverview>;
     models: (signal?: AbortSignal) => Promise<{
         configured: {
             extractor: string;
@@ -97,7 +97,7 @@ export declare const memoryApi: {
     runs: (signal?: AbortSignal) => Promise<{
         runs: MemoryRun[];
     }>;
-    files: (signal?: AbortSignal) => Promise<MemoryFiles>;
+    files: (sessionId?: string, signal?: AbortSignal) => Promise<MemoryFiles>;
     file: (path: string, signal?: AbortSignal) => Promise<MemoryFileContent>;
     saveFile: (path: string, content: string) => Promise<{
         ok: true;
@@ -105,7 +105,11 @@ export declare const memoryApi: {
     setModel: (kind: "extractor" | "cleaner", value: string) => Promise<{
         value: string;
     }>;
-    clean: () => Promise<{
+    clean: (sessionId?: string) => Promise<{
+        ok: true;
+        runId: string;
+    }>;
+    consolidate: (sessionId?: string) => Promise<{
         ok: true;
         runId: string;
     }>;

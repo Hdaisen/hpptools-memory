@@ -281,6 +281,8 @@ export declare const zh: {
     memRunsHint: string;
     memRunClean: string;
     memCleanStarted: string;
+    memRunConsolidate: string;
+    memConsolidateStarted: string;
     memColStarted: string;
     memColKind: string;
     memColStatus: string;

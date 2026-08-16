@@ -24,7 +24,7 @@ import { safeRead, walkMarkdownFiles, parseMemoryEntries } from './utils.js'
 import { getExtractorModel, getCleanerModel, setModel } from './models.js'
 import { runEntries, activeRunCount } from './runs.js'
 import { getLastMaintenance } from './memory-ops.js'
-import { spawnCleanerSubagent } from './subagents.js'
+import { spawnCleanerSubagent, spawnConsolidationSubagent } from './subagents.js'
 import { getSessionDir } from './prompt.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -87,9 +87,22 @@ function fileStats(dir) {
 
 /** 当前活动根 agent 的 cwd（UI 面板是根级，取第一个根会话）。 */
 function firstAgentCwd(ctx) {
+  return firstAgent(ctx)?.session?.header?.cwd
+}
+
+/**
+ * 按 session id 找根 agent（面板传当前会话 id，避免固定取第一个根——
+ * 修复"所有工作区的会话打开记忆管理都显示同一项目"）。
+ * 找不到匹配时回退第一个根 agent。
+ */
+function agentForSession(ctx, sessionId) {
   try {
     const roots = ctx.get('agents')?.roots?.() ?? []
-    return roots[0]?.session?.header?.cwd
+    if (sessionId) {
+      const found = roots.find((a) => a?.session?.id === sessionId)
+      if (found) return found
+    }
+    return roots[0]
   } catch {
     return undefined
   }
@@ -247,9 +260,9 @@ function projectList() {
     .sort()
 }
 
-/** 记忆概览数据（导出供测试/复用）。 */
-export async function overviewData(ctx) {
-  const cwd = firstAgentCwd(ctx)
+/** 记忆概览数据（导出供测试/复用）。cwdArg 由面板传入当前会话的工作目录（跟随工作区项目）。 */
+export async function overviewData(ctx, cwdArg) {
+  const cwd = cwdArg ?? firstAgentCwd(ctx)
   const projects = projectList()
   // 汇总所有项目的记忆（不再只统计当前会话项目）
   let totalFiles = 0
@@ -286,9 +299,9 @@ export async function overviewData(ctx) {
   }
 }
 
-/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 当前项目记忆（只列当前工作区项目）。 */
-export function filesData(ctx) {
-  const cwd = firstAgentCwd(ctx)
+/** 文件树：核心文件 / 会话小本本 / 全局记忆 / 当前项目记忆（只列当前工作区项目）。cwdArg 由面板传入当前会话的工作目录。 */
+export function filesData(ctx, cwdArg) {
+  const cwd = cwdArg ?? firstAgentCwd(ctx)
   const groups = []
 
   const coreFiles = ['core-prompt.md', 'rules.md']
@@ -457,9 +470,12 @@ export function registerWebUi(ctx) {
   register({
     kind: 'exact',
     path: `${API_PREFIX}/api/overview`,
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
       try {
-        sendJson(res, 200, await overviewData(ctx))
+        const url = new URL(req.url ?? '', 'http://x')
+        const sessionId = url.searchParams.get('sessionId') ?? undefined
+        const cwd = agentForSession(ctx, sessionId)?.session?.header?.cwd
+        sendJson(res, 200, await overviewData(ctx, cwd))
       } catch (e) {
         sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
       }
@@ -534,6 +550,42 @@ export function registerWebUi(ctx) {
     },
   })
 
+  // 手动触发固化子代理（?sessionId= 指定会话；用当前会话的短期记忆目录）
+  register({
+    kind: 'exact',
+    path: `${API_PREFIX}/api/consolidate`,
+    handler: async (req, res) => {
+      try {
+        const url = new URL(req.url ?? '', 'http://x')
+        const sessionId = url.searchParams.get('sessionId') ?? undefined
+        const agent = agentForSession(ctx, sessionId)
+        if (!agent) {
+          sendJson(res, 400, { error: '没有活动会话，无法确定项目。请先在 DSH 中打开一个会话。' })
+          return
+        }
+        const cwd = agent.session?.header?.cwd
+        if (!cwd) {
+          sendJson(res, 400, { error: '当前会话没有工作目录。' })
+          return
+        }
+        let sessionDir = agent.session?.id ? getSessionDir(agent.session.id) : null
+        if (!sessionDir) sessionDir = currentSessionDir(ctx)
+        if (!sessionDir) {
+          sendJson(res, 400, { error: '找不到当前会话的短期记忆目录（turns/sessions/）。' })
+          return
+        }
+        const run = await spawnConsolidationSubagent(ctx, agent, sessionDir)
+        if (!run) {
+          sendJson(res, 500, { error: '固化子代理启动失败（agents/memory-extractor.md 缺失或 spawn 错误）。' })
+          return
+        }
+        sendJson(res, 200, { ok: true, runId: run.id })
+      } catch (e) {
+        sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
+      }
+    },
+  })
+
   // 在系统文件管理器中打开目录（Obsidian 打开文件夹的 URI 不受支持，改用资源管理器；
   // 用户可把该目录添加为 Obsidian vault 后在 Obsidian 中浏览）
   register({
@@ -582,13 +634,16 @@ export function registerWebUi(ctx) {
     },
   })
 
-  // 文件树
+  // 文件树（?sessionId= 跟随面板所在会话的工作区项目）
   register({
     kind: 'exact',
     path: `${API_PREFIX}/api/files`,
-    handler: (_req, res) => {
+    handler: (req, res) => {
       try {
-        sendJson(res, 200, filesData(ctx))
+        const url = new URL(req.url ?? '', 'http://x')
+        const sessionId = url.searchParams.get('sessionId') ?? undefined
+        const cwd = agentForSession(ctx, sessionId)?.session?.header?.cwd
+        sendJson(res, 200, filesData(ctx, cwd))
       } catch (e) {
         sendJson(res, 500, { error: e instanceof Error ? e.message : String(e) })
       }

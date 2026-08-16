@@ -11,6 +11,7 @@ import {
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { memoryApi, type MemoryFiles } from './api.ts'
 import { t } from '../locales.ts'
+import type { SessionScope } from '../service.ts'
 import shellCss from '../sidebar.module.css'
 import css from '../memory.module.css'
 
@@ -100,7 +101,7 @@ function renderMarkdown(md: string): string {
   return out.join('\n')
 }
 
-export function Files({ visible }: { visible: boolean }) {
+export function Files({ visible, scope }: { visible: boolean; scope?: SessionScope }) {
   const [files, setFiles] = useState<MemoryFiles | null>(null)
   const [collapsed, setCollapsed] = useState<string[] | null>(readCollapsed())
   const [current, setCurrent] = useState<{ rel: string; content: string } | null>(null)
@@ -109,12 +110,13 @@ export function Files({ visible }: { visible: boolean }) {
   const [status, setStatus] = useState<{ msg: string; kind?: string }>({ msg: t('memSelectHint') })
   const [busy, setBusy] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
+  const sessionId = scope?.sessionId
 
   const loadFiles = useCallback((): void => {
-    memoryApi.files().then(setFiles).catch((e: unknown) => {
+    memoryApi.files(sessionId).then(setFiles).catch((e: unknown) => {
       setStatus({ msg: `❌ ${e instanceof Error ? e.message : String(e)}`, kind: 'err' })
     })
-  }, [])
+  }, [sessionId])
 
   useEffect(() => { loadFiles() }, [loadFiles])
 
