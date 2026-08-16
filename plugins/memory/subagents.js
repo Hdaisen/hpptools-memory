@@ -19,7 +19,13 @@ import { trackRun, updateRun } from './runs.js'
 import { buildNetworkHealthReport, updateMaintenanceRecords } from './memory-ops.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const AGENTS_DIR = path.resolve(__dirname, '..', '..', 'agents')
+// agents/*.md 提示词目录：优先包内 agents/（复制式安装时随包分发）；
+// 回退源码仓库布局 ../../agents（项目根）。安装副本缺 agents/ 时固化子代理会静默失败。
+const AGENTS_DIR = (() => {
+  const inPkg = path.resolve(__dirname, 'agents')
+  if (fs.existsSync(inPkg)) return inPkg
+  return path.resolve(__dirname, '..', '..', 'agents')
+})()
 
 /** 固化/海马体子代理允许的工具集（对应 pi 的 --tools read,write,edit,remember,recall,forget,supersede）。 */
 const MEMORY_TOOLS = ['read', 'write', 'edit', 'remember', 'recall', 'forget', 'supersede']
