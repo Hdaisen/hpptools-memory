@@ -36,9 +36,9 @@
 
 ## 架构
 
-![hpptools-memory 架构](docs/architecture.zh.html)
+📊 **[打开交互式架构图（中文版）](docs/architecture.zh.html)**
 
-> 架构图是交互式 HTML（可缩放、聚焦、切换明暗主题），用浏览器打开 `docs/architecture.zh.html` 查看。
+> 架构图是交互式 HTML（可缩放、聚焦、切换明暗主题），由 archify 生成。
 
 插件以 Cordis 插件（ESM JS，零构建）形式运行在 DeepSeek Harness 宿主内：
 
