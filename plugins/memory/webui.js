@@ -273,7 +273,7 @@ export function filesData(ctx) {
   const cwd = firstAgentCwd(ctx)
   const groups = []
 
-  const coreFiles = ['core-prompt.md', 'rules.md', 'subagent-model.txt']
+  const coreFiles = ['core-prompt.md', 'rules.md']
   groups.push({
     id: 'core',
     label: '核心文件',
@@ -304,17 +304,19 @@ export function filesData(ctx) {
   }
 
   // 当前会话的短期记忆（turns/sessions/<id>/）：raw-<n>.md 每轮备份 + dialogue-summary.md 对话摘要。
+  // 两类分开成独立分组（对话摘要 vs raw 备份），便于快速定位。
   // 固化子代理日志（consolidation-*.log）不属于长期工作记忆，单独归入「子代理日志」组。
-  // 当前会话目录存在即输出该组（尚未写入 raw 时为空组——仍提示"当前会话"存在）。
+  // 当前会话目录存在即输出分组（尚未写入 raw 时为空组——仍提示"当前会话"存在）。
   const sessionDir = currentSessionDir(ctx)
   if (sessionDir) {
     const anchor = path.basename(sessionDir).slice(-12)
     const sessionFiles = listSessionFiles(sessionDir)
-      .filter((rel) => /^(raw-\d+\.md|dialogue-summary\.md)$/.test(path.basename(rel)))
-    groups.push({
-      id: 'session:' + anchor,
-      label: '当前会话 · raw + 对话摘要',
-      files: sessionFiles.map((rel) => {
+    const summary = sessionFiles.filter((rel) => path.basename(rel) === 'dialogue-summary.md')
+    const raws = sessionFiles.filter((rel) => /^raw-\d+\.md$/.test(path.basename(rel)))
+    const sessionGroup = (id, label, files) => ({
+      id: 'session-' + id + ':' + anchor,
+      label,
+      files: files.map((rel) => {
         const full = path.join(PATHS.root, rel)
         return {
           rel,
@@ -324,6 +326,8 @@ export function filesData(ctx) {
         }
       }),
     })
+    groups.push(sessionGroup('summary', '当前会话 · 对话摘要', summary))
+    groups.push(sessionGroup('raw', '当前会话 · raw 备份', raws))
   }
 
   // 子代理日志：固化/海马体子代理的最终报告（consolidation-*.log / clean-*.log）。

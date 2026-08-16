@@ -96,14 +96,14 @@ export declare const TAB_MAX_WIDTH = 160;
  * bound is the viewport, enforced by {@link setBottomHeight}). */
 export declare const BOTTOM_MIN = 120;
 export declare const BOTTOM_DEFAULT = 220;
-/** A fresh default state: one explorer tab in one pane, open per the caller's
- * preference. `width` is the caller's preferred panel width (default
- * PANEL_DEFAULT) and `panelOpen` whether the panel starts expanded (default
- * true); the store seeds new sessions from the user's side card prefs.
- * `seedExplorer` places the default explorer tab — the store passes false
- * when the user disabled the explorer tab type in settings, so a fresh
- * session starts with an empty pane instead of a tab they turned off. */
-export declare function makeDefaultState(width?: number, panelOpen?: boolean, seedExplorer?: boolean): SidebarState;
+/** A fresh default state: one explorer tab plus the memory tab in one pane,
+ * open per the caller's preference. `width` is the caller's preferred panel
+ * width (default PANEL_DEFAULT) and `panelOpen` whether the panel starts
+ * expanded (default true); the store seeds new sessions from the user's side
+ * card prefs. `seedExplorer` / `seedMemory` place the default explorer /
+ * memory tabs — the store passes false when the user disabled that tab type
+ * in settings, so a fresh session starts without a tab they turned off. */
+export declare function makeDefaultState(width?: number, panelOpen?: boolean, seedExplorer?: boolean, seedMemory?: boolean): SidebarState;
 /** Which tree owns a pane/split id: 'bottomSplits' when the id lives in the
  *  bottom panel's tree, else 'splits' (the right panel's tree). Ids are
  *  globally unique (the shared uid counter), so an id in neither tree falls

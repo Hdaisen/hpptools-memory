@@ -100,7 +100,7 @@ function renderMarkdown(md: string): string {
   return out.join('\n')
 }
 
-export function Files() {
+export function Files({ visible }: { visible: boolean }) {
   const [files, setFiles] = useState<MemoryFiles | null>(null)
   const [collapsed, setCollapsed] = useState<string[] | null>(readCollapsed())
   const [current, setCurrent] = useState<{ rel: string; content: string } | null>(null)
@@ -117,6 +117,15 @@ export function Files() {
   }, [])
 
   useEffect(() => { loadFiles() }, [loadFiles])
+
+  // 文件树自动刷新：对话进行中会不断产生新的 raw-<n>.md / 更新
+  // dialogue-summary.md——可见时每 3 秒轮询一次，让新文件自动出现
+  // （不打断编辑/预览：文件树与内容区状态独立）。
+  useEffect(() => {
+    if (!visible) return
+    const timer = setInterval(loadFiles, 3000)
+    return () => clearInterval(timer)
+  }, [visible, loadFiles])
 
   const toggleGroup = (id: string): void => {
     const arr = collapsed ?? []

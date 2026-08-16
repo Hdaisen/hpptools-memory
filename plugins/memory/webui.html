@@ -1387,6 +1387,10 @@ switchTab(initialTab && ["overview", "files", "models", "runs", "settings"].incl
 
 setInterval(() => { if (!pageHidden && currentTab() === "overview") loadOverview(); }, 5000);
 setInterval(() => { if (!pageHidden && currentTab() === "runs") loadRuns(); }, 3000);
+// 文件页轮询：对话中不断产生新 raw-<n>.md / 更新 dialogue-summary，
+// 可见时每 3 秒刷新文件树，让新文件自动出现（不打断编辑状态——
+// loadFiles 只重建树，不动内容区）。
+setInterval(() => { if (!pageHidden && currentTab() === "files") loadFiles(); }, 3000);
 </script>
 </body>
 </html>

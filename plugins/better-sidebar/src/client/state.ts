@@ -11,6 +11,7 @@
  */
 import { SIDEBAR_PREFS_DEFAULTS, type SidebarPrefs } from '../prefs-shared.ts'
 import { isNarrowWidth } from './breakpoints.ts'
+import { t } from './locales.ts'
 
 /**
  * Tab type identifier. Builtins register their ids (explorer / git / editor
@@ -139,19 +140,22 @@ function maxCounterId(parsed: unknown): number {
   return max
 }
 
-/** A fresh default state: one explorer tab in one pane, open per the caller's
- * preference. `width` is the caller's preferred panel width (default
- * PANEL_DEFAULT) and `panelOpen` whether the panel starts expanded (default
- * true); the store seeds new sessions from the user's side card prefs.
- * `seedExplorer` places the default explorer tab — the store passes false
- * when the user disabled the explorer tab type in settings, so a fresh
- * session starts with an empty pane instead of a tab they turned off. */
-export function makeDefaultState(width = PANEL_DEFAULT, panelOpen = true, seedExplorer = true): SidebarState {
+/** A fresh default state: one explorer tab plus the memory tab in one pane,
+ * open per the caller's preference. `width` is the caller's preferred panel
+ * width (default PANEL_DEFAULT) and `panelOpen` whether the panel starts
+ * expanded (default true); the store seeds new sessions from the user's side
+ * card prefs. `seedExplorer` / `seedMemory` place the default explorer /
+ * memory tabs — the store passes false when the user disabled that tab type
+ * in settings, so a fresh session starts without a tab they turned off. */
+export function makeDefaultState(width = PANEL_DEFAULT, panelOpen = true, seedExplorer = true, seedMemory = true): SidebarState {
   const leaf: SidebarLeaf = { kind: 'leaf', id: uid('pane'), tabs: [], active: null }
   if (seedExplorer) {
-    leaf.tabs = [{ id: uid('tab'), type: 'explorer', title: 'Explorer' }]
-    leaf.active = leaf.tabs[0]!.id
+    leaf.tabs.push({ id: uid('tab'), type: 'explorer', title: 'Explorer' })
   }
+  if (seedMemory) {
+    leaf.tabs.push({ id: uid('tab'), type: 'memory', title: t('memTab') })
+  }
+  if (leaf.tabs.length > 0) leaf.active = leaf.tabs[0]!.id
   // The bottom panel starts closed with an empty pane (its welcome cards
   // offer the openable types on first use).
   const bottomLeaf: SidebarLeaf = { kind: 'leaf', id: uid('pane'), tabs: [], active: null }
@@ -776,7 +780,12 @@ function loadState(sessionId: string, prefs: SidebarPrefs): SidebarState {
     ? PANEL_DEFAULT
     : defaultWidthFor(viewport, prefs.defaultWidthPercent)
   const openByDefault = prefs.openByDefault && (viewport === undefined || !isNarrowWidth(viewport))
-  return makeDefaultState(width, openByDefault, prefs.tabsEnabled['explorer'] !== false)
+  return makeDefaultState(
+    width,
+    openByDefault,
+    prefs.tabsEnabled['explorer'] !== false,
+    prefs.tabsEnabled['memory'] !== false,
+  )
 }
 
 /**

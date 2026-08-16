@@ -1,1 +1,3 @@
-export declare function Files(): import("react").JSX.Element;
+export declare function Files({ visible }: {
+    visible: boolean;
+}): import("react").JSX.Element;

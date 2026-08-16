@@ -50,7 +50,7 @@ export function MemoryView(props: TabComponentProps) {
         ))}
       </div>
       {view === 'overview' && <Overview visible={visible} />}
-      {view === 'files' && <Files />}
+      {view === 'files' && <Files visible={visible} />}
       {view === 'models' && <Models />}
       {view === 'runs' && <Runs visible={visible} />}
       {view === 'settings' && <Settings />}
