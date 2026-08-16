@@ -65,15 +65,16 @@ assert(html.includes('body[data-embed] .tabbar'), 'embed hides inner tabbar')
 
 // ---- client.js 关键结构 ----
 const client = fs.readFileSync(path.join(pkgDir, 'client.js'), 'utf-8')
-for (const want of [
-  'PanelBoundary', 'hpptools-locale', 'sidebar.footer.action', 'data-hpptools-memory',
-  'hpptools-pulse', 'registerTab', 'waitForService', 'TAB_ID', 'openConsole',
+// 2026-08-16：侧边栏底部按钮已按用户要求移除，client 半边降级为 no-op 入口
+// （记忆面板全部由 dsh-better-sidebar fork 内置 tab 承载）。
+assert(client.includes('__ModuleLoader__.load'), 'client.js has __ModuleLoader__.load wrapper')
+assert(client.includes('exports.inject'), 'client.js has exports.inject')
+assert(client.includes('exports.apply'), 'client.js has exports.apply')
+assert(client.includes('no-op'), 'client.js documents the no-op entry')
+// 旧结构全部移除：不再注册任何 UI/服务/样式
+for (const gone of ['sidebar.footer.action', 'registerTab', 'waitForService', 'TAB_ID', 'openConsole',
   'hpptools-memory:console', 'ctx.get("betterSidebar")', 'hpptools-memory-console',
-]) {
-  assert(client.includes(want), `client.js has ${want}`)
-}
-// 不再自研侧边栏壳（betterSidebar 提供框架）
-for (const gone of ['moveTabToEdge', 'insertLeafAt', 'hpptools-split', 'hpptools-tabbar', 'STORE-START', 'react-dom/client']) {
+  'hpptools-pulse', 'PanelBoundary', 'data-hpptools-memory']) {
   assert(!client.includes(gone), `client.js no longer has ${gone}`)
 }
 
