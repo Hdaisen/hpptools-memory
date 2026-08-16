@@ -36,9 +36,26 @@
 
 ## 架构
 
-📊 **[打开交互式架构图（中文版）](docs/architecture.zh.html)**
+📊 **[组件结构图（中文版）](docs/architecture.zh.html)** — 插件模块与记忆库的静态结构
+📊 **[运行时机制图（中文版）](docs/turn-lifecycle.zh.html)** — 一轮对话中记忆的完整生命周期
 
 > 架构图是交互式 HTML（可缩放、聚焦、切换明暗主题），由 archify 生成。
+
+### 一轮对话的记忆机制
+
+1. **会话开始**（`agent/session-start`）→ 建立会话短期记忆目录 `turns/sessions/<id>`，刷新记忆索引
+2. **每轮调用前注入两段 system prompt**：
+   - **Core 段**（稳定，-90 优先级）：`core-prompt.md` + `rules.md` + Memory Index——缓存友好
+   - **Context 段**（动态，65 优先级）：`notebook.md` + 最近 5 轮对话摘要 + 关联记忆 + 维护日志
+3. **LLM 回复期间**可主动调用 9 个记忆工具：`remember` / `recall` / `forget` / `supersede` / `notebook` / `memory_status` / `convert_file` / `confirm` / `set_project`
+4. **每轮结束**（`agent/turn-stopping`）产生两个文件：
+   - `raw-<n>.md`：本轮完整对话备份（密钥脱敏、大输出哈希截断）
+   - `dialogue-summary.md`：追加本轮摘要与关键动作行——**下一轮只注入它的最后 5 节**（成本不随轮次增长）
+5. **每 5 轮**异步触发固化子代理（不阻塞回合关闭）；会话结束时摘要余数 ≥ 3 也补固化
+6. **固化子代理**读最近 5 节摘要、需要细节时回查 `raw-<n>.md`，用 `remember` 把知识沉淀进长期记忆（`memories/` + `personal/`）
+7. **海马体子代理**（`/memory-clean` 手动触发）对长期记忆去重、修复污染、supersede 过期条目、补链报告
+
+**短期 vs 长期记忆**：短期（`turns/sessions/<id>/` + `notebook.md`）服务于当前会话——每轮注入、会话结束归档；长期（`memories/` + `personal/`）跨会话沉淀——固化子代理写入、`recall` 检索、海马体维护。
 
 插件以 Cordis 插件（ESM JS，零构建）形式运行在 DeepSeek Harness 宿主内：
 

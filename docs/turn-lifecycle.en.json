@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Memory mechanics of one turn",
+    "output": "docs/turn-lifecycle.en.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1520, 856]
+  },
+  "participants": [
+    { "id": "harness", "type": "external", "label": "DSH Host", "sublabel": "event source" },
+    { "id": "pipeline", "type": "backend", "label": "Memory pipeline", "sublabel": "prompt / extract / tools" },
+    { "id": "agent", "type": "external", "label": "LLM Agent", "sublabel": "tool calls" },
+    { "id": "shortterm", "type": "database", "label": "Short-term memory", "sublabel": "turns/sessions/<id>/" },
+    { "id": "longterm", "type": "database", "label": "Long-term memory", "sublabel": "memories/ + personal/" },
+    { "id": "extractor", "type": "backend", "label": "Consolidation agent", "sublabel": "async fork" },
+    { "id": "hippocampus", "type": "backend", "label": "Hippocampus agent", "sublabel": "manual /memory-clean" }
+  ],
+  "segments": [
+    { "from": 170, "to": 448, "label": "Session & turns" },
+    { "from": 466, "to": 540, "label": "Per-turn persistence" },
+    { "from": 566, "to": 700, "label": "Consolidation" },
+    { "from": 726, "to": 790, "label": "Maintenance" }
+  ],
+  "messages": [
+    { "from": "harness", "to": "pipeline", "y": 190, "label": "session-start", "variant": "emphasis" },
+    { "from": "pipeline", "to": "shortterm", "y": 232, "label": "create turns/sessions/<id>" },
+    { "from": "pipeline", "to": "agent", "y": 282, "label": "inject Core: core-prompt + rules + Index", "variant": "emphasis" },
+    { "from": "pipeline", "to": "agent", "y": 324, "label": "inject Context: notebook + last-5 summaries + links", "variant": "emphasis" },
+    { "from": "agent", "to": "pipeline", "y": 374, "label": "call 9 memory tools: remember / recall / notebook …" },
+    { "from": "agent", "to": "harness", "y": 416, "label": "reply done" },
+    { "from": "harness", "to": "pipeline", "y": 458, "label": "turn-stopping" },
+    { "from": "pipeline", "to": "shortterm", "y": 500, "label": "write raw-<n>.md (full backup, redacted)", "variant": "emphasis" },
+    { "from": "pipeline", "to": "shortterm", "y": 532, "label": "append dialogue-summary.md (last 5 sections for next turn)" },
+    { "from": "pipeline", "to": "extractor", "y": 582, "label": "trigger every 5 turns (async, non-blocking)", "variant": "dashed" },
+    { "from": "extractor", "to": "shortterm", "y": 624, "label": "read consolidation-input / raw" },
+    { "from": "extractor", "to": "longterm", "y": 666, "label": "remember into long-term memory", "variant": "emphasis" },
+    { "from": "harness", "to": "extractor", "y": 716, "label": "session end: consolidate if remainder >= 3", "variant": "dashed" },
+    { "from": "hippocampus", "to": "longterm", "y": 766, "label": "dedupe · fix pollution · supersede stale", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "What is injected each turn", "items": ["Core section (stable): core-prompt.md + rules.md + Memory Index", "Context section (dynamic): notebook + last-5 dialogue summaries + linked memories + maintenance log"] },
+    { "dot": "emerald", "title": "What is produced each turn", "items": ["raw-<n>.md: full dialogue backup (secret redaction, large-output hash truncation)", "dialogue-summary.md: appended summary + key actions — only the last 5 sections are injected next turn"] },
+    { "dot": "violet", "title": "When do the subagents run", "items": ["Consolidation agent: every 5 turns + session end when remainder >= 3; reads last-5 sections / raw, writes long-term memory via remember", "Hippocampus agent: manual /memory-clean; dedupe, fix pollution, supersede stale entries, link report"] }
+  ]
+}
