@@ -2,38 +2,38 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "hpptools-memory Architecture",
+    "title": "hpptools-memory Architecture & Mechanics",
     "output": "docs/architecture.en.html",
     "quality_profile": "showcase",
-    "viewBox": [1180, 700]
+    "viewBox": [1320, 700]
   },
   "components": [
-    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM · tool calls", "pos": [400, 30], "size": [160, 70] },
-    { "id": "prompt", "type": "backend", "label": "Prompt Injection", "sublabel": "prompt.js · core / context", "pos": [180, 220], "size": [190, 70] },
-    { "id": "webui", "type": "backend", "label": "Web Console", "sublabel": "webui.js · page + API", "pos": [620, 220], "size": [190, 70] },
+    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM", "tag": "injected each turn · tool access", "pos": [400, 30], "size": [170, 70] },
+    { "id": "prompt", "type": "backend", "label": "Prompt Injection", "sublabel": "Core + Context sections", "tag": "core-prompt/rules/Index · notebook/last-5 summaries/links", "pos": [180, 220], "size": [220, 76] },
+    { "id": "webui", "type": "backend", "label": "Web Console", "sublabel": "Overview / Files / Models / Runs / Settings", "tag": "panel data API", "pos": [620, 220], "size": [200, 76] },
     { "id": "runs", "type": "backend", "label": "Run Registry", "sublabel": "runs.js · live logs", "pos": [620, 330], "size": [150, 64] },
-    { "id": "tools", "type": "backend", "label": "Memory Tools", "sublabel": "tools.js · 9 tools", "pos": [180, 400], "size": [190, 70] },
-    { "id": "lifecycle", "type": "backend", "label": "Lifecycle Pipeline", "sublabel": "lifecycle.js · extract / consolidate", "pos": [180, 580], "size": [190, 70] },
-    { "id": "subagents", "type": "backend", "label": "Consolidation / Hippocampus", "sublabel": "subagents.js · fork", "pos": [620, 580], "size": [190, 70] },
-    { "id": "store", "type": "database", "label": "Markdown Memory Vault", "sublabel": "<DSH_HOME>/memory", "pos": [900, 410], "size": [240, 100] },
-    { "id": "panel", "type": "frontend", "label": "Memory Panel", "sublabel": "better-sidebar fork · five views", "pos": [900, 90], "size": [190, 80] }
+    { "id": "tools", "type": "backend", "label": "Memory Tools", "sublabel": "9 tools", "tag": "remember · recall · notebook · memory_status …", "pos": [180, 400], "size": [210, 76] },
+    { "id": "lifecycle", "type": "backend", "label": "Lifecycle Pipeline", "sublabel": "per-turn persistence + consolidation", "tag": "writes raw-<n>.md + dialogue-summary.md · triggers every 5 turns", "pos": [180, 580], "size": [240, 76] },
+    { "id": "subagents", "type": "backend", "label": "Consolidation / Hippocampus", "sublabel": "async fork", "tag": "every 5 turns / end ≥ 3 · /memory-clean manual", "pos": [620, 580], "size": [250, 76] },
+    { "id": "store", "type": "database", "label": "Markdown Memory Vault", "sublabel": "short-term + long-term", "tag": "short: turns/sessions + notebook · long: memories/", "pos": [900, 400], "size": [280, 110] },
+    { "id": "panel", "type": "frontend", "label": "Memory Panel", "sublabel": "better-sidebar tab", "pos": [900, 90], "size": [170, 70] }
   ],
   "boundaries": [
     { "kind": "region", "label": "DeepSeek Harness host (Cordis plugin runtime)", "wraps": ["prompt", "webui", "runs", "tools", "lifecycle", "subagents"] }
   ],
   "connections": [
-    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "Call memory tools", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [275, 380]], "labelAt": [442, 372] },
-    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "Inject prompt sections", "fromSide": "top", "toSide": "bottom", "via": [[275, 150], [480, 150]], "labelAt": [378, 142] },
-    { "id": "tools-store", "from": "tools", "to": "store", "label": "Read / write entries", "fromSide": "right", "toSide": "left", "via": [[700, 435], [700, 460]], "labelAt": [800, 452] },
-    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "Consolidate every 5 turns", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [495, 607] },
-    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "Persist long-term memory", "fromSide": "right", "toSide": "bottom", "via": [[870, 615], [870, 560], [1020, 560]], "labelAt": [945, 552] },
-    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[850, 130], [850, 210], [715, 210]], "labelAt": [852, 180] },
-    { "id": "webui-store", "from": "webui", "to": "store", "label": "Read / write files", "fromSide": "right", "toSide": "top", "via": [[860, 255], [860, 390], [1020, 390]], "labelAt": [940, 382] },
-    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "Read live logs", "fromSide": "bottom", "toSide": "top", "via": [[715, 310], [695, 310]], "labelAt": [700, 300] }
+    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "call 9 memory tools", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [285, 380]], "labelAt": [448, 372] },
+    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "inject Core + Context", "fromSide": "top", "toSide": "bottom", "via": [[290, 150], [485, 150]], "labelAt": [388, 142] },
+    { "id": "tools-store", "from": "tools", "to": "store", "label": "read / write entries", "fromSide": "right", "toSide": "left", "via": [[700, 438], [700, 455]], "labelAt": [800, 447] },
+    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "trigger every 5 turns", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [515, 610] },
+    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "remember into long-term", "fromSide": "right", "toSide": "bottom", "via": [[925, 618], [925, 565], [1040, 565]], "labelAt": [975, 557] },
+    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[860, 125], [860, 212], [720, 212]], "labelAt": [865, 168] },
+    { "id": "webui-store", "from": "webui", "to": "store", "label": "read / write files", "fromSide": "right", "toSide": "top", "via": [[870, 258], [870, 392], [1040, 392]], "labelAt": [955, 384] },
+    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "read live logs", "fromSide": "bottom", "toSide": "top", "via": [[720, 310], [695, 310]], "labelAt": [707, 314] }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Three memory layers", "items": ["core-prompt.md + rules.md + Memory Index injected every turn", "notebook.md maintained by the main LLM each turn", "memories/ + personal/ written by subagents"] },
-    { "dot": "emerald", "title": "Automation pipeline", "items": ["Consolidation subagent every 5 turns", "Catch-up consolidation when a session ends (remainder >= 3)", "Automatic MarkItDown for binary files"] },
-    { "dot": "violet", "title": "Visual console", "items": ["Overview / Files / Models / Runs / Settings views", "Built-in memory tab in better-sidebar"] }
+    { "dot": "cyan", "title": "What is injected each turn", "items": ["Core section (stable): core-prompt.md + rules.md + Memory Index, cache-friendly", "Context section (dynamic): notebook + last-5 dialogue summaries + linked memories + maintenance log"] },
+    { "dot": "emerald", "title": "Per-turn persistence", "items": ["raw-<n>.md: full dialogue backup (secret redaction, large-output hash truncation)", "dialogue-summary.md: appended summary + key actions — only last 5 sections injected next turn", "Consolidation subagent triggered asynchronously every 5 turns; catch-up at session end when remainder >= 3"] },
+    { "dot": "violet", "title": "Two subagents", "items": ["Consolidation: reads last-5 sections / queries raw → remember into long-term memory (facts · preferences · decisions · events)", "Hippocampus: manual /memory-clean — dedupe, fix pollution, supersede stale entries"] }
   ]
 }

@@ -2,38 +2,38 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "hpptools-memory 架构",
+    "title": "hpptools-memory 架构与机制",
     "output": "docs/architecture.zh.html",
     "quality_profile": "showcase",
-    "viewBox": [1180, 700]
+    "viewBox": [1220, 700]
   },
   "components": [
-    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM · 工具调用", "pos": [400, 30], "size": [160, 70] },
-    { "id": "prompt", "type": "backend", "label": "提示词注入", "sublabel": "prompt.js · core / context", "pos": [180, 220], "size": [190, 70] },
-    { "id": "webui", "type": "backend", "label": "Web 控制台", "sublabel": "webui.js · 页面 + API", "pos": [620, 220], "size": [190, 70] },
+    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM", "tag": "每轮注入 · 可调工具", "pos": [400, 30], "size": [170, 70] },
+    { "id": "prompt", "type": "backend", "label": "提示词注入", "sublabel": "Core 段 + Context 段", "tag": "core-prompt/rules/Index · notebook/最近5轮摘要/关联记忆", "pos": [180, 220], "size": [210, 76] },
+    { "id": "webui", "type": "backend", "label": "Web 控制台", "sublabel": "概览 / 文件 / 模型 / 运行 / 设置", "tag": "面板数据 API", "pos": [620, 220], "size": [200, 76] },
     { "id": "runs", "type": "backend", "label": "运行登记", "sublabel": "runs.js · 实时日志", "pos": [620, 330], "size": [150, 64] },
-    { "id": "tools", "type": "backend", "label": "记忆工具", "sublabel": "tools.js · 9 个工具", "pos": [180, 400], "size": [190, 70] },
-    { "id": "lifecycle", "type": "backend", "label": "生命周期管线", "sublabel": "lifecycle.js · 提取 / 固化", "pos": [180, 580], "size": [190, 70] },
-    { "id": "subagents", "type": "backend", "label": "固化 / 海马体子代理", "sublabel": "subagents.js · fork", "pos": [620, 580], "size": [190, 70] },
-    { "id": "store", "type": "database", "label": "Markdown 记忆库", "sublabel": "<DSH_HOME>/memory", "pos": [900, 410], "size": [240, 100] },
-    { "id": "panel", "type": "frontend", "label": "记忆管理面板", "sublabel": "better-sidebar fork · 五视图", "pos": [900, 90], "size": [190, 80] }
+    { "id": "tools", "type": "backend", "label": "记忆工具", "sublabel": "9 个工具", "tag": "remember · recall · notebook · memory_status …", "pos": [180, 400], "size": [210, 76] },
+    { "id": "lifecycle", "type": "backend", "label": "生命周期管线", "sublabel": "每轮落盘 + 固化触发", "tag": "写 raw-<n>.md + dialogue-summary.md · 每 5 轮触发", "pos": [180, 580], "size": [230, 76] },
+    { "id": "subagents", "type": "backend", "label": "固化 / 海马体子代理", "sublabel": "fork 异步", "tag": "固化: 每5轮+会话结束余数≥3 · 海马体: /memory-clean", "pos": [620, 580], "size": [230, 76] },
+    { "id": "store", "type": "database", "label": "Markdown 记忆库", "sublabel": "短期 + 长期", "tag": "短期: turns/sessions + notebook · 长期: memories/", "pos": [900, 400], "size": [280, 110] },
+    { "id": "panel", "type": "frontend", "label": "记忆管理面板", "sublabel": "better-sidebar tab", "pos": [900, 90], "size": [170, 70] }
   ],
   "boundaries": [
     { "kind": "region", "label": "DeepSeek Harness 宿主（Cordis 插件运行时）", "wraps": ["prompt", "webui", "runs", "tools", "lifecycle", "subagents"] }
   ],
   "connections": [
-    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "调用记忆工具", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [275, 380]], "labelAt": [442, 372] },
-    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "注入提示段", "fromSide": "top", "toSide": "bottom", "via": [[275, 150], [480, 150]], "labelAt": [378, 142] },
-    { "id": "tools-store", "from": "tools", "to": "store", "label": "读写记忆条目", "fromSide": "right", "toSide": "left", "via": [[700, 435], [700, 460]], "labelAt": [800, 452] },
-    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "每 5 轮触发固化", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [495, 607] },
-    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "沉淀长期记忆", "fromSide": "right", "toSide": "bottom", "via": [[870, 615], [870, 560], [1020, 560]], "labelAt": [945, 552] },
-    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[850, 130], [850, 210], [715, 210]], "labelAt": [852, 180] },
-    { "id": "webui-store", "from": "webui", "to": "store", "label": "读写文件 / 状态", "fromSide": "right", "toSide": "top", "via": [[860, 255], [860, 390], [1020, 390]], "labelAt": [940, 382] },
-    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "读取实时日志", "fromSide": "bottom", "toSide": "top", "via": [[715, 310], [695, 310]], "labelAt": [700, 300] }
+    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "调用 9 个记忆工具", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [285, 380]], "labelAt": [448, 372] },
+    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "注入 Core + Context 段", "fromSide": "top", "toSide": "bottom", "via": [[285, 150], [485, 150]], "labelAt": [385, 142] },
+    { "id": "tools-store", "from": "tools", "to": "store", "label": "读写记忆条目", "fromSide": "right", "toSide": "left", "via": [[700, 438], [700, 455]], "labelAt": [800, 447] },
+    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "每 5 轮触发固化", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [515, 610] },
+    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "remember 写长期记忆", "fromSide": "right", "toSide": "bottom", "via": [[895, 618], [895, 565], [1040, 565]], "labelAt": [960, 557] },
+    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[860, 125], [860, 212], [720, 212]], "labelAt": [865, 168] },
+    { "id": "webui-store", "from": "webui", "to": "store", "label": "读写文件 / 状态", "fromSide": "right", "toSide": "top", "via": [[870, 258], [870, 392], [1040, 392]], "labelAt": [955, 384] },
+    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "读取实时日志", "fromSide": "bottom", "toSide": "top", "via": [[720, 310], [695, 310]], "labelAt": [707, 314] }
   ],
   "cards": [
-    { "dot": "cyan", "title": "记忆三层", "items": ["core-prompt.md + rules.md + Memory Index 每轮注入", "notebook.md 主 LLM 每轮维护", "memories/ + personal/ 由子代理沉淀"] },
-    { "dot": "emerald", "title": "自动化管线", "items": ["每 5 轮触发固化子代理", "会话结束补固化（余数 ≥ 3）", "二进制文件自动 MarkItDown"] },
-    { "dot": "violet", "title": "可视化控制台", "items": ["概览 / 文件 / 模型 / 运行 / 设置 五视图", "better-sidebar 内置记忆管理 tab"] }
+    { "dot": "cyan", "title": "每轮注入 LLM 什么", "items": ["Core 段（稳定）：core-prompt.md + rules.md + Memory Index，缓存友好", "Context 段（动态）：notebook + 最近 5 轮对话摘要 + 关联记忆 + 维护日志"] },
+    { "dot": "emerald", "title": "每轮结束落盘", "items": ["raw-<n>.md：本轮完整对话备份（密钥脱敏、大输出哈希截断）", "dialogue-summary.md：追加摘要与关键动作——下一轮只注入最后 5 节", "每 5 轮异步触发固化子代理，会话结束余数 ≥ 3 补固化"] },
+    { "dot": "violet", "title": "两个子代理", "items": ["固化子代理：读最近 5 节 / 回查 raw → remember 沉淀长期记忆（facts · preferences · decisions · events）", "海马体子代理：/memory-clean 手动触发，去重、修复污染、supersede 过期"] }
   ]
 }
