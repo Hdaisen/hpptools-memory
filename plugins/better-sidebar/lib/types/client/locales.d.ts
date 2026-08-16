@@ -228,6 +228,7 @@ export declare const zh: {
     pluginSentinelDesc: string;
     pluginSidebarQaDesc: string;
     memTab: string;
+    memRefresh: string;
     memNavOverview: string;
     memNavFiles: string;
     memNavModels: string;

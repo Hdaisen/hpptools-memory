@@ -1619,6 +1619,7 @@ window.__ModuleLoader__.load({
 			pluginSentinelDesc: "条件驱动的 agent 唤醒系统：文件/进程/端口/HTTP/命令/webhook 传感器，条件达成自动唤醒休眠会话；注册「哨兵」Tab 展示服务器全局监控表",
 			pluginSidebarQaDesc: "基于 better-sidebar 的划选提问tab分页: 对话划选 → 右侧面板提问 → 同工作区独立追问会话（❓追问·主题）：快速无思考模型压缩主对话上下文后与引文一起注入，不打断主对话；追问可嵌套、可继续、可归档",
 			memTab: "记忆管理",
+			memRefresh: "刷新",
 			memNavOverview: "概览",
 			memNavFiles: "文件",
 			memNavModels: "模型配置",
@@ -1916,6 +1917,7 @@ window.__ModuleLoader__.load({
 			pluginSentinelDesc: "Condition-driven agent wakeup: file/process/port/http/command/webhook sensors wake dormant sessions when conditions fire; registers a \"Sentinel\" tab with the server-wide watch table",
 			pluginSidebarQaDesc: "Select-and-ask: Select conversation text → ask in the right-side panel → a dedicated follow-up session (❓追问) in the same workspace; a fast no-thinking model compresses the main context and injects it with the quote, without interrupting the main conversation. Follow-ups nest, continue, and archive",
 			memTab: "Memory",
+			memRefresh: "Refresh",
 			memNavOverview: "Overview",
 			memNavFiles: "Files",
 			memNavModels: "Models",
@@ -2148,243 +2150,180 @@ window.__ModuleLoader__.load({
 		}
 		//#endregion
 		//#region \0dsh-css:F:\projects\hpptools_memory\.tmp-test\DSH-better-sidebar\src\client\sidebar.module.css.mjs
-		const css$3 = "._79NhKa_toggleCluster{z-index:55;flex-direction:row;gap:4px;display:flex;position:fixed;top:3px;right:10px}._79NhKa_panel:not(._79NhKa_panelHidden) ._79NhKa_tabBar{padding-right:72px}._79NhKa_toggleButton{width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out), color var(--ds-transition-duration-slow) var(--ds-ease-in-out);background:0 0;border:none;border-radius:50%;justify-content:center;align-items:center;display:flex}._79NhKa_toggleButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_toggleButton:disabled{opacity:.4;cursor:default}._79NhKa_panel{z-index:50;background:var(--dsw-specific-sidebar-fill);border-left:1px solid var(--dsw-alias-border-l2);transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), width var(--ds-transition-duration-slow) var(--ds-ease-in-out);flex-direction:column;display:flex;position:fixed;top:0;bottom:0;right:0}._79NhKa_panelHidden{pointer-events:none;visibility:hidden;transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), width var(--ds-transition-duration-slow) var(--ds-ease-in-out), visibility 0s linear var(--ds-transition-duration-slow);transform:translate(102%)}._79NhKa_panel[data-dragging]{transition:none}._79NhKa_panelResize{cursor:col-resize;z-index:2;touch-action:none;width:8px;position:absolute;top:0;bottom:0;left:-4px}._79NhKa_panelResizeActive{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_panelBody{flex:1;min-width:0;min-height:0;display:flex}._79NhKa_bottomPanel{z-index:50;background:var(--dsw-specific-sidebar-fill);border-top:1px solid var(--dsw-alias-border-l2);transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), height var(--ds-transition-duration-slow) var(--ds-ease-in-out);flex-direction:column;display:flex;position:fixed;bottom:0}._79NhKa_bottomPanelHidden{pointer-events:none;visibility:hidden;transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), height var(--ds-transition-duration-slow) var(--ds-ease-in-out), visibility 0s linear var(--ds-transition-duration-slow);transform:translateY(102%)}._79NhKa_bottomPanel[data-dragging]{transition:none}._79NhKa_bottomResize{cursor:row-resize;z-index:2;touch-action:none;height:8px;position:absolute;top:-4px;left:0;right:0}._79NhKa_bottomResizeActive{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_bottomClose{z-index:4;width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex;position:absolute;top:3px;right:6px}._79NhKa_bottomClose:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_bottomPanel ._79NhKa_tabBar{padding-right:40px}body[data-dsh-title-bar-compat] ._79NhKa_toggleCluster{top:calc(var(--dsh-title-bar-strip,40px) + 3px)}body[data-dsh-title-bar-compat] ._79NhKa_panel{padding-top:var(--dsh-title-bar-strip,40px)}._79NhKa_cornerHandle{z-index:52;cursor:nwse-resize;touch-action:none;width:12px;height:12px;position:fixed}._79NhKa_cornerHandle:hover,._79NhKa_cornerHandle[data-dragging]{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_iconButton{width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}._79NhKa_iconButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_iconButton:disabled{opacity:.4;cursor:default}._79NhKa_workbench,._79NhKa_split{flex:1;min-width:0;min-height:0;display:flex}._79NhKa_splitRow{flex-direction:row}._79NhKa_splitCol{flex-direction:column}._79NhKa_splitChild{display:flex;position:relative;overflow:hidden}._79NhKa_divider{z-index:3;touch-action:none;flex:none;position:relative}._79NhKa_dividerRow:after,._79NhKa_dividerCol:after{content:\"\";background:var(--dsw-alias-border-l2);transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out);position:absolute}._79NhKa_dividerRow{cursor:col-resize;width:7px;margin:0 -2px}._79NhKa_dividerRow:after{width:1px;top:0;bottom:0;left:50%;transform:translate(-50%)}._79NhKa_dividerCol{cursor:row-resize;height:7px;margin:-2px 0}._79NhKa_dividerCol:after{height:1px;top:50%;left:0;right:0;transform:translateY(-50%)}._79NhKa_divider:hover:after,._79NhKa_dividerActive:after{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_pane{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;position:relative}._79NhKa_paneDrop{outline:1px solid var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}._79NhKa_dropOverlay{z-index:6;pointer-events:none;background:var(--dsw-alias-interactive-bg-hover-accent);opacity:.5;position:absolute}._79NhKa_dropLeft{width:25%;top:0;bottom:0;left:0}._79NhKa_dropRight{width:25%;top:0;bottom:0;right:0}._79NhKa_dropUp{height:25%;top:0;left:0;right:0}._79NhKa_dropDown{height:25%;bottom:0;left:0;right:0}._79NhKa_dropCenter{outline:2px dashed var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-2px;background:0 0;inset:25%}._79NhKa_paneContent{flex-direction:column;flex:1;min-height:0;display:flex;overflow:hidden}._79NhKa_paneTab{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_paneTabHidden{display:none}._79NhKa_paneEmptyCards{flex:1;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));align-content:start;gap:8px;min-height:0;padding:12px;display:grid;overflow:hidden}._79NhKa_paneCard{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);min-width:0;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-strong-12);cursor:pointer;text-align:center;border-radius:8px;flex-direction:column;justify-content:center;align-items:center;gap:6px;padding:12px 8px;display:flex}._79NhKa_paneCard:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-border-l2)}._79NhKa_paneCard:disabled{opacity:.45;cursor:default}._79NhKa_tabBar{border-bottom:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);flex:none;align-items:stretch;height:34px;display:flex}._79NhKa_tabBarDrop{outline:1px dashed var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}._79NhKa_tabList{scrollbar-width:none;flex:1;min-width:0;display:flex;overflow-x:auto}._79NhKa_tabList::-webkit-scrollbar{display:none}._79NhKa_tab{min-width:64px;max-width:160px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary);border-right:1px solid var(--dsw-alias-border-l1);cursor:pointer;user-select:none;background:0 0;flex:none;align-items:center;gap:4px;padding:0 4px 0 10px;display:flex}._79NhKa_tab:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_tabActive{color:var(--dsw-alias-label-primary);background:var(--dsw-alias-interactive-bg-active)}._79NhKa_tabTitle{text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;overflow:hidden}._79NhKa_tabBadge{min-width:16px;height:15px;font:var(--dsw-font-xxxs-strong-11);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-brand-primary);border-radius:8px;flex:none;justify-content:center;align-items:center;padding:0 4px;display:inline-flex}._79NhKa_tabClose{width:18px;height:18px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:none;border-radius:4px;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}._79NhKa_tabClose:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_tabBarPlus{background:var(--dsw-alias-bg-layer-1);width:22px;height:22px;color:var(--dsw-alias-label-tertiary);cursor:pointer;border:none;border-radius:5px;flex:none;justify-content:center;align-self:center;align-items:center;margin:0 6px;padding:0;display:inline-flex;position:sticky;right:0}._79NhKa_tabBarPlus:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_explorer{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_explorerHeader{flex:none;justify-content:space-between;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_explorerRoot{font:var(--dsw-font-s-14);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_explorerBody{flex:1;min-height:0;padding:2px 6px 8px;overflow-y:auto}._79NhKa_explorerRow{width:100%;height:34px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;white-space:nowrap;animation:_79NhKa_dsh-row-in .15s var(--ds-ease-in-out);background:0 0;border:none;border-radius:8px;align-items:center;gap:6px;padding:0 8px;display:flex}._79NhKa_explorerRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_explorerDir{font:var(--dsw-font-s-strong-14)}._79NhKa_explorerHidden{opacity:.45}._79NhKa_explorerName{text-overflow:ellipsis;overflow:hidden}._79NhKa_explorerRef{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);height:20px;color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;border-radius:999px;flex:none;align-items:center;padding:0 8px;display:none}._79NhKa_explorerRef:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_explorerRow:hover ._79NhKa_explorerRef,._79NhKa_explorerRow:focus-within ._79NhKa_explorerRef{display:inline-flex}._79NhKa_explorerCopied{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._79NhKa_explorerError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);cursor:default}@keyframes _79NhKa_dsh-row-in{0%{opacity:0}}._79NhKa_explorerEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;padding:16px}._79NhKa_editor{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_editorHeader{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:6px;padding:4px 8px;display:flex}._79NhKa_editorTitle{min-width:0;font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._79NhKa_editorStatus{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._79NhKa_editorStatusError{color:var(--dsw-alias-state-error-primary)}._79NhKa_dirtyDot{background:var(--dsw-alias-state-warn-primary);border-radius:50%;flex:none;width:7px;height:7px}._79NhKa_editorPlaceholder{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;flex:1;justify-content:center;align-items:center;padding:16px;display:flex}._79NhKa_orphanedType{opacity:.7;overflow-wrap:anywhere;margin-top:8px;font-size:12px;display:block}._79NhKa_editorBinary{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:12px;padding:24px 16px;display:flex}._79NhKa_editorBinaryNotice{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_editorDownloadLink{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-strong-12);cursor:pointer;transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out), border-color var(--ds-transition-duration-slow) var(--ds-ease-in-out);border-radius:6px;align-items:center;gap:6px;padding:6px 14px;text-decoration:none;display:inline-flex}._79NhKa_editorDownloadLink:hover{background:var(--dsw-alias-interactive-bg-hover);border-color:var(--dsw-alias-border-l2)}._79NhKa_editorError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);padding:12px 16px}._79NhKa_editorBanner{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex:none;padding:4px 12px}._79NhKa_sandboxStatus{font:var(--dsw-font-xxxs-11);flex:none;align-items:center;gap:8px;padding:4px 10px;display:flex}._79NhKa_sandboxStatusOn{color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-layer-1);border-bottom:1px solid var(--dsw-alias-border-l1)}._79NhKa_sandboxStatusOff{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 10%, transparent);border-bottom:1px solid color-mix(in srgb, var(--dsw-alias-state-error-primary) 45%, transparent)}._79NhKa_sandboxDot{background:var(--dsw-alias-state-success-primary);border-radius:50%;flex:none;width:6px;height:6px}._79NhKa_sandboxStatusOff ._79NhKa_sandboxDot{background:var(--dsw-alias-state-error-primary)}._79NhKa_sandboxStatusText{text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;overflow:hidden}._79NhKa_sandboxAction{border:1px solid var(--dsw-alias-border-l2);font:inherit;color:inherit;cursor:pointer;background:0 0;border-radius:6px;flex:none;padding:2px 8px}._79NhKa_sandboxAction:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorHtml{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_browser{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_browserBar{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:4px;padding:6px 8px;display:flex}._79NhKa_browserInput{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);min-width:0;height:28px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-12);border-radius:6px;flex:1;padding:0 10px}._79NhKa_browserInput:focus{border-color:var(--dsw-alias-border-l2);outline:none}._79NhKa_browserMessage{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex:none;padding:4px 12px}._79NhKa_browserFrame{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_browserStart{text-align:center;min-height:0;font:var(--dsw-font-xs-13);color:var(--dsw-alias-label-tertiary);flex:1;justify-content:center;align-items:center;padding:20px;display:flex}._79NhKa_browserBlocked{text-align:center;min-height:0;color:var(--dsw-alias-state-warn-primary);flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;padding:24px;display:flex}._79NhKa_browserBlockedTitle{font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary)}._79NhKa_browserBlockedDesc{max-width:280px;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-secondary)}._79NhKa_browserBlockedActions{gap:8px;margin-top:6px;display:flex}._79NhKa_browserBlockedButton{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxxs-11);cursor:pointer;border-radius:6px;padding:4px 12px}._79NhKa_browserBlockedButton:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorCm{background:0 0;flex:1;min-height:0;overflow:hidden}._79NhKa_editorCmHidden{display:none}._79NhKa_editorCm .cm-editor{height:100%}._79NhKa_editorCm .cm-editor.cm-focused{outline:none}._79NhKa_editorModeToggle{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);border-radius:6px;flex:none;align-items:center;gap:2px;padding:2px;display:inline-flex}._79NhKa_editorModeButton{color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-11);cursor:pointer;background:0 0;border:none;border-radius:4px;padding:2px 8px}._79NhKa_editorModeButton:hover{color:var(--dsw-alias-label-primary)}._79NhKa_editorModeActive{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)}._79NhKa_editorImageWrap{flex:1;justify-content:center;align-items:center;min-height:0;padding:12px;display:flex;overflow:auto}._79NhKa_editorImage{object-fit:contain;max-width:100%;max-height:100%}._79NhKa_editorMd{min-height:0;font:var(--dsw-font-xs-13);flex:1;padding:10px 14px;overflow-y:auto}._79NhKa_selectionPopup{z-index:60;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);height:28px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxxs-strong-11);white-space:nowrap;cursor:pointer;border-radius:6px;align-items:center;padding:0 10px;display:inline-flex;position:fixed;transform:translate(-50%,calc(-100% - 8px))}._79NhKa_selectionPopup:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorPdf{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_editorPdfToolbar{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;justify-content:flex-end;padding:6px 8px;display:flex}._79NhKa_editorPdfStage{flex:1;min-height:0;display:flex;position:relative}._79NhKa_editorPdfFrame{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_editorPdfFrameBlocked{pointer-events:none}._79NhKa_editorPdfDragShield{z-index:4;pointer-events:none;background:0 0;position:absolute;inset:0}._79NhKa_editorPdfDragShieldActive{pointer-events:auto}body[data-dsh-tab-dragging] ._79NhKa_editorPdfFrame{pointer-events:none!important}body[data-dsh-tab-dragging] ._79NhKa_editorPdfDragShield{pointer-events:auto!important}._79NhKa_terminalWrap{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-height:0;display:flex;position:relative}._79NhKa_terminal{flex:1;min-height:0;padding:6px 4px 6px 8px}._79NhKa_terminal .xterm{height:100%}._79NhKa_terminalBanner{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex-wrap:wrap;flex:none;align-items:center;gap:8px;padding:3px 10px;display:flex}._79NhKa_terminalBannerUrl{word-break:break-all;opacity:.85;flex-basis:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}._79NhKa_boundaryError{z-index:50;background:var(--dsw-alias-bg-layer-1);border-left:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);flex-direction:column;align-items:flex-start;gap:8px;padding:16px;display:flex;position:fixed;top:0;bottom:0;right:0;overflow:auto}._79NhKa_terminalRetry{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;border-radius:999px;flex:none;padding:1px 8px}._79NhKa_terminalRetry:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_tabBoundaryError{min-height:0;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);flex-direction:column;flex:1;align-items:flex-start;gap:8px;padding:12px 16px;display:flex;overflow:auto}._79NhKa_git{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;overflow:hidden auto}._79NhKa_gitHeader{flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_gitBranchSelect{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base);min-width:0;height:26px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-12);border-radius:6px;flex:1;padding:0 6px}._79NhKa_gitSection{border-top:1px solid var(--dsw-alias-border-l1)}._79NhKa_gitSectionHeader{font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-tertiary);text-transform:uppercase;justify-content:space-between;align-items:center;padding:6px 12px 4px;display:flex}._79NhKa_gitLink{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-brand-primary);cursor:pointer;background:0 0;border:none;padding:0}._79NhKa_gitLink:hover:not(:disabled){text-decoration:underline}._79NhKa_gitLink:disabled{opacity:.4;cursor:default}._79NhKa_gitRow{min-height:34px;animation:_79NhKa_dsh-row-in .15s var(--ds-ease-in-out);border-radius:8px;align-items:center;gap:6px;margin:0 6px;padding:0 8px;display:flex}._79NhKa_gitRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitRowSelected{background:var(--dsw-alias-interactive-bg-active)}._79NhKa_gitRowMain{cursor:pointer;text-align:left;background:0 0;border:none;flex:1;align-items:center;gap:8px;min-width:0;padding:3px 0;display:flex}._79NhKa_gitBadge{width:20px;height:16px;font:var(--dsw-font-xxxs-strong-11);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);border-radius:4px;flex:none;justify-content:center;align-items:center;display:inline-flex}._79NhKa_gitName{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);padding:4px 12px 8px}._79NhKa_gitPlaceholder{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;padding:16px}._79NhKa_gitError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);white-space:pre-wrap;padding:8px 12px}._79NhKa_gitDiff{border-top:1px solid var(--dsw-alias-border-l1);padding:8px}._79NhKa_gitDiffTab{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;overflow:hidden auto}._79NhKa_gitDiffTabHeader{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_gitDiffTabTitle{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitDiffFile{align-items:baseline;gap:6px;padding:8px 2px 2px;display:flex}._79NhKa_gitDiffFilePath{font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_gitDiffFileOld{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;flex:none;max-width:40%;overflow:hidden}._79NhKa_gitDiffFileTag{border:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);border-radius:999px;flex:none;padding:0 6px}._79NhKa_gitDiffHunk{font:var(--dsw-font-markdown-code-block-small);color:var(--dsw-alias-label-tertiary);gap:8px;padding:3px 2px;display:flex}._79NhKa_gitDiffHunkHeader{color:var(--dsw-alias-label-secondary);flex:none}._79NhKa_gitDiffHunkSection{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_gitDiffLine{font:var(--dsw-font-markdown-code-block-small);white-space:pre-wrap;overflow-wrap:anywhere;align-items:stretch;min-width:0;line-height:20px;display:flex}._79NhKa_gitDiffNum{text-align:right;width:36px;color:var(--dsw-alias-label-tertiary);user-select:none;flex:none;padding-right:8px}._79NhKa_gitDiffCode{flex:1;min-width:0;overflow:visible}._79NhKa_gitDiffCtx{color:var(--dsw-alias-label-primary)}._79NhKa_gitDiffDel{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent)}._79NhKa_gitDiffAdd{color:var(--dsw-alias-state-success-primary);background:color-mix(in srgb, var(--dsw-alias-state-success-primary) 12%, transparent)}._79NhKa_gitDiffMeta{padding-left:2px}._79NhKa_gitDiffMetaText{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);font-style:italic}._79NhKa_gitDiffExpand{width:100%;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-brand-primary);cursor:pointer;text-align:center;background:0 0;border:none;margin:4px 0;display:block}._79NhKa_gitDiffExpand:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitConfirmDesc{font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);white-space:pre-wrap;margin:0}._79NhKa_gitCommit{border-top:1px solid var(--dsw-alias-border-l1);align-items:center;gap:6px;padding:8px 12px;display:flex}._79NhKa_gitCommitInput{flex:1;min-width:0}._79NhKa_gitCommitButton{background:var(--dsw-alias-button-primary-fill);height:26px;color:var(--dsw-alias-label-primary-inverted);font:var(--dsw-font-xxs-strong-12);cursor:pointer;border:none;border-radius:6px;flex:none;padding:0 12px}._79NhKa_gitCommitButton:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}._79NhKa_gitCommitButton:disabled{opacity:.45;cursor:default}._79NhKa_gitLogRow{cursor:pointer;border-radius:8px;flex-direction:column;gap:2px;padding:5px 12px;display:flex}._79NhKa_gitLogRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitLogLine1{align-items:baseline;gap:8px;min-width:0;display:flex}._79NhKa_gitLogHash{font:var(--dsw-font-markdown-code-block-small);color:var(--dsw-alias-label-tertiary);flex:none}._79NhKa_gitLogLine2{flex-wrap:wrap;align-items:center;gap:6px;min-width:0;display:flex}._79NhKa_gitLogRef{border:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-brand-primary);white-space:nowrap;border-radius:999px;flex:none;padding:0 5px}._79NhKa_gitLogSubject{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitLogMeta{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._79NhKa_gitLogMore{border:1px solid var(--dsw-alias-border-l2);width:calc(100% - 24px);font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border-radius:6px;margin:4px 12px 8px;padding:6px 0;display:block}._79NhKa_gitLogMore:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_gitLogMore:disabled{opacity:.5;cursor:default}._79NhKa_producedRow{flex-wrap:wrap;align-items:center;gap:8px;padding:4px 0;display:flex}._79NhKa_producedLabel{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_producedChip{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);max-width:200px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-12);cursor:pointer;border-radius:999px;align-items:center;gap:4px;padding:2px 8px;display:inline-flex;overflow:hidden}._79NhKa_producedChip:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_producedChip span{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_producedMore{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_toggleButton:focus-visible,._79NhKa_bottomClose:focus-visible,._79NhKa_iconButton:focus-visible,._79NhKa_tab:focus-visible,._79NhKa_tabClose:focus-visible,._79NhKa_tabBarPlus:focus-visible,._79NhKa_paneCard:focus-visible,._79NhKa_explorerRow:focus-visible,._79NhKa_explorerRef:focus-visible,._79NhKa_gitRowMain:focus-visible,._79NhKa_gitLink:focus-visible,._79NhKa_gitCommitButton:focus-visible,._79NhKa_gitLogRow:focus-visible,._79NhKa_gitLogMore:focus-visible,._79NhKa_gitDiffExpand:focus-visible,._79NhKa_terminalRetry:focus-visible,._79NhKa_editorModeButton:focus-visible,._79NhKa_editorDownloadLink:focus-visible,._79NhKa_editorPptxButton:focus-visible,._79NhKa_editorDocxZoomRange:focus-visible{outline:2px solid var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}@media (prefers-reduced-motion:reduce){._79NhKa_panel,._79NhKa_panelHidden,._79NhKa_bottomPanel,._79NhKa_bottomPanelHidden,._79NhKa_toggleCluster,._79NhKa_toggleButton,._79NhKa_tab,._79NhKa_tabBarPlus,._79NhKa_paneCard,._79NhKa_explorerRow,._79NhKa_gitRow,._79NhKa_divider,._79NhKa_dividerRow:after,._79NhKa_dividerCol:after{transition:none;animation:none}}@media (width<=767px){._79NhKa_panel:not(._79NhKa_panelHidden) ._79NhKa_tabBar{padding-right:40px}._79NhKa_tab{min-width:48px;max-width:128px}}._79NhKa_memRoot{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-width:0;min-height:0;display:flex}._79NhKa_memNavIcon{font-size:12px;line-height:1}._79NhKa_memScroll{flex:1;min-height:0;padding:12px 14px 18px;overflow-y:auto}._79NhKa_memHint{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:1.6}._79NhKa_memError{color:var(--dsw-alias-state-error-primary);padding:12px 14px;font-size:12.5px;line-height:1.6}._79NhKa_memMono{color:var(--dsw-alias-label-secondary);word-break:break-all;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}._79NhKa_memCards{grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;display:grid}._79NhKa_memCard{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:12px;flex-direction:column;gap:4px;padding:13px 14px;transition:background .12s,border-color .12s;display:flex}._79NhKa_memCard:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_memCardHot{border-color:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 55%, var(--dsw-alias-border-l2))}._79NhKa_memCardK{color:var(--dsw-alias-label-secondary);align-items:center;gap:6px;font-size:12px;display:flex}._79NhKa_memCardIcon{font-size:14px;line-height:1}._79NhKa_memCardV{color:var(--dsw-alias-label-primary);overflow-wrap:anywhere;font-size:17px;font-weight:600;line-height:1.3}._79NhKa_memCardS{color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:1.5}._79NhKa_memBadgeRun{background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 15%, transparent);color:var(--dsw-alias-state-warn-primary);border-radius:999px;align-items:center;gap:5px;padding:1px 8px;font-size:11.5px;font-weight:500;display:inline-flex}._79NhKa_memBadgeOk{background:color-mix(in srgb, var(--dsw-alias-state-success-primary) 15%, transparent);color:var(--dsw-alias-state-success-primary);border-radius:999px;align-items:center;padding:1px 8px;font-size:11.5px;font-weight:500;display:inline-flex}._79NhKa_memBadgeErr{background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 15%, transparent);color:var(--dsw-alias-state-error-primary);border-radius:999px;align-items:center;padding:1px 8px;font-size:11.5px;font-weight:500;display:inline-flex}._79NhKa_memDot{background:currentColor;border-radius:50%;width:6px;height:6px;animation:1.6s ease-in-out infinite _79NhKa_memPulse}@keyframes _79NhKa_memPulse{0%,to{opacity:1}50%{opacity:.3}}._79NhKa_memBanner{background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 12%, transparent);border:1px solid color-mix(in srgb, var(--dsw-alias-state-warn-primary) 45%, transparent);color:var(--dsw-alias-state-warn-primary);border-radius:10px;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;padding:9px 12px;font-size:12.5px;line-height:1.5;display:flex}._79NhKa_memBannerText{overflow-wrap:anywhere;flex:1;min-width:0}._79NhKa_memBannerMuted{background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-secondary);border-radius:10px;margin-bottom:12px;padding:8px 12px;font-size:12px;line-height:1.5}._79NhKa_memBtn{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary);font:inherit;cursor:pointer;border-radius:8px;padding:5px 10px;font-size:12.5px;transition:background .12s}._79NhKa_memBtn:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_memBtn:disabled{opacity:.5;cursor:default}._79NhKa_memBtnPrimary{background:var(--dsw-alias-button-primary-fill);border:1px solid var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-button-primary-ink);font:inherit;cursor:pointer;border-radius:8px;padding:5px 12px;font-size:12.5px}._79NhKa_memBtnPrimary:hover:not(:disabled){filter:brightness(1.12)}._79NhKa_memBtnPrimary:disabled{opacity:.5;cursor:default}._79NhKa_memFiles{flex:1;align-items:stretch;min-width:0;min-height:0;display:flex}._79NhKa_memTree{background:var(--dsw-alias-bg-layer-1);border-right:1px solid var(--dsw-alias-border-l1);flex-shrink:0;width:178px;min-width:130px;padding:6px;overflow-y:auto}._79NhKa_memTreeGroup{margin-bottom:2px}._79NhKa_memTreeHead{width:100%;color:var(--dsw-alias-label-tertiary);letter-spacing:.05em;text-transform:uppercase;cursor:pointer;background:0 0;border:none;border-radius:6px;align-items:center;gap:5px;padding:6px 7px 4px;font-size:10.5px;font-weight:600;display:flex}._79NhKa_memTreeHead:hover{color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_memTreeArrow{flex:none;width:10px;font-size:9px}._79NhKa_memTreeLabel{text-overflow:ellipsis;white-space:nowrap;text-align:left;flex:1;min-width:0;overflow:hidden}._79NhKa_memTreeCount{color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;font-size:10.5px}._79NhKa_memTreeEmpty{color:var(--dsw-alias-label-tertiary);padding:4px 8px;font-size:12px;font-style:italic}._79NhKa_memTreeItem{width:100%;color:var(--dsw-alias-label-secondary);cursor:pointer;text-align:left;background:0 0;border:none;border-left:2px solid #0000;border-radius:6px;align-items:center;gap:6px;padding:3.5px 8px 3.5px 6px;font-size:12.5px;display:flex}._79NhKa_memTreeItem:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_memTreeItemActive{background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);border-left-color:var(--dsw-alias-button-primary-fill)}._79NhKa_memTreeName{text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;overflow:hidden}._79NhKa_memFilePane{flex-direction:column;flex:1;min-width:0;display:flex}._79NhKa_memFileHead{background:var(--dsw-alias-bg-layer-1);border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:8px;padding:7px 10px;display:flex}._79NhKa_memFileName{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-size:12.5px;font-weight:600;overflow:hidden}._79NhKa_memFileBody{flex:1;min-height:0;display:flex}._79NhKa_memFileContent{flex:1;min-width:0;padding:12px 14px;overflow:auto}._79NhKa_memTextarea{width:100%;height:100%;color:var(--dsw-alias-label-primary);resize:none;background:0 0;border:none;outline:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.7}._79NhKa_memMd{color:var(--dsw-alias-label-primary);font-size:13px;line-height:1.8}._79NhKa_memMd h1,._79NhKa_memMd h2,._79NhKa_memMd h3,._79NhKa_memMd h4{margin:14px 0 7px;line-height:1.4}._79NhKa_memMd h1{border-bottom:1px solid var(--dsw-alias-border-l1);padding-bottom:5px;font-size:18px}._79NhKa_memMd h2{border-bottom:1px solid var(--dsw-alias-border-l1);padding-bottom:3px;font-size:15.5px}._79NhKa_memMd h3{font-size:14px}._79NhKa_memMd p{margin:6px 0}._79NhKa_memMd code{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);border-radius:4px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px}._79NhKa_memMd pre._79NhKa_memCodeBlock{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;margin:8px 0;padding:9px 11px;overflow:auto}._79NhKa_memMd pre._79NhKa_memCodeBlock code{background:0 0;border:none;padding:0}._79NhKa_memMd ul,._79NhKa_memMd ol{margin:6px 0;padding-left:20px}._79NhKa_memMd blockquote{border-left:3px solid var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-secondary);margin:6px 0;padding:2px 10px}._79NhKa_memMd a{color:var(--dsw-alias-button-primary-fill)}._79NhKa_memWl{background:color-mix(in srgb, var(--dsw-alias-button-primary-fill) 15%, transparent);color:var(--dsw-alias-button-primary-fill);border-radius:4px;padding:0 4px;font-size:11.5px}._79NhKa_memEntryNav{border-left:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);flex-shrink:0;width:168px;min-width:108px;padding:8px;overflow-y:auto}._79NhKa_memEntryNavHead{color:var(--dsw-alias-label-tertiary);letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;font-size:10.5px;font-weight:600}._79NhKa_memEntryItem{width:100%;color:var(--dsw-alias-label-secondary);cursor:pointer;text-align:left;white-space:nowrap;text-overflow:ellipsis;background:0 0;border:none;border-radius:6px;padding:4px 8px;font-size:12px;display:block;overflow:hidden}._79NhKa_memEntryItem:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_memEntrySup{color:var(--dsw-alias-label-tertiary);text-decoration:line-through}._79NhKa_memStatus{border-top:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-tertiary);flex:none;padding:6px 12px;font-size:11.5px}._79NhKa_memStatusOk{color:var(--dsw-alias-state-success-primary)}._79NhKa_memStatusErr{color:var(--dsw-alias-state-error-primary)}._79NhKa_memGroup{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:14px;flex-direction:column;gap:4px;margin-top:14px;padding:14px 16px;display:flex}._79NhKa_memGroup:first-child{margin-top:0}._79NhKa_memGroupHead{color:var(--dsw-alias-label-primary);letter-spacing:.04em;text-transform:uppercase;margin:0 0 4px;font-size:12px;font-weight:600}._79NhKa_memSetRow{flex-wrap:wrap;align-items:center;gap:10px;padding:8px 0;display:flex}._79NhKa_memSetRow+._79NhKa_memSetRow{border-top:1px solid var(--dsw-alias-border-l1)}._79NhKa_memLabel{color:var(--dsw-alias-label-primary);min-width:96px;font-size:12.5px}._79NhKa_memSelect{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);min-width:220px;max-width:100%;color:var(--dsw-alias-label-primary);font:inherit;border-radius:8px;padding:5px 8px;font-size:12.5px}._79NhKa_memSelect:focus{outline:1.5px solid var(--dsw-alias-button-primary-fill);outline-offset:-1px;border-color:var(--dsw-alias-button-primary-fill)}._79NhKa_memInput{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);min-width:200px;max-width:100%;color:var(--dsw-alias-label-primary);font:inherit;border-radius:8px;flex:1;padding:5px 9px;font-size:12.5px}._79NhKa_memInput:focus{outline:1.5px solid var(--dsw-alias-button-primary-fill);outline-offset:-1px;border-color:var(--dsw-alias-button-primary-fill)}._79NhKa_memCheckRow{color:var(--dsw-alias-label-secondary);cursor:pointer;align-items:center;gap:6px;padding:6px 0;font-size:12.5px;display:flex}._79NhKa_memRow{flex-wrap:wrap;align-items:center;gap:10px;padding:6px 0;display:flex}._79NhKa_memTable{border-collapse:collapse;width:100%;margin-top:10px;font-size:12.5px}._79NhKa_memTable th,._79NhKa_memTable td{text-align:left;border-bottom:1px solid var(--dsw-alias-border-l1);padding:7px 9px}._79NhKa_memTable th{color:var(--dsw-alias-label-tertiary);letter-spacing:.03em;text-transform:uppercase;font-size:11px;font-weight:500}._79NhKa_memRunRow{cursor:pointer}._79NhKa_memRunRow:hover td{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_memRunRowActive td{background:var(--dsw-alias-interactive-bg-active)}._79NhKa_memEmptyRow{color:var(--dsw-alias-label-tertiary);text-align:center;padding:18px 0}._79NhKa_memLog{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-secondary);white-space:pre-wrap;border-radius:8px;max-height:260px;margin-top:10px;padding:9px 11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.6;overflow:auto}";
-		const tagId$3 = "dsh-external/dsh-better-sidebar/sidebar.module.css";
-		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$3) + "]") === null) {
+		const css$4 = "._79NhKa_toggleCluster{z-index:55;flex-direction:row;gap:4px;display:flex;position:fixed;top:3px;right:10px}._79NhKa_panel:not(._79NhKa_panelHidden) ._79NhKa_tabBar{padding-right:72px}._79NhKa_toggleButton{width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out), color var(--ds-transition-duration-slow) var(--ds-ease-in-out);background:0 0;border:none;border-radius:50%;justify-content:center;align-items:center;display:flex}._79NhKa_toggleButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_toggleButton:disabled{opacity:.4;cursor:default}._79NhKa_panel{z-index:50;background:var(--dsw-specific-sidebar-fill);border-left:1px solid var(--dsw-alias-border-l2);transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), width var(--ds-transition-duration-slow) var(--ds-ease-in-out);flex-direction:column;display:flex;position:fixed;top:0;bottom:0;right:0}._79NhKa_panelHidden{pointer-events:none;visibility:hidden;transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), width var(--ds-transition-duration-slow) var(--ds-ease-in-out), visibility 0s linear var(--ds-transition-duration-slow);transform:translate(102%)}._79NhKa_panel[data-dragging]{transition:none}._79NhKa_panelResize{cursor:col-resize;z-index:2;touch-action:none;width:8px;position:absolute;top:0;bottom:0;left:-4px}._79NhKa_panelResizeActive{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_panelBody{flex:1;min-width:0;min-height:0;display:flex}._79NhKa_bottomPanel{z-index:50;background:var(--dsw-specific-sidebar-fill);border-top:1px solid var(--dsw-alias-border-l2);transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), height var(--ds-transition-duration-slow) var(--ds-ease-in-out);flex-direction:column;display:flex;position:fixed;bottom:0}._79NhKa_bottomPanelHidden{pointer-events:none;visibility:hidden;transition:transform var(--ds-transition-duration-slow) var(--ds-ease-in-out), height var(--ds-transition-duration-slow) var(--ds-ease-in-out), visibility 0s linear var(--ds-transition-duration-slow);transform:translateY(102%)}._79NhKa_bottomPanel[data-dragging]{transition:none}._79NhKa_bottomResize{cursor:row-resize;z-index:2;touch-action:none;height:8px;position:absolute;top:-4px;left:0;right:0}._79NhKa_bottomResizeActive{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_bottomClose{z-index:4;width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex;position:absolute;top:3px;right:6px}._79NhKa_bottomClose:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_bottomPanel ._79NhKa_tabBar{padding-right:40px}body[data-dsh-title-bar-compat] ._79NhKa_toggleCluster{top:calc(var(--dsh-title-bar-strip,40px) + 3px)}body[data-dsh-title-bar-compat] ._79NhKa_panel{padding-top:var(--dsh-title-bar-strip,40px)}._79NhKa_cornerHandle{z-index:52;cursor:nwse-resize;touch-action:none;width:12px;height:12px;position:fixed}._79NhKa_cornerHandle:hover,._79NhKa_cornerHandle[data-dragging]{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_iconButton{width:28px;height:28px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}._79NhKa_iconButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_iconButton:disabled{opacity:.4;cursor:default}._79NhKa_workbench,._79NhKa_split{flex:1;min-width:0;min-height:0;display:flex}._79NhKa_splitRow{flex-direction:row}._79NhKa_splitCol{flex-direction:column}._79NhKa_splitChild{display:flex;position:relative;overflow:hidden}._79NhKa_divider{z-index:3;touch-action:none;flex:none;position:relative}._79NhKa_dividerRow:after,._79NhKa_dividerCol:after{content:\"\";background:var(--dsw-alias-border-l2);transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out);position:absolute}._79NhKa_dividerRow{cursor:col-resize;width:7px;margin:0 -2px}._79NhKa_dividerRow:after{width:1px;top:0;bottom:0;left:50%;transform:translate(-50%)}._79NhKa_dividerCol{cursor:row-resize;height:7px;margin:-2px 0}._79NhKa_dividerCol:after{height:1px;top:50%;left:0;right:0;transform:translateY(-50%)}._79NhKa_divider:hover:after,._79NhKa_dividerActive:after{background:var(--dsw-alias-interactive-bg-hover-accent)}._79NhKa_pane{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;position:relative}._79NhKa_paneDrop{outline:1px solid var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}._79NhKa_dropOverlay{z-index:6;pointer-events:none;background:var(--dsw-alias-interactive-bg-hover-accent);opacity:.5;position:absolute}._79NhKa_dropLeft{width:25%;top:0;bottom:0;left:0}._79NhKa_dropRight{width:25%;top:0;bottom:0;right:0}._79NhKa_dropUp{height:25%;top:0;left:0;right:0}._79NhKa_dropDown{height:25%;bottom:0;left:0;right:0}._79NhKa_dropCenter{outline:2px dashed var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-2px;background:0 0;inset:25%}._79NhKa_paneContent{flex-direction:column;flex:1;min-height:0;display:flex;overflow:hidden}._79NhKa_paneTab{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_paneTabHidden{display:none}._79NhKa_paneEmptyCards{flex:1;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));align-content:start;gap:8px;min-height:0;padding:12px;display:grid;overflow:hidden}._79NhKa_paneCard{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);min-width:0;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-strong-12);cursor:pointer;text-align:center;border-radius:8px;flex-direction:column;justify-content:center;align-items:center;gap:6px;padding:12px 8px;display:flex}._79NhKa_paneCard:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-border-l2)}._79NhKa_paneCard:disabled{opacity:.45;cursor:default}._79NhKa_tabBar{border-bottom:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);flex:none;align-items:stretch;height:34px;display:flex}._79NhKa_tabBarDrop{outline:1px dashed var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}._79NhKa_tabList{scrollbar-width:none;flex:1;min-width:0;display:flex;overflow-x:auto}._79NhKa_tabList::-webkit-scrollbar{display:none}._79NhKa_tab{min-width:64px;max-width:160px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary);border-right:1px solid var(--dsw-alias-border-l1);cursor:pointer;user-select:none;background:0 0;flex:none;align-items:center;gap:4px;padding:0 4px 0 10px;display:flex}._79NhKa_tab:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_tabActive{color:var(--dsw-alias-label-primary);background:var(--dsw-alias-interactive-bg-active)}._79NhKa_tabTitle{text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;overflow:hidden}._79NhKa_tabBadge{min-width:16px;height:15px;font:var(--dsw-font-xxxs-strong-11);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-brand-primary);border-radius:8px;flex:none;justify-content:center;align-items:center;padding:0 4px;display:inline-flex}._79NhKa_tabClose{width:18px;height:18px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:none;border-radius:4px;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}._79NhKa_tabClose:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_tabBarPlus{background:var(--dsw-alias-bg-layer-1);width:22px;height:22px;color:var(--dsw-alias-label-tertiary);cursor:pointer;border:none;border-radius:5px;flex:none;justify-content:center;align-self:center;align-items:center;margin:0 6px;padding:0;display:inline-flex;position:sticky;right:0}._79NhKa_tabBarPlus:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_explorer{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_explorerHeader{flex:none;justify-content:space-between;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_explorerRoot{font:var(--dsw-font-s-14);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_explorerBody{flex:1;min-height:0;padding:2px 6px 8px;overflow-y:auto}._79NhKa_explorerRow{width:100%;height:34px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;white-space:nowrap;animation:_79NhKa_dsh-row-in .15s var(--ds-ease-in-out);background:0 0;border:none;border-radius:8px;align-items:center;gap:6px;padding:0 8px;display:flex}._79NhKa_explorerRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_explorerDir{font:var(--dsw-font-s-strong-14)}._79NhKa_explorerHidden{opacity:.45}._79NhKa_explorerName{text-overflow:ellipsis;overflow:hidden}._79NhKa_explorerRef{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);height:20px;color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;border-radius:999px;flex:none;align-items:center;padding:0 8px;display:none}._79NhKa_explorerRef:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_explorerRow:hover ._79NhKa_explorerRef,._79NhKa_explorerRow:focus-within ._79NhKa_explorerRef{display:inline-flex}._79NhKa_explorerCopied{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._79NhKa_explorerError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);cursor:default}@keyframes _79NhKa_dsh-row-in{0%{opacity:0}}._79NhKa_explorerEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;padding:16px}._79NhKa_editor{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_editorHeader{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:6px;padding:4px 8px;display:flex}._79NhKa_editorTitle{min-width:0;font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._79NhKa_editorStatus{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._79NhKa_editorStatusError{color:var(--dsw-alias-state-error-primary)}._79NhKa_dirtyDot{background:var(--dsw-alias-state-warn-primary);border-radius:50%;flex:none;width:7px;height:7px}._79NhKa_editorPlaceholder{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;flex:1;justify-content:center;align-items:center;padding:16px;display:flex}._79NhKa_orphanedType{opacity:.7;overflow-wrap:anywhere;margin-top:8px;font-size:12px;display:block}._79NhKa_editorBinary{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:12px;padding:24px 16px;display:flex}._79NhKa_editorBinaryNotice{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_editorDownloadLink{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-strong-12);cursor:pointer;transition:background var(--ds-transition-duration-slow) var(--ds-ease-in-out), border-color var(--ds-transition-duration-slow) var(--ds-ease-in-out);border-radius:6px;align-items:center;gap:6px;padding:6px 14px;text-decoration:none;display:inline-flex}._79NhKa_editorDownloadLink:hover{background:var(--dsw-alias-interactive-bg-hover);border-color:var(--dsw-alias-border-l2)}._79NhKa_editorError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);padding:12px 16px}._79NhKa_editorBanner{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex:none;padding:4px 12px}._79NhKa_sandboxStatus{font:var(--dsw-font-xxxs-11);flex:none;align-items:center;gap:8px;padding:4px 10px;display:flex}._79NhKa_sandboxStatusOn{color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-layer-1);border-bottom:1px solid var(--dsw-alias-border-l1)}._79NhKa_sandboxStatusOff{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 10%, transparent);border-bottom:1px solid color-mix(in srgb, var(--dsw-alias-state-error-primary) 45%, transparent)}._79NhKa_sandboxDot{background:var(--dsw-alias-state-success-primary);border-radius:50%;flex:none;width:6px;height:6px}._79NhKa_sandboxStatusOff ._79NhKa_sandboxDot{background:var(--dsw-alias-state-error-primary)}._79NhKa_sandboxStatusText{text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;overflow:hidden}._79NhKa_sandboxAction{border:1px solid var(--dsw-alias-border-l2);font:inherit;color:inherit;cursor:pointer;background:0 0;border-radius:6px;flex:none;padding:2px 8px}._79NhKa_sandboxAction:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorHtml{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_browser{flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_browserBar{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:4px;padding:6px 8px;display:flex}._79NhKa_browserInput{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);min-width:0;height:28px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-12);border-radius:6px;flex:1;padding:0 10px}._79NhKa_browserInput:focus{border-color:var(--dsw-alias-border-l2);outline:none}._79NhKa_browserMessage{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex:none;padding:4px 12px}._79NhKa_browserFrame{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_browserStart{text-align:center;min-height:0;font:var(--dsw-font-xs-13);color:var(--dsw-alias-label-tertiary);flex:1;justify-content:center;align-items:center;padding:20px;display:flex}._79NhKa_browserBlocked{text-align:center;min-height:0;color:var(--dsw-alias-state-warn-primary);flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;padding:24px;display:flex}._79NhKa_browserBlockedTitle{font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary)}._79NhKa_browserBlockedDesc{max-width:280px;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-secondary)}._79NhKa_browserBlockedActions{gap:8px;margin-top:6px;display:flex}._79NhKa_browserBlockedButton{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxxs-11);cursor:pointer;border-radius:6px;padding:4px 12px}._79NhKa_browserBlockedButton:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorCm{background:0 0;flex:1;min-height:0;overflow:hidden}._79NhKa_editorCmHidden{display:none}._79NhKa_editorCm .cm-editor{height:100%}._79NhKa_editorCm .cm-editor.cm-focused{outline:none}._79NhKa_editorModeToggle{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);border-radius:6px;flex:none;align-items:center;gap:2px;padding:2px;display:inline-flex}._79NhKa_editorModeButton{color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-11);cursor:pointer;background:0 0;border:none;border-radius:4px;padding:2px 8px}._79NhKa_editorModeButton:hover{color:var(--dsw-alias-label-primary)}._79NhKa_editorModeActive{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)}._79NhKa_editorImageWrap{flex:1;justify-content:center;align-items:center;min-height:0;padding:12px;display:flex;overflow:auto}._79NhKa_editorImage{object-fit:contain;max-width:100%;max-height:100%}._79NhKa_editorMd{min-height:0;font:var(--dsw-font-xs-13);flex:1;padding:10px 14px;overflow-y:auto}._79NhKa_selectionPopup{z-index:60;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);height:28px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxxs-strong-11);white-space:nowrap;cursor:pointer;border-radius:6px;align-items:center;padding:0 10px;display:inline-flex;position:fixed;transform:translate(-50%,calc(-100% - 8px))}._79NhKa_selectionPopup:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_editorPdf{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-height:0;display:flex}._79NhKa_editorPdfToolbar{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;justify-content:flex-end;padding:6px 8px;display:flex}._79NhKa_editorPdfStage{flex:1;min-height:0;display:flex;position:relative}._79NhKa_editorPdfFrame{background:var(--dsw-alias-bg-base);border:none;flex:1;width:100%;min-height:0}._79NhKa_editorPdfFrameBlocked{pointer-events:none}._79NhKa_editorPdfDragShield{z-index:4;pointer-events:none;background:0 0;position:absolute;inset:0}._79NhKa_editorPdfDragShieldActive{pointer-events:auto}body[data-dsh-tab-dragging] ._79NhKa_editorPdfFrame{pointer-events:none!important}body[data-dsh-tab-dragging] ._79NhKa_editorPdfDragShield{pointer-events:auto!important}._79NhKa_terminalWrap{background:var(--dsw-alias-bg-base);flex-direction:column;flex:1;min-height:0;display:flex;position:relative}._79NhKa_terminal{flex:1;min-height:0;padding:6px 4px 6px 8px}._79NhKa_terminal .xterm{height:100%}._79NhKa_terminalBanner{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-label);background:var(--dsw-alias-state-warn-tertiary);flex-wrap:wrap;flex:none;align-items:center;gap:8px;padding:3px 10px;display:flex}._79NhKa_terminalBannerUrl{word-break:break-all;opacity:.85;flex-basis:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}._79NhKa_boundaryError{z-index:50;background:var(--dsw-alias-bg-layer-1);border-left:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);flex-direction:column;align-items:flex-start;gap:8px;padding:16px;display:flex;position:fixed;top:0;bottom:0;right:0;overflow:auto}._79NhKa_terminalRetry{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;border-radius:999px;flex:none;padding:1px 8px}._79NhKa_terminalRetry:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_tabBoundaryError{min-height:0;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);flex-direction:column;flex:1;align-items:flex-start;gap:8px;padding:12px 16px;display:flex;overflow:auto}._79NhKa_git{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;overflow:hidden auto}._79NhKa_gitHeader{flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_gitBranchSelect{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base);min-width:0;height:26px;color:var(--dsw-alias-label-primary);font:var(--dsw-font-xxs-12);border-radius:6px;flex:1;padding:0 6px}._79NhKa_gitSection{border-top:1px solid var(--dsw-alias-border-l1)}._79NhKa_gitSectionHeader{font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-tertiary);text-transform:uppercase;justify-content:space-between;align-items:center;padding:6px 12px 4px;display:flex}._79NhKa_gitLink{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-brand-primary);cursor:pointer;background:0 0;border:none;padding:0}._79NhKa_gitLink:hover:not(:disabled){text-decoration:underline}._79NhKa_gitLink:disabled{opacity:.4;cursor:default}._79NhKa_gitRow{min-height:34px;animation:_79NhKa_dsh-row-in .15s var(--ds-ease-in-out);border-radius:8px;align-items:center;gap:6px;margin:0 6px;padding:0 8px;display:flex}._79NhKa_gitRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitRowSelected{background:var(--dsw-alias-interactive-bg-active)}._79NhKa_gitRowMain{cursor:pointer;text-align:left;background:0 0;border:none;flex:1;align-items:center;gap:8px;min-width:0;padding:3px 0;display:flex}._79NhKa_gitBadge{width:20px;height:16px;font:var(--dsw-font-xxxs-strong-11);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);border-radius:4px;flex:none;justify-content:center;align-items:center;display:inline-flex}._79NhKa_gitName{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);padding:4px 12px 8px}._79NhKa_gitPlaceholder{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;padding:16px}._79NhKa_gitError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);white-space:pre-wrap;padding:8px 12px}._79NhKa_gitDiff{border-top:1px solid var(--dsw-alias-border-l1);padding:8px}._79NhKa_gitDiffTab{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex;overflow:hidden auto}._79NhKa_gitDiffTabHeader{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._79NhKa_gitDiffTabTitle{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitDiffFile{align-items:baseline;gap:6px;padding:8px 2px 2px;display:flex}._79NhKa_gitDiffFilePath{font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_gitDiffFileOld{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;flex:none;max-width:40%;overflow:hidden}._79NhKa_gitDiffFileTag{border:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);border-radius:999px;flex:none;padding:0 6px}._79NhKa_gitDiffHunk{font:var(--dsw-font-markdown-code-block-small);color:var(--dsw-alias-label-tertiary);gap:8px;padding:3px 2px;display:flex}._79NhKa_gitDiffHunkHeader{color:var(--dsw-alias-label-secondary);flex:none}._79NhKa_gitDiffHunkSection{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_gitDiffLine{font:var(--dsw-font-markdown-code-block-small);white-space:pre-wrap;overflow-wrap:anywhere;align-items:stretch;min-width:0;line-height:20px;display:flex}._79NhKa_gitDiffNum{text-align:right;width:36px;color:var(--dsw-alias-label-tertiary);user-select:none;flex:none;padding-right:8px}._79NhKa_gitDiffCode{flex:1;min-width:0;overflow:visible}._79NhKa_gitDiffCtx{color:var(--dsw-alias-label-primary)}._79NhKa_gitDiffDel{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent)}._79NhKa_gitDiffAdd{color:var(--dsw-alias-state-success-primary);background:color-mix(in srgb, var(--dsw-alias-state-success-primary) 12%, transparent)}._79NhKa_gitDiffMeta{padding-left:2px}._79NhKa_gitDiffMetaText{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);font-style:italic}._79NhKa_gitDiffExpand{width:100%;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-brand-primary);cursor:pointer;text-align:center;background:0 0;border:none;margin:4px 0;display:block}._79NhKa_gitDiffExpand:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitConfirmDesc{font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);white-space:pre-wrap;margin:0}._79NhKa_gitCommit{border-top:1px solid var(--dsw-alias-border-l1);align-items:center;gap:6px;padding:8px 12px;display:flex}._79NhKa_gitCommitInput{flex:1;min-width:0}._79NhKa_gitCommitButton{background:var(--dsw-alias-button-primary-fill);height:26px;color:var(--dsw-alias-label-primary-inverted);font:var(--dsw-font-xxs-strong-12);cursor:pointer;border:none;border-radius:6px;flex:none;padding:0 12px}._79NhKa_gitCommitButton:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}._79NhKa_gitCommitButton:disabled{opacity:.45;cursor:default}._79NhKa_gitLogRow{cursor:pointer;border-radius:8px;flex-direction:column;gap:2px;padding:5px 12px;display:flex}._79NhKa_gitLogRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._79NhKa_gitLogLine1{align-items:baseline;gap:8px;min-width:0;display:flex}._79NhKa_gitLogHash{font:var(--dsw-font-markdown-code-block-small);color:var(--dsw-alias-label-tertiary);flex:none}._79NhKa_gitLogLine2{flex-wrap:wrap;align-items:center;gap:6px;min-width:0;display:flex}._79NhKa_gitLogRef{border:1px solid var(--dsw-alias-border-l2);font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-brand-primary);white-space:nowrap;border-radius:999px;flex:none;padding:0 5px}._79NhKa_gitLogSubject{text-overflow:ellipsis;white-space:nowrap;min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._79NhKa_gitLogMeta{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._79NhKa_gitLogMore{border:1px solid var(--dsw-alias-border-l2);width:calc(100% - 24px);font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border-radius:6px;margin:4px 12px 8px;padding:6px 0;display:block}._79NhKa_gitLogMore:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_gitLogMore:disabled{opacity:.5;cursor:default}._79NhKa_producedRow{flex-wrap:wrap;align-items:center;gap:8px;padding:4px 0;display:flex}._79NhKa_producedLabel{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_producedChip{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);max-width:200px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-12);cursor:pointer;border-radius:999px;align-items:center;gap:4px;padding:2px 8px;display:inline-flex;overflow:hidden}._79NhKa_producedChip:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._79NhKa_producedChip span{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._79NhKa_producedMore{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary)}._79NhKa_toggleButton:focus-visible,._79NhKa_bottomClose:focus-visible,._79NhKa_iconButton:focus-visible,._79NhKa_tab:focus-visible,._79NhKa_tabClose:focus-visible,._79NhKa_tabBarPlus:focus-visible,._79NhKa_paneCard:focus-visible,._79NhKa_explorerRow:focus-visible,._79NhKa_explorerRef:focus-visible,._79NhKa_gitRowMain:focus-visible,._79NhKa_gitLink:focus-visible,._79NhKa_gitCommitButton:focus-visible,._79NhKa_gitLogRow:focus-visible,._79NhKa_gitLogMore:focus-visible,._79NhKa_gitDiffExpand:focus-visible,._79NhKa_terminalRetry:focus-visible,._79NhKa_editorModeButton:focus-visible,._79NhKa_editorDownloadLink:focus-visible,._79NhKa_editorPptxButton:focus-visible,._79NhKa_editorDocxZoomRange:focus-visible{outline:2px solid var(--dsw-alias-interactive-bg-hover-accent);outline-offset:-1px}@media (prefers-reduced-motion:reduce){._79NhKa_panel,._79NhKa_panelHidden,._79NhKa_bottomPanel,._79NhKa_bottomPanelHidden,._79NhKa_toggleCluster,._79NhKa_toggleButton,._79NhKa_tab,._79NhKa_tabBarPlus,._79NhKa_paneCard,._79NhKa_explorerRow,._79NhKa_gitRow,._79NhKa_divider,._79NhKa_dividerRow:after,._79NhKa_dividerCol:after{transition:none;animation:none}}@media (width<=767px){._79NhKa_panel:not(._79NhKa_panelHidden) ._79NhKa_tabBar{padding-right:40px}._79NhKa_tab{min-width:48px;max-width:128px}}";
+		const tagId$4 = "dsh-external/dsh-better-sidebar/sidebar.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$4) + "]") === null) {
 			const tag = document.createElement("style");
 			tag.dataset.plugin = "dsh-external/dsh-better-sidebar";
-			tag.dataset.pluginCss = tagId$3;
-			tag.textContent = css$3;
+			tag.dataset.pluginCss = tagId$4;
+			tag.textContent = css$4;
 			document.head.appendChild(tag);
 		}
 		var sidebar_module_css_default = {
-			"gitDiffDel": "_79NhKa_gitDiffDel",
-			"editorPdfStage": "_79NhKa_editorPdfStage",
-			"tabBoundaryError": "_79NhKa_tabBoundaryError",
-			"gitLogRow": "_79NhKa_gitLogRow",
-			"explorerName": "_79NhKa_explorerName",
-			"memFileHead": "_79NhKa_memFileHead",
-			"browserBlockedDesc": "_79NhKa_browserBlockedDesc",
-			"explorerRoot": "_79NhKa_explorerRoot",
-			"editorPptxButton": "_79NhKa_editorPptxButton",
-			"dropRight": "_79NhKa_dropRight",
-			"editorPdfDragShield": "_79NhKa_editorPdfDragShield",
-			"tabActive": "_79NhKa_tabActive",
-			"editorBinaryNotice": "_79NhKa_editorBinaryNotice",
-			"browserBlockedActions": "_79NhKa_browserBlockedActions",
-			"gitLogHash": "_79NhKa_gitLogHash",
-			"gitDiffHunkSection": "_79NhKa_gitDiffHunkSection",
-			"gitLogLine2": "_79NhKa_gitLogLine2",
-			"panelHidden": "_79NhKa_panelHidden",
-			"memTree": "_79NhKa_memTree",
-			"sandboxStatus": "_79NhKa_sandboxStatus",
-			"gitSectionHeader": "_79NhKa_gitSectionHeader",
-			"producedLabel": "_79NhKa_producedLabel",
-			"memTreeEmpty": "_79NhKa_memTreeEmpty",
-			"editorBanner": "_79NhKa_editorBanner",
-			"memEmptyRow": "_79NhKa_memEmptyRow",
-			"gitEmpty": "_79NhKa_gitEmpty",
-			"memError": "_79NhKa_memError",
-			"dividerActive": "_79NhKa_dividerActive",
-			"divider": "_79NhKa_divider",
-			"explorer": "_79NhKa_explorer",
-			"gitLogRef": "_79NhKa_gitLogRef",
-			"memFileName": "_79NhKa_memFileName",
-			"memPulse": "_79NhKa_memPulse",
-			"iconButton": "_79NhKa_iconButton",
-			"editor": "_79NhKa_editor",
-			"editorPdfDragShieldActive": "_79NhKa_editorPdfDragShieldActive",
-			"dsh-row-in": "_79NhKa_dsh-row-in",
-			"memLog": "_79NhKa_memLog",
-			"dropCenter": "_79NhKa_dropCenter",
-			"memStatusErr": "_79NhKa_memStatusErr",
-			"memTable": "_79NhKa_memTable",
-			"gitDiffMetaText": "_79NhKa_gitDiffMetaText",
-			"tabTitle": "_79NhKa_tabTitle",
-			"bottomResize": "_79NhKa_bottomResize",
-			"memCardIcon": "_79NhKa_memCardIcon",
+			"explorerError": "_79NhKa_explorerError",
+			"bottomResizeActive": "_79NhKa_bottomResizeActive",
+			"gitSection": "_79NhKa_gitSection",
 			"gitCommitInput": "_79NhKa_gitCommitInput",
-			"memRoot": "_79NhKa_memRoot",
-			"explorerDir": "_79NhKa_explorerDir",
-			"browser": "_79NhKa_browser",
+			"editorPlaceholder": "_79NhKa_editorPlaceholder",
+			"bottomPanel": "_79NhKa_bottomPanel",
+			"gitLogMeta": "_79NhKa_gitLogMeta",
+			"editorPptxButton": "_79NhKa_editorPptxButton",
+			"explorerHeader": "_79NhKa_explorerHeader",
+			"explorerName": "_79NhKa_explorerName",
+			"gitLogLine1": "_79NhKa_gitLogLine1",
+			"sandboxAction": "_79NhKa_sandboxAction",
+			"editorError": "_79NhKa_editorError",
+			"browserBar": "_79NhKa_browserBar",
+			"splitRow": "_79NhKa_splitRow",
 			"editorPdfToolbar": "_79NhKa_editorPdfToolbar",
-			"gitCommitButton": "_79NhKa_gitCommitButton",
-			"memTreeCount": "_79NhKa_memTreeCount",
-			"gitDiffExpand": "_79NhKa_gitDiffExpand",
-			"sandboxStatusText": "_79NhKa_sandboxStatusText",
-			"browserBlockedTitle": "_79NhKa_browserBlockedTitle",
-			"editorImage": "_79NhKa_editorImage",
-			"gitDiffTab": "_79NhKa_gitDiffTab",
-			"memInput": "_79NhKa_memInput",
+			"editorPdfDragShieldActive": "_79NhKa_editorPdfDragShieldActive",
+			"editorCm": "_79NhKa_editorCm",
+			"tabBarDrop": "_79NhKa_tabBarDrop",
+			"gitRowSelected": "_79NhKa_gitRowSelected",
 			"dropUp": "_79NhKa_dropUp",
-			"memBannerMuted": "_79NhKa_memBannerMuted",
-			"dirtyDot": "_79NhKa_dirtyDot",
-			"memTreeItemActive": "_79NhKa_memTreeItemActive",
+			"browserInput": "_79NhKa_browserInput",
+			"gitDiffTabTitle": "_79NhKa_gitDiffTabTitle",
+			"editorModeToggle": "_79NhKa_editorModeToggle",
+			"explorerRef": "_79NhKa_explorerRef",
+			"editorModeButton": "_79NhKa_editorModeButton",
+			"gitBranchSelect": "_79NhKa_gitBranchSelect",
+			"sandboxStatusOn": "_79NhKa_sandboxStatusOn",
+			"paneDrop": "_79NhKa_paneDrop",
+			"gitEmpty": "_79NhKa_gitEmpty",
+			"editorHeader": "_79NhKa_editorHeader",
+			"panelResizeActive": "_79NhKa_panelResizeActive",
+			"bottomResize": "_79NhKa_bottomResize",
+			"terminal": "_79NhKa_terminal",
+			"gitDiffDel": "_79NhKa_gitDiffDel",
+			"editorHtml": "_79NhKa_editorHtml",
+			"divider": "_79NhKa_divider",
 			"editorStatusError": "_79NhKa_editorStatusError",
 			"tabClose": "_79NhKa_tabClose",
-			"editorBinary": "_79NhKa_editorBinary",
-			"memGroup": "_79NhKa_memGroup",
-			"dividerRow": "_79NhKa_dividerRow",
-			"editorPdf": "_79NhKa_editorPdf",
-			"memBanner": "_79NhKa_memBanner",
-			"git": "_79NhKa_git",
-			"memSelect": "_79NhKa_memSelect",
-			"gitRow": "_79NhKa_gitRow",
-			"gitName": "_79NhKa_gitName",
-			"memCardHot": "_79NhKa_memCardHot",
-			"explorerBody": "_79NhKa_explorerBody",
-			"memCodeBlock": "_79NhKa_memCodeBlock",
-			"editorPdfFrame": "_79NhKa_editorPdfFrame",
-			"memCardS": "_79NhKa_memCardS",
-			"selectionPopup": "_79NhKa_selectionPopup",
-			"paneContent": "_79NhKa_paneContent",
-			"gitDiffTabHeader": "_79NhKa_gitDiffTabHeader",
-			"splitChild": "_79NhKa_splitChild",
-			"memFiles": "_79NhKa_memFiles",
-			"memTextarea": "_79NhKa_memTextarea",
-			"pane": "_79NhKa_pane",
-			"memNavIcon": "_79NhKa_memNavIcon",
-			"gitDiffCtx": "_79NhKa_gitDiffCtx",
-			"producedRow": "_79NhKa_producedRow",
-			"gitDiffTabTitle": "_79NhKa_gitDiffTabTitle",
-			"memTreeItem": "_79NhKa_memTreeItem",
-			"memDot": "_79NhKa_memDot",
-			"memTreeHead": "_79NhKa_memTreeHead",
-			"editorStatus": "_79NhKa_editorStatus",
-			"tabList": "_79NhKa_tabList",
-			"gitLogMeta": "_79NhKa_gitLogMeta",
-			"editorError": "_79NhKa_editorError",
-			"terminalBannerUrl": "_79NhKa_terminalBannerUrl",
-			"gitDiffHunkHeader": "_79NhKa_gitDiffHunkHeader",
-			"editorCmHidden": "_79NhKa_editorCmHidden",
-			"bottomPanel": "_79NhKa_bottomPanel",
-			"memRow": "_79NhKa_memRow",
-			"gitRowMain": "_79NhKa_gitRowMain",
-			"browserBar": "_79NhKa_browserBar",
-			"memGroupHead": "_79NhKa_memGroupHead",
-			"bottomClose": "_79NhKa_bottomClose",
-			"memRunRowActive": "_79NhKa_memRunRowActive",
-			"browserFrame": "_79NhKa_browserFrame",
-			"memCardK": "_79NhKa_memCardK",
-			"tabBarDrop": "_79NhKa_tabBarDrop",
-			"explorerCopied": "_79NhKa_explorerCopied",
-			"memFileContent": "_79NhKa_memFileContent",
-			"tabBarPlus": "_79NhKa_tabBarPlus",
-			"gitRowSelected": "_79NhKa_gitRowSelected",
-			"explorerHidden": "_79NhKa_explorerHidden",
-			"terminalWrap": "_79NhKa_terminalWrap",
-			"memBannerText": "_79NhKa_memBannerText",
-			"gitDiffAdd": "_79NhKa_gitDiffAdd",
-			"editorModeActive": "_79NhKa_editorModeActive",
-			"gitError": "_79NhKa_gitError",
-			"paneDrop": "_79NhKa_paneDrop",
-			"dividerCol": "_79NhKa_dividerCol",
-			"gitDiff": "_79NhKa_gitDiff",
-			"bottomPanelHidden": "_79NhKa_bottomPanelHidden",
-			"panelBody": "_79NhKa_panelBody",
-			"terminal": "_79NhKa_terminal",
-			"tab": "_79NhKa_tab",
-			"gitConfirmDesc": "_79NhKa_gitConfirmDesc",
-			"memCheckRow": "_79NhKa_memCheckRow",
-			"sandboxAction": "_79NhKa_sandboxAction",
-			"producedChip": "_79NhKa_producedChip",
-			"dropOverlay": "_79NhKa_dropOverlay",
-			"paneEmptyCards": "_79NhKa_paneEmptyCards",
-			"memSetRow": "_79NhKa_memSetRow",
-			"memBadgeOk": "_79NhKa_memBadgeOk",
-			"gitLogMore": "_79NhKa_gitLogMore",
-			"memFileBody": "_79NhKa_memFileBody",
-			"gitDiffLine": "_79NhKa_gitDiffLine",
-			"bottomResizeActive": "_79NhKa_bottomResizeActive",
-			"explorerEmpty": "_79NhKa_explorerEmpty",
-			"splitCol": "_79NhKa_splitCol",
-			"gitLogLine1": "_79NhKa_gitLogLine1",
-			"producedMore": "_79NhKa_producedMore",
-			"memTreeLabel": "_79NhKa_memTreeLabel",
-			"memStatusOk": "_79NhKa_memStatusOk",
-			"browserMessage": "_79NhKa_browserMessage",
-			"gitDiffNum": "_79NhKa_gitDiffNum",
-			"paneTab": "_79NhKa_paneTab",
-			"splitRow": "_79NhKa_splitRow",
-			"browserBlockedButton": "_79NhKa_browserBlockedButton",
-			"panel": "_79NhKa_panel",
-			"toggleCluster": "_79NhKa_toggleCluster",
-			"sandboxStatusOff": "_79NhKa_sandboxStatusOff",
-			"memTreeGroup": "_79NhKa_memTreeGroup",
-			"split": "_79NhKa_split",
-			"editorImageWrap": "_79NhKa_editorImageWrap",
-			"gitDiffMeta": "_79NhKa_gitDiffMeta",
-			"sandboxStatusOn": "_79NhKa_sandboxStatusOn",
-			"gitDiffFileOld": "_79NhKa_gitDiffFileOld",
-			"memBtnPrimary": "_79NhKa_memBtnPrimary",
-			"editorDownloadLink": "_79NhKa_editorDownloadLink",
-			"memBadgeErr": "_79NhKa_memBadgeErr",
-			"memRunRow": "_79NhKa_memRunRow",
-			"gitDiffFileTag": "_79NhKa_gitDiffFileTag",
-			"explorerRow": "_79NhKa_explorerRow",
-			"explorerRef": "_79NhKa_explorerRef",
-			"toggleButton": "_79NhKa_toggleButton",
-			"gitBadge": "_79NhKa_gitBadge",
-			"memLabel": "_79NhKa_memLabel",
-			"browserBlocked": "_79NhKa_browserBlocked",
-			"editorHeader": "_79NhKa_editorHeader",
-			"sandboxDot": "_79NhKa_sandboxDot",
-			"memCard": "_79NhKa_memCard",
-			"gitHeader": "_79NhKa_gitHeader",
-			"panelResize": "_79NhKa_panelResize",
-			"memEntryNavHead": "_79NhKa_memEntryNavHead",
-			"terminalBanner": "_79NhKa_terminalBanner",
-			"gitDiffFile": "_79NhKa_gitDiffFile",
-			"memTreeName": "_79NhKa_memTreeName",
-			"memTreeArrow": "_79NhKa_memTreeArrow",
-			"dropDown": "_79NhKa_dropDown",
-			"editorPdfFrameBlocked": "_79NhKa_editorPdfFrameBlocked",
-			"orphanedType": "_79NhKa_orphanedType",
-			"memEntryNav": "_79NhKa_memEntryNav",
-			"editorMd": "_79NhKa_editorMd",
-			"editorTitle": "_79NhKa_editorTitle",
-			"browserStart": "_79NhKa_browserStart",
-			"memHint": "_79NhKa_memHint",
-			"memBtn": "_79NhKa_memBtn",
-			"memStatus": "_79NhKa_memStatus",
-			"terminalRetry": "_79NhKa_terminalRetry",
 			"gitLink": "_79NhKa_gitLink",
-			"gitDiffHunk": "_79NhKa_gitDiffHunk",
-			"memEntrySup": "_79NhKa_memEntrySup",
-			"memCardV": "_79NhKa_memCardV",
-			"memBadgeRun": "_79NhKa_memBadgeRun",
-			"paneTabHidden": "_79NhKa_paneTabHidden",
-			"gitCommit": "_79NhKa_gitCommit",
-			"editorDocxZoomRange": "_79NhKa_editorDocxZoomRange",
-			"tabBar": "_79NhKa_tabBar",
-			"gitLogSubject": "_79NhKa_gitLogSubject",
-			"cornerHandle": "_79NhKa_cornerHandle",
-			"explorerHeader": "_79NhKa_explorerHeader",
-			"editorModeToggle": "_79NhKa_editorModeToggle",
-			"memFilePane": "_79NhKa_memFilePane",
-			"tabBadge": "_79NhKa_tabBadge",
-			"memEntryItem": "_79NhKa_memEntryItem",
-			"editorPlaceholder": "_79NhKa_editorPlaceholder",
-			"gitPlaceholder": "_79NhKa_gitPlaceholder",
-			"memMono": "_79NhKa_memMono",
+			"gitDiffExpand": "_79NhKa_gitDiffExpand",
+			"gitName": "_79NhKa_gitName",
+			"terminalWrap": "_79NhKa_terminalWrap",
+			"editorPdfFrame": "_79NhKa_editorPdfFrame",
+			"editorCmHidden": "_79NhKa_editorCmHidden",
+			"tabActive": "_79NhKa_tabActive",
+			"bottomPanelHidden": "_79NhKa_bottomPanelHidden",
+			"iconButton": "_79NhKa_iconButton",
+			"paneTab": "_79NhKa_paneTab",
+			"split": "_79NhKa_split",
+			"paneContent": "_79NhKa_paneContent",
+			"sandboxStatus": "_79NhKa_sandboxStatus",
+			"tabList": "_79NhKa_tabList",
 			"workbench": "_79NhKa_workbench",
-			"memScroll": "_79NhKa_memScroll",
-			"editorCm": "_79NhKa_editorCm",
-			"editorModeButton": "_79NhKa_editorModeButton",
-			"gitDiffCode": "_79NhKa_gitDiffCode",
-			"memWl": "_79NhKa_memWl",
-			"panelResizeActive": "_79NhKa_panelResizeActive",
-			"memMd": "_79NhKa_memMd",
+			"dropCenter": "_79NhKa_dropCenter",
+			"editorTitle": "_79NhKa_editorTitle",
+			"editorStatus": "_79NhKa_editorStatus",
+			"paneEmptyCards": "_79NhKa_paneEmptyCards",
+			"editorBanner": "_79NhKa_editorBanner",
+			"explorerRoot": "_79NhKa_explorerRoot",
+			"terminalBanner": "_79NhKa_terminalBanner",
+			"gitSectionHeader": "_79NhKa_gitSectionHeader",
+			"gitDiffCtx": "_79NhKa_gitDiffCtx",
+			"gitPlaceholder": "_79NhKa_gitPlaceholder",
+			"explorerBody": "_79NhKa_explorerBody",
+			"editorBinary": "_79NhKa_editorBinary",
+			"gitDiffTab": "_79NhKa_gitDiffTab",
+			"gitLogRow": "_79NhKa_gitLogRow",
+			"gitDiffMeta": "_79NhKa_gitDiffMeta",
+			"tabTitle": "_79NhKa_tabTitle",
+			"tabBar": "_79NhKa_tabBar",
+			"browserMessage": "_79NhKa_browserMessage",
+			"producedRow": "_79NhKa_producedRow",
+			"gitLogSubject": "_79NhKa_gitLogSubject",
+			"gitConfirmDesc": "_79NhKa_gitConfirmDesc",
+			"explorerRow": "_79NhKa_explorerRow",
+			"editorPdf": "_79NhKa_editorPdf",
+			"splitChild": "_79NhKa_splitChild",
+			"editorPdfFrameBlocked": "_79NhKa_editorPdfFrameBlocked",
+			"browserFrame": "_79NhKa_browserFrame",
+			"browserBlocked": "_79NhKa_browserBlocked",
+			"gitDiffNum": "_79NhKa_gitDiffNum",
+			"gitHeader": "_79NhKa_gitHeader",
+			"splitCol": "_79NhKa_splitCol",
+			"gitDiff": "_79NhKa_gitDiff",
+			"sandboxDot": "_79NhKa_sandboxDot",
+			"toggleCluster": "_79NhKa_toggleCluster",
+			"browserBlockedButton": "_79NhKa_browserBlockedButton",
+			"editorModeActive": "_79NhKa_editorModeActive",
+			"editorMd": "_79NhKa_editorMd",
+			"producedLabel": "_79NhKa_producedLabel",
+			"explorerCopied": "_79NhKa_explorerCopied",
+			"browserBlockedTitle": "_79NhKa_browserBlockedTitle",
+			"gitDiffHunk": "_79NhKa_gitDiffHunk",
+			"selectionPopup": "_79NhKa_selectionPopup",
+			"producedMore": "_79NhKa_producedMore",
+			"explorerEmpty": "_79NhKa_explorerEmpty",
+			"dropOverlay": "_79NhKa_dropOverlay",
+			"explorerDir": "_79NhKa_explorerDir",
+			"sandboxStatusOff": "_79NhKa_sandboxStatusOff",
+			"panel": "_79NhKa_panel",
+			"explorerHidden": "_79NhKa_explorerHidden",
 			"dropLeft": "_79NhKa_dropLeft",
-			"memCards": "_79NhKa_memCards",
-			"editorHtml": "_79NhKa_editorHtml",
-			"gitDiffFilePath": "_79NhKa_gitDiffFilePath",
-			"explorerError": "_79NhKa_explorerError",
-			"gitSection": "_79NhKa_gitSection",
-			"browserInput": "_79NhKa_browserInput",
+			"gitDiffFileTag": "_79NhKa_gitDiffFileTag",
+			"paneCard": "_79NhKa_paneCard",
+			"tabBadge": "_79NhKa_tabBadge",
+			"gitDiffLine": "_79NhKa_gitDiffLine",
+			"gitLogRef": "_79NhKa_gitLogRef",
+			"editorBinaryNotice": "_79NhKa_editorBinaryNotice",
+			"gitDiffCode": "_79NhKa_gitDiffCode",
+			"gitBadge": "_79NhKa_gitBadge",
+			"editorPdfStage": "_79NhKa_editorPdfStage",
+			"producedChip": "_79NhKa_producedChip",
+			"editorDocxZoomRange": "_79NhKa_editorDocxZoomRange",
+			"pane": "_79NhKa_pane",
+			"gitRowMain": "_79NhKa_gitRowMain",
+			"bottomClose": "_79NhKa_bottomClose",
+			"gitCommit": "_79NhKa_gitCommit",
+			"dropDown": "_79NhKa_dropDown",
+			"terminalBannerUrl": "_79NhKa_terminalBannerUrl",
+			"panelHidden": "_79NhKa_panelHidden",
+			"orphanedType": "_79NhKa_orphanedType",
+			"editorImage": "_79NhKa_editorImage",
+			"dropRight": "_79NhKa_dropRight",
 			"boundaryError": "_79NhKa_boundaryError",
-			"gitBranchSelect": "_79NhKa_gitBranchSelect",
-			"paneCard": "_79NhKa_paneCard"
+			"sandboxStatusText": "_79NhKa_sandboxStatusText",
+			"tabBoundaryError": "_79NhKa_tabBoundaryError",
+			"gitDiffFilePath": "_79NhKa_gitDiffFilePath",
+			"gitDiffAdd": "_79NhKa_gitDiffAdd",
+			"gitCommitButton": "_79NhKa_gitCommitButton",
+			"browser": "_79NhKa_browser",
+			"editorImageWrap": "_79NhKa_editorImageWrap",
+			"gitError": "_79NhKa_gitError",
+			"gitLogLine2": "_79NhKa_gitLogLine2",
+			"editorDownloadLink": "_79NhKa_editorDownloadLink",
+			"paneTabHidden": "_79NhKa_paneTabHidden",
+			"editor": "_79NhKa_editor",
+			"browserStart": "_79NhKa_browserStart",
+			"gitDiffHunkHeader": "_79NhKa_gitDiffHunkHeader",
+			"editorPdfDragShield": "_79NhKa_editorPdfDragShield",
+			"tabBarPlus": "_79NhKa_tabBarPlus",
+			"explorer": "_79NhKa_explorer",
+			"gitLogMore": "_79NhKa_gitLogMore",
+			"panelBody": "_79NhKa_panelBody",
+			"dividerActive": "_79NhKa_dividerActive",
+			"cornerHandle": "_79NhKa_cornerHandle",
+			"tab": "_79NhKa_tab",
+			"dividerRow": "_79NhKa_dividerRow",
+			"toggleButton": "_79NhKa_toggleButton",
+			"dsh-row-in": "_79NhKa_dsh-row-in",
+			"dirtyDot": "_79NhKa_dirtyDot",
+			"browserBlockedActions": "_79NhKa_browserBlockedActions",
+			"git": "_79NhKa_git",
+			"browserBlockedDesc": "_79NhKa_browserBlockedDesc",
+			"gitRow": "_79NhKa_gitRow",
+			"gitDiffTabHeader": "_79NhKa_gitDiffTabHeader",
+			"gitDiffMetaText": "_79NhKa_gitDiffMetaText",
+			"gitDiffFileOld": "_79NhKa_gitDiffFileOld",
+			"gitDiffFile": "_79NhKa_gitDiffFile",
+			"panelResize": "_79NhKa_panelResize",
+			"terminalRetry": "_79NhKa_terminalRetry",
+			"gitLogHash": "_79NhKa_gitLogHash",
+			"gitDiffHunkSection": "_79NhKa_gitDiffHunkSection",
+			"dividerCol": "_79NhKa_dividerCol"
 		};
 		//#endregion
 		//#region src/client/intercept.tsx
@@ -3222,7 +3161,7 @@ window.__ModuleLoader__.load({
 		* focus (no file watcher — KISS).
 		*/
 		/** The XY status letters a row badge shows (X = index, Y = worktree). */
-		function badgeOf(entry) {
+		function badgeOf$1(entry) {
 			const index = entry.xy[0];
 			const worktree = entry.xy[1];
 			if (index !== void 0 && index !== " " && index !== "?") return index;
@@ -3244,7 +3183,7 @@ window.__ModuleLoader__.load({
 		}
 		/** Whether the entry is untracked (`??`): git diff never includes it. */
 		function isUntracked(entry) {
-			return badgeOf(entry) === "?";
+			return badgeOf$1(entry) === "?";
 		}
 		/** The last path segment (tab title for a file's diff). */
 		function baseName(path) {
@@ -3450,7 +3389,7 @@ window.__ModuleLoader__.load({
 						},
 						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 							className: sidebar_module_css_default.gitBadge,
-							children: badgeOf(entry)
+							children: badgeOf$1(entry)
 						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 							className: sidebar_module_css_default.gitName,
 							children: entry.path
@@ -4815,67 +4754,67 @@ window.__ModuleLoader__.load({
 		});
 		//#endregion
 		//#region \0dsh-css:F:\projects\hpptools_memory\.tmp-test\DSH-better-sidebar\src\client\SubagentView.module.css.mjs
-		const css$2 = "._Dl_qG_subagent{flex-direction:column;flex:1;min-height:0;display:flex}._Dl_qG_subagentHeader{flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._Dl_qG_subagentTitle{min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._Dl_qG_subagentCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_subagentRefresh{width:24px;height:24px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;justify-content:center;align-items:center;display:inline-flex}._Dl_qG_subagentRefresh:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_subagentBody{flex:1;min-height:0;padding:2px 6px 8px;overflow-y:auto}._Dl_qG_subagentRow{box-sizing:border-box;width:100%;min-height:50px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;background:0 0;border:none;border-radius:8px;outline:none;align-items:flex-start;gap:8px;padding:7px 8px 7px 11px;display:flex;position:relative}._Dl_qG_subagentRow:hover,._Dl_qG_subagentRow:focus-visible{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_subagentRowActive,._Dl_qG_subagentRowActive:hover,._Dl_qG_subagentRowActive:focus-visible{background:var(--dsw-alias-interactive-bg-active)}._Dl_qG_subagentRowDisabled{color:var(--dsw-alias-label-dimmed);cursor:not-allowed}._Dl_qG_subagentRowDisabled:hover{background:0 0}._Dl_qG_subagentRowLoading{cursor:default}._Dl_qG_subagentDot{margin-top:4px}._Dl_qG_subagentContent{flex-direction:column;flex:1;gap:2px;min-width:0;display:flex}._Dl_qG_subagentLabel,._Dl_qG_subagentSecondary{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._Dl_qG_subagentLabel{color:inherit;font-weight:400}._Dl_qG_subagentSecondary{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._Dl_qG_subagentLive{min-width:0;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);align-items:baseline;gap:4px;display:flex;overflow:hidden}._Dl_qG_subagentLiveTool{font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);flex:none}._Dl_qG_subagentLiveArgs{min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._Dl_qG_subagentLiveText{-webkit-line-clamp:2;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-secondary);-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden}._Dl_qG_subagentNode{min-width:0;position:relative}._Dl_qG_subagentChildren{margin-left:18px;padding-left:4px;position:relative}._Dl_qG_subagentChildren:before{content:\"\";border-left:1px solid var(--dsw-alias-border-l2);height:26px;position:absolute;top:-26px;left:0}._Dl_qG_subagentChildren[aria-busy=true]:before{content:none}._Dl_qG_subagentChildren>._Dl_qG_subagentNode:before{content:\"\";border-left:1px solid var(--dsw-alias-border-l2);position:absolute;top:0;bottom:0;left:-4px}._Dl_qG_subagentChildren>._Dl_qG_subagentNode:last-child:before{height:17px;bottom:auto}._Dl_qG_subagentChildren>._Dl_qG_subagentNode>._Dl_qG_subagentRow:before{content:\"\";border-top:1px solid var(--dsw-alias-border-l2);width:14px;position:absolute;top:16px;left:-4px}._Dl_qG_subagentEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;flex-direction:column;gap:2px;padding:16px;display:flex}._Dl_qG_subagentEmptyHint{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-dimmed)}._Dl_qG_subagentError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;display:flex}._Dl_qG_subagentErrorRetry{height:24px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;align-items:center;gap:4px;padding:0 8px;display:inline-flex}._Dl_qG_subagentErrorRetry:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._Dl_qG_jobs{border-top:1px solid var(--dsw-alias-border-l2);margin-top:10px;padding-top:8px}._Dl_qG_jobsHeader{align-items:center;gap:8px;height:26px;padding:0 2px;display:flex}._Dl_qG_jobsTitle{min-width:0;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._Dl_qG_jobsCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_jobsList{flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;display:flex}._Dl_qG_jobsRow{border-radius:8px;align-items:center;gap:4px;display:flex}._Dl_qG_jobsRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsRowSettled{opacity:.8}._Dl_qG_jobsRowSelected,._Dl_qG_jobsRowSelected:hover{background:var(--dsw-alias-interactive-bg-active)}._Dl_qG_jobsRowMain{min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;background:0 0;border:none;border-radius:8px;outline:none;flex:1;align-items:flex-start;gap:8px;padding:6px 8px 6px 11px;display:flex}._Dl_qG_jobsRowMain:focus-visible{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsDot{margin-top:5px}._Dl_qG_jobsContent{flex-direction:column;gap:1px;min-width:0;display:flex}._Dl_qG_jobsLabelLine{align-items:center;gap:6px;min-width:0;display:flex}._Dl_qG_jobsKind{text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--dsw-alias-border-l2);max-width:90px;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-tertiary);border-radius:4px;flex:none;padding:0 5px;line-height:14px;overflow:hidden}._Dl_qG_jobsLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._Dl_qG_jobsSecondary{text-overflow:ellipsis;white-space:nowrap;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);overflow:hidden}._Dl_qG_jobsKill{width:22px;height:22px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;justify-content:center;align-items:center;margin-right:4px;display:inline-flex}._Dl_qG_jobsKill:hover{background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent);color:var(--dsw-alias-state-error-primary)}._Dl_qG_jobsKillArmed,._Dl_qG_jobsKillArmed:hover{background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent);width:auto;height:20px;color:var(--dsw-alias-state-error-primary);font:var(--dsw-font-xxxs-strong-11);white-space:nowrap;padding:0 8px}._Dl_qG_jobsKill:disabled{opacity:.5;cursor:default}._Dl_qG_jobsKillError{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-error-primary);flex:none;margin-right:4px}._Dl_qG_jobsPane{z-index:1;border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base);border-radius:8px;margin-top:4px;position:sticky;bottom:0;overflow:hidden;box-shadow:0 -6px 12px -8px #00000059}._Dl_qG_jobsPaneHeader{border-bottom:1px solid var(--dsw-alias-border-l1);align-items:center;gap:6px;height:28px;padding:0 4px 0 10px;display:flex}._Dl_qG_jobsPaneDot{flex:none}._Dl_qG_jobsPaneLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._Dl_qG_jobsPaneStatus{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_jobsPaneClose{width:20px;height:20px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:5px;flex:none;justify-content:center;align-items:center;display:inline-flex}._Dl_qG_jobsPaneClose:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsPanePre{max-height:200px;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);color:var(--dsw-alias-label-primary);white-space:pre-wrap;word-break:break-word;margin:0;padding:6px 10px;line-height:1.5;overflow:auto}._Dl_qG_jobsPaneHint{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);padding:8px 10px}._Dl_qG_jobsPaneError{color:var(--dsw-alias-state-error-primary)}";
-		const tagId$2 = "dsh-external/dsh-better-sidebar/SubagentView.module.css";
-		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
+		const css$3 = "._Dl_qG_subagent{flex-direction:column;flex:1;min-height:0;display:flex}._Dl_qG_subagentHeader{flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._Dl_qG_subagentTitle{min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._Dl_qG_subagentCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_subagentRefresh{width:24px;height:24px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;justify-content:center;align-items:center;display:inline-flex}._Dl_qG_subagentRefresh:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_subagentBody{flex:1;min-height:0;padding:2px 6px 8px;overflow-y:auto}._Dl_qG_subagentRow{box-sizing:border-box;width:100%;min-height:50px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;background:0 0;border:none;border-radius:8px;outline:none;align-items:flex-start;gap:8px;padding:7px 8px 7px 11px;display:flex;position:relative}._Dl_qG_subagentRow:hover,._Dl_qG_subagentRow:focus-visible{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_subagentRowActive,._Dl_qG_subagentRowActive:hover,._Dl_qG_subagentRowActive:focus-visible{background:var(--dsw-alias-interactive-bg-active)}._Dl_qG_subagentRowDisabled{color:var(--dsw-alias-label-dimmed);cursor:not-allowed}._Dl_qG_subagentRowDisabled:hover{background:0 0}._Dl_qG_subagentRowLoading{cursor:default}._Dl_qG_subagentDot{margin-top:4px}._Dl_qG_subagentContent{flex-direction:column;flex:1;gap:2px;min-width:0;display:flex}._Dl_qG_subagentLabel,._Dl_qG_subagentSecondary{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._Dl_qG_subagentLabel{color:inherit;font-weight:400}._Dl_qG_subagentSecondary{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary)}._Dl_qG_subagentLive{min-width:0;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);align-items:baseline;gap:4px;display:flex;overflow:hidden}._Dl_qG_subagentLiveTool{font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);flex:none}._Dl_qG_subagentLiveArgs{min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._Dl_qG_subagentLiveText{-webkit-line-clamp:2;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-secondary);-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden}._Dl_qG_subagentNode{min-width:0;position:relative}._Dl_qG_subagentChildren{margin-left:18px;padding-left:4px;position:relative}._Dl_qG_subagentChildren:before{content:\"\";border-left:1px solid var(--dsw-alias-border-l2);height:26px;position:absolute;top:-26px;left:0}._Dl_qG_subagentChildren[aria-busy=true]:before{content:none}._Dl_qG_subagentChildren>._Dl_qG_subagentNode:before{content:\"\";border-left:1px solid var(--dsw-alias-border-l2);position:absolute;top:0;bottom:0;left:-4px}._Dl_qG_subagentChildren>._Dl_qG_subagentNode:last-child:before{height:17px;bottom:auto}._Dl_qG_subagentChildren>._Dl_qG_subagentNode>._Dl_qG_subagentRow:before{content:\"\";border-top:1px solid var(--dsw-alias-border-l2);width:14px;position:absolute;top:16px;left:-4px}._Dl_qG_subagentEmpty{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-tertiary);text-align:center;flex-direction:column;gap:2px;padding:16px;display:flex}._Dl_qG_subagentEmptyHint{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-dimmed)}._Dl_qG_subagentError{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-state-error-primary);justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;display:flex}._Dl_qG_subagentErrorRetry{height:24px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxxs-strong-11);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;align-items:center;gap:4px;padding:0 8px;display:inline-flex}._Dl_qG_subagentErrorRetry:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._Dl_qG_jobs{border-top:1px solid var(--dsw-alias-border-l2);margin-top:10px;padding-top:8px}._Dl_qG_jobsHeader{align-items:center;gap:8px;height:26px;padding:0 2px;display:flex}._Dl_qG_jobsTitle{min-width:0;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._Dl_qG_jobsCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_jobsList{flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;display:flex}._Dl_qG_jobsRow{border-radius:8px;align-items:center;gap:4px;display:flex}._Dl_qG_jobsRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsRowSettled{opacity:.8}._Dl_qG_jobsRowSelected,._Dl_qG_jobsRowSelected:hover{background:var(--dsw-alias-interactive-bg-active)}._Dl_qG_jobsRowMain{min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;background:0 0;border:none;border-radius:8px;outline:none;flex:1;align-items:flex-start;gap:8px;padding:6px 8px 6px 11px;display:flex}._Dl_qG_jobsRowMain:focus-visible{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsDot{margin-top:5px}._Dl_qG_jobsContent{flex-direction:column;gap:1px;min-width:0;display:flex}._Dl_qG_jobsLabelLine{align-items:center;gap:6px;min-width:0;display:flex}._Dl_qG_jobsKind{text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--dsw-alias-border-l2);max-width:90px;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-tertiary);border-radius:4px;flex:none;padding:0 5px;line-height:14px;overflow:hidden}._Dl_qG_jobsLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._Dl_qG_jobsSecondary{text-overflow:ellipsis;white-space:nowrap;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);overflow:hidden}._Dl_qG_jobsKill{width:22px;height:22px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;justify-content:center;align-items:center;margin-right:4px;display:inline-flex}._Dl_qG_jobsKill:hover{background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent);color:var(--dsw-alias-state-error-primary)}._Dl_qG_jobsKillArmed,._Dl_qG_jobsKillArmed:hover{background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent);width:auto;height:20px;color:var(--dsw-alias-state-error-primary);font:var(--dsw-font-xxxs-strong-11);white-space:nowrap;padding:0 8px}._Dl_qG_jobsKill:disabled{opacity:.5;cursor:default}._Dl_qG_jobsKillError{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-error-primary);flex:none;margin-right:4px}._Dl_qG_jobsPane{z-index:1;border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base);border-radius:8px;margin-top:4px;position:sticky;bottom:0;overflow:hidden;box-shadow:0 -6px 12px -8px #00000059}._Dl_qG_jobsPaneHeader{border-bottom:1px solid var(--dsw-alias-border-l1);align-items:center;gap:6px;height:28px;padding:0 4px 0 10px;display:flex}._Dl_qG_jobsPaneDot{flex:none}._Dl_qG_jobsPaneLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-primary);flex:1;overflow:hidden}._Dl_qG_jobsPaneStatus{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._Dl_qG_jobsPaneClose{width:20px;height:20px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:5px;flex:none;justify-content:center;align-items:center;display:inline-flex}._Dl_qG_jobsPaneClose:hover{background:var(--dsw-alias-interactive-bg-hover)}._Dl_qG_jobsPanePre{max-height:200px;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);color:var(--dsw-alias-label-primary);white-space:pre-wrap;word-break:break-word;margin:0;padding:6px 10px;line-height:1.5;overflow:auto}._Dl_qG_jobsPaneHint{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);padding:8px 10px}._Dl_qG_jobsPaneError{color:var(--dsw-alias-state-error-primary)}";
+		const tagId$3 = "dsh-external/dsh-better-sidebar/SubagentView.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$3) + "]") === null) {
 			const tag = document.createElement("style");
 			tag.dataset.plugin = "dsh-external/dsh-better-sidebar";
-			tag.dataset.pluginCss = tagId$2;
-			tag.textContent = css$2;
+			tag.dataset.pluginCss = tagId$3;
+			tag.textContent = css$3;
 			document.head.appendChild(tag);
 		}
 		var SubagentView_module_css_default = {
-			"subagentSecondary": "_Dl_qG_subagentSecondary",
-			"subagentHeader": "_Dl_qG_subagentHeader",
-			"subagentChildren": "_Dl_qG_subagentChildren",
-			"subagentNode": "_Dl_qG_subagentNode",
 			"jobsRowSelected": "_Dl_qG_jobsRowSelected",
-			"jobsContent": "_Dl_qG_jobsContent",
-			"subagentRow": "_Dl_qG_subagentRow",
-			"subagentLive": "_Dl_qG_subagentLive",
-			"subagentError": "_Dl_qG_subagentError",
-			"subagentLabel": "_Dl_qG_subagentLabel",
-			"jobsList": "_Dl_qG_jobsList",
-			"jobsLabelLine": "_Dl_qG_jobsLabelLine",
-			"subagentCount": "_Dl_qG_subagentCount",
-			"subagentRowDisabled": "_Dl_qG_subagentRowDisabled",
 			"jobsKillArmed": "_Dl_qG_jobsKillArmed",
-			"jobsKillError": "_Dl_qG_jobsKillError",
-			"jobsKill": "_Dl_qG_jobsKill",
-			"jobsPaneStatus": "_Dl_qG_jobsPaneStatus",
-			"jobsTitle": "_Dl_qG_jobsTitle",
-			"jobsHeader": "_Dl_qG_jobsHeader",
-			"jobsPaneHeader": "_Dl_qG_jobsPaneHeader",
-			"jobsSecondary": "_Dl_qG_jobsSecondary",
-			"jobsPanePre": "_Dl_qG_jobsPanePre",
-			"subagentRowActive": "_Dl_qG_subagentRowActive",
-			"subagent": "_Dl_qG_subagent",
-			"subagentLiveText": "_Dl_qG_subagentLiveText",
-			"subagentErrorRetry": "_Dl_qG_subagentErrorRetry",
-			"jobsCount": "_Dl_qG_jobsCount",
-			"subagentRefresh": "_Dl_qG_subagentRefresh",
-			"jobsPaneHint": "_Dl_qG_jobsPaneHint",
-			"subagentTitle": "_Dl_qG_subagentTitle",
-			"subagentLiveArgs": "_Dl_qG_subagentLiveArgs",
-			"jobsRowMain": "_Dl_qG_jobsRowMain",
-			"subagentRowLoading": "_Dl_qG_subagentRowLoading",
-			"subagentBody": "_Dl_qG_subagentBody",
-			"jobsRow": "_Dl_qG_jobsRow",
-			"jobsPaneDot": "_Dl_qG_jobsPaneDot",
-			"subagentContent": "_Dl_qG_subagentContent",
-			"jobsPaneError": "_Dl_qG_jobsPaneError",
-			"jobsPaneLabel": "_Dl_qG_jobsPaneLabel",
-			"jobsPane": "_Dl_qG_jobsPane",
-			"jobsDot": "_Dl_qG_jobsDot",
-			"jobsLabel": "_Dl_qG_jobsLabel",
 			"jobs": "_Dl_qG_jobs",
 			"jobsKind": "_Dl_qG_jobsKind",
-			"subagentEmptyHint": "_Dl_qG_subagentEmptyHint",
-			"subagentDot": "_Dl_qG_subagentDot",
+			"jobsDot": "_Dl_qG_jobsDot",
+			"jobsPaneHeader": "_Dl_qG_jobsPaneHeader",
+			"jobsHeader": "_Dl_qG_jobsHeader",
+			"subagentErrorRetry": "_Dl_qG_subagentErrorRetry",
+			"jobsRow": "_Dl_qG_jobsRow",
+			"subagentRow": "_Dl_qG_subagentRow",
+			"subagentTitle": "_Dl_qG_subagentTitle",
+			"subagentRefresh": "_Dl_qG_subagentRefresh",
+			"subagentRowActive": "_Dl_qG_subagentRowActive",
+			"subagentLabel": "_Dl_qG_subagentLabel",
 			"subagentLiveTool": "_Dl_qG_subagentLiveTool",
-			"subagentEmpty": "_Dl_qG_subagentEmpty",
+			"jobsList": "_Dl_qG_jobsList",
+			"jobsSecondary": "_Dl_qG_jobsSecondary",
+			"jobsKillError": "_Dl_qG_jobsKillError",
 			"jobsRowSettled": "_Dl_qG_jobsRowSettled",
-			"jobsPaneClose": "_Dl_qG_jobsPaneClose"
+			"subagentError": "_Dl_qG_subagentError",
+			"jobsPaneStatus": "_Dl_qG_jobsPaneStatus",
+			"jobsPanePre": "_Dl_qG_jobsPanePre",
+			"subagent": "_Dl_qG_subagent",
+			"subagentEmpty": "_Dl_qG_subagentEmpty",
+			"jobsContent": "_Dl_qG_jobsContent",
+			"jobsPaneHint": "_Dl_qG_jobsPaneHint",
+			"subagentSecondary": "_Dl_qG_subagentSecondary",
+			"jobsPane": "_Dl_qG_jobsPane",
+			"jobsPaneDot": "_Dl_qG_jobsPaneDot",
+			"jobsKill": "_Dl_qG_jobsKill",
+			"subagentContent": "_Dl_qG_subagentContent",
+			"subagentCount": "_Dl_qG_subagentCount",
+			"subagentRowLoading": "_Dl_qG_subagentRowLoading",
+			"subagentLiveArgs": "_Dl_qG_subagentLiveArgs",
+			"subagentNode": "_Dl_qG_subagentNode",
+			"jobsLabel": "_Dl_qG_jobsLabel",
+			"subagentDot": "_Dl_qG_subagentDot",
+			"jobsCount": "_Dl_qG_jobsCount",
+			"subagentChildren": "_Dl_qG_subagentChildren",
+			"jobsLabelLine": "_Dl_qG_jobsLabelLine",
+			"subagentLive": "_Dl_qG_subagentLive",
+			"jobsPaneLabel": "_Dl_qG_jobsPaneLabel",
+			"subagentBody": "_Dl_qG_subagentBody",
+			"subagentHeader": "_Dl_qG_subagentHeader",
+			"jobsTitle": "_Dl_qG_jobsTitle",
+			"jobsRowMain": "_Dl_qG_jobsRowMain",
+			"subagentEmptyHint": "_Dl_qG_subagentEmptyHint",
+			"jobsPaneClose": "_Dl_qG_jobsPaneClose",
+			"jobsPaneError": "_Dl_qG_jobsPaneError",
+			"subagentRowDisabled": "_Dl_qG_subagentRowDisabled",
+			"subagentLiveText": "_Dl_qG_subagentLiveText"
 		};
 		//#endregion
 		//#region src/client/SubagentView.tsx
@@ -6024,6 +5963,78 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
+		//#region \0dsh-css:F:\projects\hpptools_memory\.tmp-test\DSH-better-sidebar\src\client\memory.module.css.mjs
+		const css$2 = "._7swVXW_memRoot{flex-direction:column;flex:1;min-height:0;display:flex}._7swVXW_memHeader{flex:none;align-items:center;gap:8px;height:36px;padding:0 8px 0 12px;display:flex}._7swVXW_memTitle{min-width:0;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._7swVXW_memCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);flex:none}._7swVXW_memIconBtn{width:24px;height:24px;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:none;border-radius:6px;flex:none;justify-content:center;align-items:center;display:inline-flex}._7swVXW_memIconBtn:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}._7swVXW_memIconBtn:disabled{opacity:.45;cursor:default}._7swVXW_memTextBtn{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);height:26px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-primary);cursor:pointer;border-radius:8px;flex:none;align-items:center;gap:5px;padding:0 10px;display:inline-flex}._7swVXW_memTextBtn:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}._7swVXW_memTextBtn:disabled{opacity:.45;cursor:default}._7swVXW_memTextBtnPrimary{border-color:var(--dsw-alias-button-primary-fill);background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-button-primary-ink)}._7swVXW_memTextBtnPrimary:hover:not(:disabled){background:var(--dsw-alias-button-primary-fill);filter:brightness(1.12)}._7swVXW_memBody{flex:1;min-height:0;padding:2px 6px 8px;overflow-y:auto}._7swVXW_memCard{box-sizing:border-box;width:100%;min-height:48px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;background:0 0;border:none;border-radius:8px;align-items:flex-start;gap:8px;padding:7px 8px 7px 11px;display:flex}._7swVXW_memCard:hover{background:var(--dsw-alias-interactive-bg-hover)}._7swVXW_memCardHot{background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 8%, transparent)}._7swVXW_memCardHot:hover{background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 12%, transparent)}._7swVXW_memCardIcon{background:var(--dsw-alias-bg-layer-2);width:24px;height:24px;color:var(--dsw-alias-label-secondary);border-radius:6px;flex:none;justify-content:center;align-items:center;margin-top:2px;display:inline-flex}._7swVXW_memCardContent{flex-direction:column;flex:1;gap:1px;min-width:0;display:flex}._7swVXW_memCardValue{font:var(--dsw-font-s-strong-14);color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._7swVXW_memCardLabel{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._7swVXW_memBanner{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-warn-primary);background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 10%, transparent);border:1px solid color-mix(in srgb, var(--dsw-alias-state-warn-primary) 35%, transparent);border-radius:8px;flex:none;align-items:center;gap:8px;margin:6px 8px;padding:7px 10px;line-height:1.5;display:flex}._7swVXW_memBannerText{overflow-wrap:anywhere;flex:1;min-width:0}._7swVXW_memBannerMuted{color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-layer-1);border-color:var(--dsw-alias-border-l1)}._7swVXW_memHint{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);line-height:1.5}._7swVXW_memMono{font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);line-height:var(--dsw-font-xxxs-11-line-height);color:var(--dsw-alias-label-secondary);word-break:break-all}._7swVXW_memError{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-state-error-primary);flex:1;padding:10px 14px}._7swVXW_memEmpty{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-align:center;padding:14px 12px}._7swVXW_memFiles{flex:1;align-items:stretch;min-height:0;display:flex}._7swVXW_memTree{background:var(--dsw-alias-bg-layer-1);border-right:1px solid var(--dsw-alias-border-l1);flex:none;width:178px;min-width:140px;padding:4px 0 8px;overflow-y:auto}._7swVXW_memTreeGroupHead{width:100%;height:26px;font:var(--dsw-font-xxxs-strong-11);letter-spacing:.04em;text-transform:uppercase;color:var(--dsw-alias-label-tertiary);cursor:pointer;text-align:left;background:0 0;border:none;align-items:center;gap:5px;padding:0 8px 0 12px;display:flex}._7swVXW_memTreeGroupHead:hover{color:var(--dsw-alias-label-secondary)}._7swVXW_memTreeCount{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;flex:none}._7swVXW_memTreeItemActive,._7swVXW_memTreeItemActive:hover{background:var(--dsw-alias-interactive-bg-active)}._7swVXW_memFilePane{flex-direction:column;flex:1;min-width:0;display:flex}._7swVXW_memFileHead{border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;align-items:center;gap:6px;height:36px;padding:0 6px 0 12px;display:flex}._7swVXW_memFileTitle{min-width:0;font:var(--dsw-font-s-strong-14);color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._7swVXW_memFileBody{flex:1;min-height:0;display:flex}._7swVXW_memFileContent{flex:1;min-width:0;overflow:auto}._7swVXW_memTextarea{width:100%;height:100%;color:var(--dsw-alias-label-primary);resize:none;font-family:var(--ds-font-family-code);font-size:var(--dsw-font-s-14-font-size);line-height:var(--dsw-font-s-14-line-height);background:0 0;border:none;outline:none;padding:8px 12px}._7swVXW_memEntryNav{background:var(--dsw-alias-bg-layer-1);border-left:1px solid var(--dsw-alias-border-l1);flex:none;width:150px;min-width:110px;padding:6px 4px;overflow-y:auto}._7swVXW_memEntryNavHead{font:var(--dsw-font-xxxs-strong-11);letter-spacing:.04em;text-transform:uppercase;color:var(--dsw-alias-label-tertiary);padding:4px 8px 6px}._7swVXW_memEntryItem{width:100%;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-secondary);cursor:pointer;text-align:left;white-space:nowrap;text-overflow:ellipsis;background:0 0;border:none;border-radius:6px;padding:4px 8px;display:block;overflow:hidden}._7swVXW_memEntryItem:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}._7swVXW_memEntrySup{color:var(--dsw-alias-label-tertiary);text-decoration:line-through}._7swVXW_memStatus{border-top:1px solid var(--dsw-alias-border-l1);height:26px;font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;flex:none;padding:0 12px;line-height:25px;overflow:hidden}._7swVXW_memStatusOk{color:var(--dsw-alias-state-success-primary)}._7swVXW_memStatusErr{color:var(--dsw-alias-state-error-primary)}._7swVXW_memGroup{flex-direction:column;gap:2px;margin-top:12px;display:flex}._7swVXW_memGroup:first-child{margin-top:0}._7swVXW_memGroupHead{font:var(--dsw-font-xxxs-strong-11);letter-spacing:.04em;text-transform:uppercase;color:var(--dsw-alias-label-tertiary);padding:4px 12px 6px}._7swVXW_memRow{align-items:center;gap:8px;min-height:40px;padding:6px 12px;display:flex}._7swVXW_memRow+._7swVXW_memRow{border-top:1px solid var(--dsw-alias-border-l1)}._7swVXW_memRow ._7swVXW_memHint{flex:1;min-width:0}._7swVXW_memLabel{width:100px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);flex:none}._7swVXW_memSelect{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);min-width:0;max-width:260px;height:28px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-primary);border-radius:8px;flex:1;padding:0 8px}._7swVXW_memSelect:focus{outline:1.5px solid var(--dsw-alias-button-primary-fill);outline-offset:-1px;border-color:var(--dsw-alias-button-primary-fill)}._7swVXW_memInput{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);min-width:0;height:28px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-primary);border-radius:8px;flex:1;padding:0 8px}._7swVXW_memInput:focus{outline:1.5px solid var(--dsw-alias-button-primary-fill);outline-offset:-1px;border-color:var(--dsw-alias-button-primary-fill)}._7swVXW_memCheckRow{min-height:32px;font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary);cursor:pointer;align-items:center;gap:6px;padding:4px 12px;display:flex}._7swVXW_memRunRow{box-sizing:border-box;width:100%;min-height:48px;font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);text-align:left;cursor:pointer;background:0 0;border:none;border-radius:8px;align-items:flex-start;gap:8px;padding:7px 8px 7px 11px;display:flex}._7swVXW_memRunRow:hover{background:var(--dsw-alias-interactive-bg-hover)}._7swVXW_memRunRowActive,._7swVXW_memRunRowActive:hover{background:var(--dsw-alias-interactive-bg-active)}._7swVXW_memRunContent{flex-direction:column;flex:1;gap:2px;min-width:0;display:flex}._7swVXW_memRunKind{font:var(--dsw-font-s-strong-14);color:inherit;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._7swVXW_memRunSecondary{font:var(--dsw-font-xxxs-11);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._7swVXW_memBadge{font:var(--dsw-font-xxxs-strong-11);border-radius:999px;flex:none;align-items:center;gap:4px;padding:1px 7px;display:inline-flex}._7swVXW_memBadgeRunning{color:var(--dsw-alias-state-warn-primary);background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 12%, transparent)}._7swVXW_memBadgeOk{color:var(--dsw-alias-state-success-primary);background:color-mix(in srgb, var(--dsw-alias-state-success-primary) 12%, transparent)}._7swVXW_memBadgeErr{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 12%, transparent)}._7swVXW_memDot{margin-top:4px}._7swVXW_memLog{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);font-family:var(--ds-font-family-code);font-size:var(--dsw-font-xxxs-11-font-size);color:var(--dsw-alias-label-secondary);white-space:pre-wrap;border-radius:8px;max-height:220px;margin:4px 8px 8px;padding:8px 10px;line-height:1.6;overflow:auto}._7swVXW_memMd{font:var(--dsw-font-s-14);color:var(--dsw-alias-label-primary);padding:10px 14px;line-height:1.7}._7swVXW_memMd h1,._7swVXW_memMd h2,._7swVXW_memMd h3,._7swVXW_memMd h4{margin:14px 0 7px;line-height:1.4}._7swVXW_memMd h1{border-bottom:1px solid var(--dsw-alias-border-l1);padding-bottom:5px;font-size:18px}._7swVXW_memMd h2{border-bottom:1px solid var(--dsw-alias-border-l1);padding-bottom:3px;font-size:15px}._7swVXW_memMd h3{font-size:13.5px}._7swVXW_memMd p{margin:6px 0}._7swVXW_memMd code{font-family:var(--ds-font-family-code);background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);border-radius:4px;padding:1px 5px;font-size:12px}._7swVXW_memMd pre{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);border-radius:8px;margin:8px 0;padding:9px 11px;overflow:auto}._7swVXW_memMd pre code{background:0 0;border:none;padding:0}._7swVXW_memMd ul,._7swVXW_memMd ol{margin:6px 0;padding-left:20px}._7swVXW_memMd blockquote{border-left:3px solid var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-secondary);margin:6px 0;padding:2px 10px}._7swVXW_memMd a{color:var(--dsw-alias-button-primary-fill)}._7swVXW_memWl{background:color-mix(in srgb, var(--dsw-alias-button-primary-fill) 12%, transparent);color:var(--dsw-alias-button-primary-fill);border-radius:4px;padding:0 4px;font-size:11.5px}";
+		const tagId$2 = "dsh-external/dsh-better-sidebar/memory.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
+			const tag = document.createElement("style");
+			tag.dataset.plugin = "dsh-external/dsh-better-sidebar";
+			tag.dataset.pluginCss = tagId$2;
+			tag.textContent = css$2;
+			document.head.appendChild(tag);
+		}
+		var memory_module_css_default = {
+			"memRunSecondary": "_7swVXW_memRunSecondary",
+			"memEmpty": "_7swVXW_memEmpty",
+			"memBadgeRunning": "_7swVXW_memBadgeRunning",
+			"memMd": "_7swVXW_memMd",
+			"memMono": "_7swVXW_memMono",
+			"memHeader": "_7swVXW_memHeader",
+			"memCardContent": "_7swVXW_memCardContent",
+			"memEntryNavHead": "_7swVXW_memEntryNavHead",
+			"memRunRow": "_7swVXW_memRunRow",
+			"memLog": "_7swVXW_memLog",
+			"memStatus": "_7swVXW_memStatus",
+			"memTreeCount": "_7swVXW_memTreeCount",
+			"memTitle": "_7swVXW_memTitle",
+			"memCardLabel": "_7swVXW_memCardLabel",
+			"memGroupHead": "_7swVXW_memGroupHead",
+			"memFileTitle": "_7swVXW_memFileTitle",
+			"memEntryNav": "_7swVXW_memEntryNav",
+			"memIconBtn": "_7swVXW_memIconBtn",
+			"memCardIcon": "_7swVXW_memCardIcon",
+			"memBanner": "_7swVXW_memBanner",
+			"memTextarea": "_7swVXW_memTextarea",
+			"memRow": "_7swVXW_memRow",
+			"memLabel": "_7swVXW_memLabel",
+			"memTree": "_7swVXW_memTree",
+			"memFiles": "_7swVXW_memFiles",
+			"memRunContent": "_7swVXW_memRunContent",
+			"memHint": "_7swVXW_memHint",
+			"memFileContent": "_7swVXW_memFileContent",
+			"memTreeItemActive": "_7swVXW_memTreeItemActive",
+			"memBadgeErr": "_7swVXW_memBadgeErr",
+			"memWl": "_7swVXW_memWl",
+			"memStatusOk": "_7swVXW_memStatusOk",
+			"memBody": "_7swVXW_memBody",
+			"memCheckRow": "_7swVXW_memCheckRow",
+			"memDot": "_7swVXW_memDot",
+			"memCardHot": "_7swVXW_memCardHot",
+			"memCardValue": "_7swVXW_memCardValue",
+			"memCount": "_7swVXW_memCount",
+			"memBadge": "_7swVXW_memBadge",
+			"memBannerText": "_7swVXW_memBannerText",
+			"memRunRowActive": "_7swVXW_memRunRowActive",
+			"memGroup": "_7swVXW_memGroup",
+			"memBannerMuted": "_7swVXW_memBannerMuted",
+			"memEntrySup": "_7swVXW_memEntrySup",
+			"memStatusErr": "_7swVXW_memStatusErr",
+			"memFileBody": "_7swVXW_memFileBody",
+			"memRunKind": "_7swVXW_memRunKind",
+			"memBadgeOk": "_7swVXW_memBadgeOk",
+			"memTextBtnPrimary": "_7swVXW_memTextBtnPrimary",
+			"memCard": "_7swVXW_memCard",
+			"memSelect": "_7swVXW_memSelect",
+			"memFileHead": "_7swVXW_memFileHead",
+			"memError": "_7swVXW_memError",
+			"memTreeGroupHead": "_7swVXW_memTreeGroupHead",
+			"memRoot": "_7swVXW_memRoot",
+			"memFilePane": "_7swVXW_memFilePane",
+			"memEntryItem": "_7swVXW_memEntryItem",
+			"memInput": "_7swVXW_memInput",
+			"memTextBtn": "_7swVXW_memTextBtn"
+		};
+		//#endregion
 		//#region src/client/memory/api.ts
 		async function memoryFetch(path, options) {
 			let response;
@@ -6106,31 +6117,28 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region src/client/memory/Overview.tsx
 		/**
-		* Memory overview: a Side-card-style grid of memory stats (current project /
-		* all projects / global / last cleanup / active runs / model config) plus the
-		* Pi-migration banner. Polls every 5s while visible.
+		* Memory overview: header + stat cards (subagent-row recipe: icon chip +
+		* value + label) for current project / all projects / global / last cleanup /
+		* active runs / model config, plus the Pi-migration banner. Polls every 5s
+		* while visible.
 		*/
 		function Card(props) {
-			const { icon, label, value, sub, hot } = props;
+			const { icon, value, label, hot } = props;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memCard + (hot === true ? " " + sidebar_module_css_default.memCardHot : ""),
-				children: [
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memCardK,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							className: sidebar_module_css_default.memCardIcon,
-							children: icon
-						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: label })]
-					}),
-					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-						className: sidebar_module_css_default.memCardV,
+				className: memory_module_css_default.memCard + (hot === true ? " " + memory_module_css_default.memCardHot : ""),
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: memory_module_css_default.memCardIcon,
+					children: icon
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+					className: memory_module_css_default.memCardContent,
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memCardValue,
 						children: value
-					}),
-					sub !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-						className: sidebar_module_css_default.memCardS,
-						children: sub
-					})
-				]
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memCardLabel,
+						children: label
+					})]
+				})]
 			});
 		}
 		function filesLabel(n) {
@@ -6162,16 +6170,25 @@ window.__ModuleLoader__.load({
 				return () => clearInterval(timer);
 			}, [visible]);
 			if (error !== null && data === null) return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memError,
+				className: memory_module_css_default.memError,
 				children: [
 					t("memOverviewFailed"),
 					": ",
 					error
 				]
 			});
-			if (data === null) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-				className: sidebar_module_css_default.memHint,
-				children: t("memLoading")
+			if (data === null) return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: memory_module_css_default.memRoot,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: memory_module_css_default.memHeader,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memTitle,
+						children: t("memNavOverview")
+					})
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: memory_module_css_default.memEmpty,
+					children: t("memLoading")
+				})]
 			});
 			const d = data;
 			const ps = d.projectSummary;
@@ -6180,99 +6197,131 @@ window.__ModuleLoader__.load({
 			const cm = cur ? `${filesLabel(cur.files)} / ${entriesLabel(cur.entries)}${cur.skillFiles ? " " + skillLabel(cur.skillFiles) : ""}` : t("memNoSession");
 			const gm = `${filesLabel(d.globalMem.files)} / ${entriesLabel(d.globalMem.entries)}${d.globalMem.skillFiles ? " " + skillLabel(d.globalMem.skillFiles) : ""}`;
 			const lm = d.lastMaintenance ? formatTime(d.lastMaintenance.lastRun, isZh()) + (d.lastMaintenance.project ? `（${d.lastMaintenance.project}）` : "") : t("memNeverCleaned");
-			const runValue = d.activeRuns > 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
-				className: sidebar_module_css_default.memBadgeRun,
-				children: [
-					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: sidebar_module_css_default.memDot }),
-					d.activeRuns,
-					" ",
-					t("memUnitCount"),
-					" ",
-					t("memRunning")
-				]
-			}) : `0 ${t("memUnitCount")}`;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memScroll,
+				className: memory_module_css_default.memRoot,
 				children: [
-					d.legacy && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memBanner,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							className: sidebar_module_css_default.memBannerText,
-							children: t("memMigDetected", { n: d.legacy })
-						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-							type: "button",
-							className: sidebar_module_css_default.memBtnPrimary,
-							disabled: migrating,
-							onClick: () => {
-								setMigrating(true);
-								memoryApi.migrate().then(() => {
-									load();
-								}).catch((e) => {
-									setError(e instanceof Error ? e.message : String(e));
-								}).finally(() => setMigrating(false));
-							},
-							children: t("memMigrateNow")
-						})]
-					}),
-					d.migrated && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-						className: sidebar_module_css_default.memBannerMuted,
-						children: t("memMigrated", {
-							from: d.migrated.from,
-							n: d.migrated.copiedItems,
-							at: formatTime(d.migrated.at, isZh())
-						})
-					}),
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memCards,
+						className: memory_module_css_default.memHeader,
 						children: [
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "📁",
-								label: t("memCardCurProject"),
-								value: cm,
-								sub: cur ? `${cur.name} → ${t("memCardCurSub")}` : t("memCardCurSub")
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: memory_module_css_default.memTitle,
+								children: t("memNavOverview")
 							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🗂️",
-								label: t("memCardAllProjects"),
-								value: pm,
-								sub: t("memCardAllSub")
+							d.projects.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: memory_module_css_default.memCount,
+								children: [
+									d.projects.length,
+									" · ",
+									d.activeRuns,
+									" ",
+									t("memRunning")
+								]
 							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🌐",
-								label: t("memCardGlobal"),
-								value: gm,
-								sub: t("memCardPersonalDir")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🧹",
-								label: t("memCardMaintenance"),
-								value: lm,
-								sub: t("memCardMaintenanceDir")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🔄",
-								label: t("memCardActiveRuns"),
-								value: runValue,
-								hot: d.activeRuns > 0
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🧠",
-								label: t("memCardExtractor"),
-								value: d.configured.extractor,
-								sub: t("memCardExtractorSub")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
-								icon: "🐙",
-								label: t("memCardCleaner"),
-								value: d.configured.cleaner,
-								sub: t("memCardCleanerSub")
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								type: "button",
+								className: memory_module_css_default.memIconBtn,
+								title: t("memRefresh"),
+								onClick: load,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconRefreshOutline16, {})
 							})
 						]
 					}),
-					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-						className: sidebar_module_css_default.memHint,
-						style: { marginTop: 10 },
-						children: d.root
+					d.legacy && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: memory_module_css_default.memBanner,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
+								state: "warning",
+								size: 10,
+								className: memory_module_css_default.memDot
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: memory_module_css_default.memBannerText,
+								children: t("memMigDetected", { n: d.legacy })
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								type: "button",
+								className: memory_module_css_default.memTextBtnPrimary,
+								disabled: migrating,
+								onClick: () => {
+									setMigrating(true);
+									memoryApi.migrate().then(() => {
+										load();
+									}).catch((e) => {
+										setError(e instanceof Error ? e.message : String(e));
+									}).finally(() => setMigrating(false));
+								},
+								children: t("memMigrateNow")
+							})
+						]
+					}),
+					d.migrated && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: memory_module_css_default.memBanner + " " + memory_module_css_default.memBannerMuted,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: memory_module_css_default.memBannerText,
+							children: t("memMigrated", {
+								from: d.migrated.from,
+								n: d.migrated.copiedItems,
+								at: formatTime(d.migrated.at, isZh())
+							})
+						})
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: memory_module_css_default.memBody,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconDataOutline16, {}),
+								value: cm,
+								label: `${t("memCardCurProject")}${cur ? ` · ${cur.name}` : ""}`
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconFolderOpenOutline16, {}),
+								value: pm,
+								label: t("memCardAllProjects")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(IconGlobeOutline16, {}),
+								value: gm,
+								label: t("memCardGlobal")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSparkle16, {}),
+								value: lm,
+								label: t("memCardMaintenance")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconThinkOutline16, {}),
+								value: d.activeRuns > 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
+										state: "ongoing",
+										size: 8,
+										className: memory_module_css_default.memDot
+									}),
+									" ",
+									d.activeRuns,
+									" ",
+									t("memUnitCount"),
+									" ",
+									t("memRunning")
+								] }) : `0 ${t("memUnitCount")}`,
+								label: t("memCardActiveRuns"),
+								hot: d.activeRuns > 0
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, {}),
+								value: d.configured.extractor,
+								label: t("memCardExtractor")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Card, {
+								icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, {}),
+								value: d.configured.cleaner,
+								label: t("memCardCleaner")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: memory_module_css_default.memHint,
+								style: { padding: "6px 12px" },
+								children: d.root
+							})
+						]
 					})
 				]
 			});
@@ -6281,8 +6330,9 @@ window.__ModuleLoader__.load({
 		//#region src/client/memory/Files.tsx
 		/**
 		* Memory files: the memory vault tree (core / notebook / global / project
-		* groups, collapsible) plus a Markdown preview / edit pane with a section
-		* navigator. Reads and writes through the hpptools-memory file routes.
+		* groups, collapsible — rows reuse the explorer row chrome) plus a Markdown
+		* preview / edit pane with a section navigator. Reads and writes through the
+		* hpptools-memory file routes.
 		*/
 		const COLLAPSED_KEY = "hpptools-tree-collapsed";
 		function defaultCollapsed(id) {
@@ -6298,11 +6348,11 @@ window.__ModuleLoader__.load({
 			} catch {}
 			return null;
 		}
-		function fileIcon(rel, name) {
+		function fileIcon(rel) {
 			if (rel === "core-prompt.md") return "🧠";
 			if (rel === "rules.md") return "📏";
 			if (rel === "subagent-model.txt") return "🤖";
-			if (name === "notebook.md") return "📓";
+			if (rel.includes("notebook.md")) return "📓";
 			if (rel.startsWith("personal/")) return "🌐";
 			if (rel.includes("/projects/")) return "📁";
 			return "📄";
@@ -6321,7 +6371,7 @@ window.__ModuleLoader__.load({
 			s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
 			s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 			s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-			s = s.replace(/\[\[([^\]]+)\]\]/g, "<span class=\"" + sidebar_module_css_default.memWl + "\">[[$1]]</span>");
+			s = s.replace(/\[\[([^\]]+)\]\]/g, `<span class="${memory_module_css_default.memWl}">[[$1]]</span>`);
 			s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noreferrer\">$1</a>");
 			return s;
 		}
@@ -6333,7 +6383,7 @@ window.__ModuleLoader__.load({
 			const codeBuf = [];
 			const flushCode = () => {
 				if (inCode) {
-					out.push(`<pre class="${sidebar_module_css_default.memCodeBlock}"><code>${escapeHtml(codeBuf.join("\n"))}</code></pre>`);
+					out.push(`<pre><code>${escapeHtml(codeBuf.join("\n"))}</code></pre>`);
 					codeBuf.length = 0;
 					inCode = false;
 				}
@@ -6448,121 +6498,139 @@ window.__ModuleLoader__.load({
 			const src = mode === "preview" ? current?.content ?? "" : draft;
 			const superseded = (title) => /Superseded|被取代/.test(title);
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memFiles,
+				className: memory_module_css_default.memFiles,
 				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-					className: sidebar_module_css_default.memTree,
+					className: memory_module_css_default.memTree,
 					children: [files === null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-						className: sidebar_module_css_default.memHint,
+						className: memory_module_css_default.memEmpty,
 						children: t("memLoading")
 					}), files?.groups.map((g) => {
 						const isCollapsed = collapsed !== null ? collapsed.includes(g.id) : defaultCollapsed(g.id);
-						return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memTreeGroup,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
-								type: "button",
-								className: sidebar_module_css_default.memTreeHead,
-								onClick: () => toggleGroup(g.id),
-								children: [
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										className: sidebar_module_css_default.memTreeArrow,
-										children: isCollapsed ? "▸" : "▾"
-									}),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										className: sidebar_module_css_default.memTreeLabel,
-										children: g.label
-									}),
-									g.files.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										className: sidebar_module_css_default.memTreeCount,
-										children: g.files.length
-									})
-								]
-							}), !isCollapsed && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: g.files.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: sidebar_module_css_default.memTreeEmpty,
-								children: t("memEmptyGroup")
-							}) : g.files.map((f) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
-								type: "button",
-								className: sidebar_module_css_default.memTreeItem + (current?.rel === f.rel ? " " + sidebar_module_css_default.memTreeItemActive : ""),
-								title: f.rel,
-								onClick: () => selectFile(f.rel),
-								children: [
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: fileIcon(f.rel, f.name) }),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										className: sidebar_module_css_default.memTreeName,
-										children: f.name
-									}),
-									f.entries > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										className: sidebar_module_css_default.memTreeCount,
-										children: f.entries
-									})
-								]
-							}, f.rel)) })]
-						}, g.id);
-					})]
-				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-					className: sidebar_module_css_default.memFilePane,
-					children: [
-						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
-							className: sidebar_module_css_default.memFileHead,
+						return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+							type: "button",
+							className: memory_module_css_default.memTreeGroupHead,
+							onClick: () => toggleGroup(g.id),
 							children: [
 								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-									className: sidebar_module_css_default.memFileName,
+									style: {
+										width: 10,
+										flex: "none",
+										fontSize: 9
+									},
+									children: isCollapsed ? "▸" : "▾"
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									style: {
+										flex: 1,
+										minWidth: 0,
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "nowrap"
+									},
+									children: g.label
+								}),
+								g.files.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memTreeCount,
+									children: g.files.length
+								})
+							]
+						}), !isCollapsed && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: g.files.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: memory_module_css_default.memEmpty,
+							children: t("memEmptyGroup")
+						}) : g.files.map((f) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+							type: "button",
+							className: sidebar_module_css_default.explorerRow + (current?.rel === f.rel ? " " + memory_module_css_default.memTreeItemActive : ""),
+							title: f.rel,
+							onClick: () => selectFile(f.rel),
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									style: { flex: "none" },
+									children: fileIcon(f.rel)
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: sidebar_module_css_default.explorerName,
+									style: { flex: 1 },
+									children: f.name
+								}),
+								f.entries > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memTreeCount,
+									children: f.entries
+								})
+							]
+						}, f.rel)) })] }, g.id);
+					})]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memFilePane,
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: memory_module_css_default.memFileHead,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memFileTitle,
 									children: current?.rel ?? ""
 								}),
 								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { style: { flex: 1 } }),
-								current !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [mode === "preview" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+								current !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [mode === "preview" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 									type: "button",
-									className: sidebar_module_css_default.memBtn,
+									className: memory_module_css_default.memIconBtn,
+									title: t("memEdit"),
 									onClick: () => {
 										setDraft(current.content);
 										setMode("edit");
 									},
-									children: ["✏️ ", t("memEdit")]
-								}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconEditOutline16, {})
+								}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 									type: "button",
-									className: sidebar_module_css_default.memBtn,
+									className: memory_module_css_default.memIconBtn,
+									title: t("memPreview"),
 									onClick: () => setMode("previewing"),
-									children: ["👁 ", t("memPreview")]
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconBrowseOutline16, {})
 								}), mode !== "preview" && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
 									type: "button",
-									className: sidebar_module_css_default.memBtnPrimary,
+									className: memory_module_css_default.memTextBtnPrimary,
 									disabled: busy,
 									onClick: saveFile,
-									children: ["💾 ", t("memSave")]
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconCheckOutline16, {}),
+										" ",
+										t("memSave")
+									]
 								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 									type: "button",
-									className: sidebar_module_css_default.memBtn,
+									className: memory_module_css_default.memIconBtn,
+									title: t("memCancel"),
 									onClick: () => {
 										setMode("preview");
 										setDraft(current.content);
 									},
-									children: t("memCancel")
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconCloseOutline16, {})
 								})] })] })
 							]
 						}),
 						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memFileBody,
+							className: memory_module_css_default.memFileBody,
 							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: sidebar_module_css_default.memFileContent,
+								className: memory_module_css_default.memFileContent,
 								ref: contentRef,
 								children: current === null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-									className: sidebar_module_css_default.memHint,
+									className: memory_module_css_default.memEmpty,
 									children: t("memSelectHint")
 								}) : mode === "edit" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("textarea", {
 									value: draft,
 									onChange: (e) => setDraft(e.target.value),
-									className: sidebar_module_css_default.memTextarea
+									className: memory_module_css_default.memTextarea
 								}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-									className: sidebar_module_css_default.memMd,
+									className: memory_module_css_default.memMd,
 									dangerouslySetInnerHTML: { __html: renderMarkdown(src) }
 								})
 							}), current !== null && mode === "preview" && sections.length >= 2 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-								className: sidebar_module_css_default.memEntryNav,
+								className: memory_module_css_default.memEntryNav,
 								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h4", {
-									className: sidebar_module_css_default.memEntryNavHead,
+									className: memory_module_css_default.memEntryNavHead,
 									children: t("memEntryNav")
 								}), sections.map((s) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 									type: "button",
-									className: sidebar_module_css_default.memEntryItem + (superseded(s.title) ? " " + sidebar_module_css_default.memEntrySup : ""),
+									className: memory_module_css_default.memEntryItem + (superseded(s.title) ? " " + memory_module_css_default.memEntrySup : ""),
 									title: s.title,
 									onClick: () => {
 										(contentRef.current?.querySelector(`h2[data-sec="${s.seq}"]`))?.scrollIntoView({ block: "center" });
@@ -6572,7 +6640,7 @@ window.__ModuleLoader__.load({
 							})]
 						}),
 						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							className: sidebar_module_css_default.memStatus + (status.kind === "ok" ? " " + sidebar_module_css_default.memStatusOk : status.kind === "err" ? " " + sidebar_module_css_default.memStatusErr : ""),
+							className: memory_module_css_default.memStatus + (status.kind === "ok" ? " " + memory_module_css_default.memStatusOk : status.kind === "err" ? " " + memory_module_css_default.memStatusErr : ""),
 							children: status.msg
 						})
 					]
@@ -6583,14 +6651,11 @@ window.__ModuleLoader__.load({
 		//#region src/client/memory/Models.tsx
 		/**
 		* Memory models: extractor / hippocampus subagent model pickers fed by the
-		* DSH configured providers (hpptools-memory models route).
+		* DSH configured providers (hpptools-memory models route). Rows follow the
+		* DSH settings-row recipe (label + control + hint).
 		*/
 		function Models() {
 			const [providers, setProviders] = (0, react.useState)([]);
-			const [configured, setConfigured] = (0, react.useState)({
-				extractor: "(default)",
-				cleaner: "(default)"
-			});
 			const [extractor, setExtractor] = (0, react.useState)("(default)");
 			const [cleaner, setCleaner] = (0, react.useState)("(default)");
 			const [result, setResult] = (0, react.useState)(null);
@@ -6600,7 +6665,6 @@ window.__ModuleLoader__.load({
 				memoryApi.models().then((d) => {
 					if (cancelled) return;
 					setProviders(d.providers);
-					setConfigured(d.configured);
 					setExtractor(d.configured.extractor);
 					setCleaner(d.configured.cleaner);
 					setResult(t("memModelsLoaded", { n: d.providers.length }));
@@ -6622,9 +6686,8 @@ window.__ModuleLoader__.load({
 						value: v,
 						children: [
 							m.name || m.id,
-							"（",
-							p.name,
-							"）"
+							" · ",
+							p.name
 						]
 					}, v));
 				}
@@ -6633,10 +6696,6 @@ window.__ModuleLoader__.load({
 			const save = () => {
 				setBusy(true);
 				Promise.all([memoryApi.setModel("extractor", extractor), memoryApi.setModel("cleaner", cleaner)]).then(([r1, r2]) => {
-					setConfigured({
-						extractor: r1.value,
-						cleaner: r2.value
-					});
 					setResult(t("memModelsSaved", {
 						a: r1.value,
 						b: r2.value
@@ -6645,66 +6704,101 @@ window.__ModuleLoader__.load({
 					setResult(`❌ ${e instanceof Error ? e.message : String(e)}`);
 				}).finally(() => setBusy(false));
 			};
-			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-				className: sidebar_module_css_default.memScroll,
-				children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-					className: sidebar_module_css_default.memGroup,
-					children: [
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", {
-							className: sidebar_module_css_default.memGroupHead,
-							children: t("memSubagentModels")
-						}),
-						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memSetRow,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
-								className: sidebar_module_css_default.memLabel,
-								children: t("memExtractorModel")
-							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("select", {
-								className: sidebar_module_css_default.memSelect,
-								value: extractor,
-								onChange: (e) => setExtractor(e.target.value),
-								children: options()
-							})]
-						}),
-						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memSetRow,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
-								className: sidebar_module_css_default.memLabel,
-								children: t("memCleanerModel")
-							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("select", {
-								className: sidebar_module_css_default.memSelect,
-								value: cleaner,
-								onChange: (e) => setCleaner(e.target.value),
-								children: options()
-							})]
-						}),
-						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memSetRow,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-								type: "button",
-								className: sidebar_module_css_default.memBtnPrimary,
-								disabled: busy,
-								onClick: save,
-								children: t("memSaveModels")
-							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-								className: sidebar_module_css_default.memHint,
-								children: result
-							})]
-						}),
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							className: sidebar_module_css_default.memHint,
-							children: t("memModelSourceHint")
-						})
-					]
-				})
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: memory_module_css_default.memRoot,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memHeader,
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memTitle,
+						children: t("memSubagentModels")
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memCount,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSparkle16, {})
+					})]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: memory_module_css_default.memBody,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: memory_module_css_default.memGroup,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: memory_module_css_default.memRow,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memLabel,
+									children: t("memExtractorModel")
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("select", {
+									className: memory_module_css_default.memSelect,
+									value: extractor,
+									onChange: (e) => setExtractor(e.target.value),
+									children: options()
+								})]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: memory_module_css_default.memRow,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memLabel,
+									children: t("memCleanerModel")
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("select", {
+									className: memory_module_css_default.memSelect,
+									value: cleaner,
+									onChange: (e) => setCleaner(e.target.value),
+									children: options()
+								})]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: memory_module_css_default.memRow,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+									type: "button",
+									className: memory_module_css_default.memTextBtnPrimary,
+									disabled: busy,
+									onClick: save,
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconCheckOutline16, {}),
+										" ",
+										t("memSaveModels")
+									]
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memHint,
+									children: result
+								})]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: memory_module_css_default.memRow,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memHint,
+									children: t("memModelSourceHint")
+								})
+							})
+						]
+					})
+				})]
 			});
 		}
 		//#endregion
 		//#region src/client/memory/Runs.tsx
 		/**
-		* Memory runs: recent subagent run table with live activity log and the
+		* Memory runs: recent subagent run rows (StateDot + kind + time + status
+		* badge, subagent-row recipe) with an expandable activity log and the
 		* one-click hippocampus cleanup trigger. Polls every 3s while visible.
 		*/
+		function badgeOf(status) {
+			if (status === "running") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: memory_module_css_default.memBadge + " " + memory_module_css_default.memBadgeRunning,
+				children: t("memBadgeRunning")
+			});
+			if (status === "done") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: memory_module_css_default.memBadge + " " + memory_module_css_default.memBadgeOk,
+				children: t("memBadgeDone")
+			});
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: memory_module_css_default.memBadge + " " + memory_module_css_default.memBadgeErr,
+				children: status || t("memBadgeFailed")
+			});
+		}
+		function dotOf(status) {
+			if (status === "running") return "ongoing";
+			if (status === "done") return "done";
+			return "error";
+		}
 		function Runs(props) {
 			const { visible } = props;
 			const [runs, setRuns] = (0, react.useState)([]);
@@ -6745,73 +6839,100 @@ window.__ModuleLoader__.load({
 			};
 			const zh = isZh();
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memScroll,
-				children: [
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memRow,
-						children: [
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-								className: sidebar_module_css_default.memHint,
-								children: hint
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { style: { flex: 1 } }),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
-								type: "button",
-								className: sidebar_module_css_default.memBtn,
-								disabled: busy,
-								onClick: runClean,
-								children: ["🧹 ", t("memRunClean")]
-							})
-						]
-					}),
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("table", {
-						className: sidebar_module_css_default.memTable,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("tr", { children: [
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("th", { children: t("memColStarted") }),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("th", { children: t("memColKind") }),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("th", { children: t("memColStatus") }),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("th", { children: t("memColDur") }),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("th", { children: t("memColReason") })
-						] }) }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("tbody", { children: [runs.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("tr", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", {
-							colSpan: 5,
-							className: sidebar_module_css_default.memEmptyRow,
+				className: memory_module_css_default.memRoot,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memHeader,
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: memory_module_css_default.memTitle,
+							children: t("memNavRuns")
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+							className: memory_module_css_default.memCount,
+							children: [
+								runs.length,
+								" · ",
+								runs.filter((r) => r.status === "running").length,
+								" ",
+								t("memRunning")
+							]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							className: memory_module_css_default.memIconBtn,
+							title: t("memRefresh"),
+							onClick: load,
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconRefreshOutline16, {})
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+							type: "button",
+							className: memory_module_css_default.memTextBtn,
+							disabled: busy,
+							onClick: runClean,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSparkle16, {}),
+								" ",
+								t("memRunClean")
+							]
+						})
+					]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memBody,
+					children: [
+						runs.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: memory_module_css_default.memEmpty,
 							children: t("memNoRuns")
-						}) }), runs.map((r) => {
-							const badge = r.status === "running" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
-								className: sidebar_module_css_default.memBadgeRun,
-								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: sidebar_module_css_default.memDot }), t("memBadgeRunning")]
-							}) : r.status === "done" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
-								className: sidebar_module_css_default.memBadgeOk,
-								children: ["✅ ", t("memBadgeDone")]
-							}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
-								className: sidebar_module_css_default.memBadgeErr,
-								children: ["❌ ", r.status || t("memBadgeFailed")]
-							});
-							return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("tr", {
-								className: sidebar_module_css_default.memRunRow + (r.id === selected ? " " + sidebar_module_css_default.memRunRowActive : ""),
-								onClick: () => openLog(r),
-								children: [
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", { children: formatTime(r.startedAt, zh) }),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", { children: r.kind }),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", { children: badge }),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", { children: formatDur(r.startedAt, r.endedAt) }),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("td", { children: r.stopReason ?? "—" })
-								]
-							}, r.id);
-						})] })]
-					}),
-					log !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
-						className: sidebar_module_css_default.memLog,
-						children: log.join("\n")
-					})
-				]
+						}),
+						runs.map((r) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							role: "button",
+							tabIndex: 0,
+							className: memory_module_css_default.memRunRow + (r.id === selected ? " " + memory_module_css_default.memRunRowActive : ""),
+							onClick: () => openLog(r),
+							onKeyDown: (e) => {
+								if (e.key === "Enter" || e.key === " ") openLog(r);
+							},
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
+									state: dotOf(r.status),
+									className: memory_module_css_default.memDot
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+									className: memory_module_css_default.memRunContent,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memRunKind,
+										children: r.kind
+									}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+										className: memory_module_css_default.memRunSecondary,
+										children: [
+											formatTime(r.startedAt, zh),
+											" · ",
+											formatDur(r.startedAt, r.endedAt),
+											r.stopReason ? ` · ${r.stopReason}` : ""
+										]
+									})]
+								}),
+								badgeOf(r.status)
+							]
+						}, r.id)),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: memory_module_css_default.memHint,
+							style: { padding: "4px 12px" },
+							children: hint
+						}),
+						log !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: memory_module_css_default.memLog,
+							children: log.join("\n")
+						})
+					]
+				})]
 			});
 		}
 		//#endregion
 		//#region src/client/memory/Settings.tsx
 		/**
 		* Memory settings: storage root (restart-required), Pi migration status, and
-		* opening the store folder in the system file manager.
+		* opening the store folder in the system file manager. Rows follow the DSH
+		* settings-row recipe.
 		*/
 		function Settings() {
 			const [root, setRoot] = (0, react.useState)(null);
@@ -6863,156 +6984,203 @@ window.__ModuleLoader__.load({
 			};
 			const zh = isZh();
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memScroll,
-				children: [
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memGroup,
-						children: [
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", {
-								className: sidebar_module_css_default.memGroupHead,
-								children: t("memStorageTitle")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-								className: sidebar_module_css_default.memSetRow,
-								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
-									className: sidebar_module_css_default.memLabel,
-									children: t("memCurrentPath")
-								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-									className: sidebar_module_css_default.memMono,
-									children: root ?? "—"
-								})]
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-								className: sidebar_module_css_default.memSetRow,
-								children: [
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
-										className: sidebar_module_css_default.memLabel,
+				className: memory_module_css_default.memRoot,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memHeader,
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: memory_module_css_default.memTitle,
+						children: t("memNavSettings")
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: memory_module_css_default.memIconBtn,
+						title: t("memRefresh"),
+						onClick: load,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconRefreshOutline16, {})
+					})]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: memory_module_css_default.memBody,
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: memory_module_css_default.memGroup,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h4", {
+									className: memory_module_css_default.memGroupHead,
+									children: t("memStorageTitle")
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: memory_module_css_default.memRow,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memLabel,
+										children: t("memCurrentPath")
+									}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memMono,
+										children: root ?? "—"
+									})]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: memory_module_css_default.memRow,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memLabel,
 										children: t("memNewPath")
-									}),
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
-										className: sidebar_module_css_default.memInput,
+									}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+										className: memory_module_css_default.memInput,
 										value: newRoot,
 										onChange: (e) => setNewRoot(e.target.value),
 										placeholder: t("memRootPlaceholder")
+									})]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+									className: memory_module_css_default.memRow,
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+										type: "button",
+										className: memory_module_css_default.memTextBtnPrimary,
+										disabled: busy,
+										onClick: saveRoot,
+										children: [
+											/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSettingsOutline16, {}),
+											" ",
+											t("memSaveRoot")
+										]
+									})
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+									className: memory_module_css_default.memCheckRow,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+										type: "checkbox",
+										checked: copyData,
+										onChange: (e) => setCopyData(e.target.checked)
+									}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("memCopyData") })]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+									className: memory_module_css_default.memRow,
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memHint,
+										children: t("memRootHint")
+									})
+								}),
+								result !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+									className: memory_module_css_default.memRow,
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memHint,
+										children: result
+									})
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: memory_module_css_default.memGroup,
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h4", {
+								className: memory_module_css_default.memGroupHead,
+								children: t("memMigrationTitle")
+							}), migrated !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: memory_module_css_default.memRow,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memHint,
+									children: t("memMigrated", {
+										from: migrated.from,
+										n: migrated.copiedItems,
+										at: formatTime(migrated.at, zh)
+									})
+								})
+							}) : legacy !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: memory_module_css_default.memRow,
+								children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
+										state: "warning",
+										size: 10,
+										className: memory_module_css_default.memDot
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memHint,
+										style: { flex: 1 },
+										children: t("memMigDetected", { n: legacy })
 									}),
 									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 										type: "button",
-										className: sidebar_module_css_default.memBtnPrimary,
+										className: memory_module_css_default.memTextBtnPrimary,
 										disabled: busy,
-										onClick: saveRoot,
-										children: t("memSaveRoot")
+										onClick: migrateNow,
+										children: t("memMigrateNow")
 									})
 								]
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
-								className: sidebar_module_css_default.memCheckRow,
-								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
-									type: "checkbox",
-									checked: copyData,
-									onChange: (e) => setCopyData(e.target.checked)
-								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("memCopyData") })]
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: sidebar_module_css_default.memHint,
-								children: t("memRootHint")
-							}),
-							result !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: sidebar_module_css_default.memHint,
-								style: { marginTop: 8 },
-								children: result
-							})
-						]
-					}),
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memGroup,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", {
-							className: sidebar_module_css_default.memGroupHead,
-							children: t("memMigrationTitle")
-						}), migrated !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							className: sidebar_module_css_default.memHint,
-							children: t("memMigrated", {
-								from: migrated.from,
-								n: migrated.copiedItems,
-								at: formatTime(migrated.at, zh)
-							})
-						}) : legacy !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							className: sidebar_module_css_default.memRow,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-								className: sidebar_module_css_default.memHint,
-								children: t("memMigDetected", { n: legacy })
-							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-								type: "button",
-								className: sidebar_module_css_default.memBtnPrimary,
-								disabled: busy,
-								onClick: migrateNow,
-								children: t("memMigrateNow")
+							}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: memory_module_css_default.memRow,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									className: memory_module_css_default.memHint,
+									children: t("memMigrateNone")
+								})
 							})]
-						}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							className: sidebar_module_css_default.memHint,
-							children: t("memMigrateNone")
-						})]
-					}),
-					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						className: sidebar_module_css_default.memGroup,
-						children: [
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", {
-								className: sidebar_module_css_default.memGroupHead,
-								children: t("memObsidianTitle")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: sidebar_module_css_default.memHint,
-								style: { marginBottom: 8 },
-								children: t("memObsidianHintText")
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-								className: sidebar_module_css_default.memRow,
-								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
-									type: "button",
-									className: sidebar_module_css_default.memBtnPrimary,
-									onClick: openFolder,
-									children: ["📂 ", t("memOpenFolder")]
-								}), root !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-									className: sidebar_module_css_default.memMono,
-									children: root
-								})]
-							})
-						]
-					})
-				]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: memory_module_css_default.memGroup,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h4", {
+									className: memory_module_css_default.memGroupHead,
+									children: t("memObsidianTitle")
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+									className: memory_module_css_default.memRow,
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memHint,
+										children: t("memObsidianHintText")
+									})
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: memory_module_css_default.memRow,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+										type: "button",
+										className: memory_module_css_default.memTextBtn,
+										onClick: openFolder,
+										children: [
+											/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconFolderOpenOutline16, {}),
+											" ",
+											t("memOpenFolder")
+										]
+									}), root !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: memory_module_css_default.memMono,
+										style: { flex: 1 },
+										children: root
+									})]
+								})
+							]
+						})
+					]
+				})]
 			});
 		}
 		//#endregion
 		//#region src/client/memory/MemoryView.tsx
 		/**
 		* The memory console tab: five internal views (Overview / Files / Models /
-		* Runs / Settings) behind a compact tab strip. Registered as the built-in
-		* `memory` tab — the sidebar shell (drag tabs, split panes, width, layout
-		* persistence) is provided by dsh-better-sidebar itself.
+		* Runs / Settings) behind a compact tab strip reusing the sidebar's own
+		* tabBar chrome. Registered as the built-in `memory` tab — the sidebar shell
+		* (drag tabs, split panes, width, layout persistence) is provided by
+		* dsh-better-sidebar itself.
 		*/
 		const NAV = [
 			{
 				id: "overview",
-				icon: "📊",
+				icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconDataOutline16, {}),
 				key: "memNavOverview"
 			},
 			{
 				id: "files",
-				icon: "📄",
+				icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconFolderOpenOutline16, {}),
 				key: "memNavFiles"
 			},
 			{
 				id: "models",
-				icon: "⚙️",
+				icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSparkle16, {}),
 				key: "memNavModels"
 			},
 			{
 				id: "runs",
-				icon: "🔄",
+				icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconThinkOutline16, {}),
 				key: "memNavRuns"
 			},
 			{
 				id: "settings",
-				icon: "🛠️",
+				icon: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconSettingsOutline16, {}),
 				key: "memNavSettings"
 			}
 		];
@@ -7020,7 +7188,7 @@ window.__ModuleLoader__.load({
 			const { visible } = props;
 			const [view, setView] = (0, react.useState)("overview");
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-				className: sidebar_module_css_default.memRoot,
+				className: memory_module_css_default.memRoot,
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: sidebar_module_css_default.tabBar,
@@ -7028,8 +7196,12 @@ window.__ModuleLoader__.load({
 							type: "button",
 							className: sidebar_module_css_default.tab + (view === n.id ? " " + sidebar_module_css_default.tabActive : ""),
 							onClick: () => setView(n.id),
+							title: t(n.key),
 							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-								className: sidebar_module_css_default.memNavIcon,
+								style: {
+									display: "inline-flex",
+									alignItems: "center"
+								},
 								children: n.icon
 							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 								className: sidebar_module_css_default.tabTitle,
@@ -7148,10 +7320,7 @@ window.__ModuleLoader__.load({
 				{
 					id: "memory",
 					title: () => t("memTab"),
-					icon: (size) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-						style: { fontSize: size },
-						children: "🧠"
-					}),
+					icon: (size) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconDataOutline16, { size }),
 					order: 25,
 					single: true,
 					component: (props) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoryView, { ...props })
@@ -9043,55 +9212,55 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var SideCardSection_module_css_default = {
-			"switch": "aA1-lW_switch",
-			"cardMain": "aA1-lW_cardMain",
-			"cardOn": "aA1-lW_cardOn",
-			"error": "aA1-lW_error",
-			"switchInput": "aA1-lW_switchInput",
-			"pluginList": "aA1-lW_pluginList",
-			"cardDesc": "aA1-lW_cardDesc",
-			"pluginEntry": "aA1-lW_pluginEntry",
-			"pluginTopicBtn": "aA1-lW_pluginTopicBtn",
-			"pluginCopyBtn": "aA1-lW_pluginCopyBtn",
-			"typedInputNumber": "aA1-lW_typedInputNumber",
-			"pluginName": "aA1-lW_pluginName",
-			"section": "aA1-lW_section",
-			"pluginEntryActions": "aA1-lW_pluginEntryActions",
-			"count": "aA1-lW_count",
-			"cardIconChip": "aA1-lW_cardIconChip",
-			"control": "aA1-lW_control",
-			"popupDialog": "aA1-lW_popupDialog",
-			"rowText": "aA1-lW_rowText",
-			"pluginJumpBtn": "aA1-lW_pluginJumpBtn",
-			"pluginInstall": "aA1-lW_pluginInstall",
-			"popupRows": "aA1-lW_popupRows",
-			"cardWithGear": "aA1-lW_cardWithGear",
-			"group": "aA1-lW_group",
-			"card": "aA1-lW_card",
-			"typedInput": "aA1-lW_typedInput",
-			"cardTitle": "aA1-lW_cardTitle",
-			"row": "aA1-lW_row",
-			"done": "aA1-lW_done",
-			"pluginEntries": "aA1-lW_pluginEntries",
-			"percentInput": "aA1-lW_percentInput",
 			"pluginEntryHead": "aA1-lW_pluginEntryHead",
-			"cardTop": "aA1-lW_cardTop",
-			"pluginModal": "aA1-lW_pluginModal",
-			"intro": "aA1-lW_intro",
-			"desc": "aA1-lW_desc",
-			"pluginDesc": "aA1-lW_pluginDesc",
-			"cardCheck": "aA1-lW_cardCheck",
-			"popupRow": "aA1-lW_popupRow",
-			"rowGear": "aA1-lW_rowGear",
+			"card": "aA1-lW_card",
+			"row": "aA1-lW_row",
+			"count": "aA1-lW_count",
 			"pluginEmpty": "aA1-lW_pluginEmpty",
-			"title": "aA1-lW_title",
-			"grid": "aA1-lW_grid",
-			"switchThumb": "aA1-lW_switchThumb",
+			"cardIconChip": "aA1-lW_cardIconChip",
+			"pluginName": "aA1-lW_pluginName",
+			"cardTop": "aA1-lW_cardTop",
+			"group": "aA1-lW_group",
 			"cardGear": "aA1-lW_cardGear",
+			"rowGear": "aA1-lW_rowGear",
 			"suffix": "aA1-lW_suffix",
+			"pluginEntries": "aA1-lW_pluginEntries",
+			"rowText": "aA1-lW_rowText",
+			"cardCheck": "aA1-lW_cardCheck",
+			"pluginList": "aA1-lW_pluginList",
+			"pluginEntry": "aA1-lW_pluginEntry",
+			"popupDialog": "aA1-lW_popupDialog",
+			"popupRow": "aA1-lW_popupRow",
+			"done": "aA1-lW_done",
+			"pluginJumpBtn": "aA1-lW_pluginJumpBtn",
+			"cardWithGear": "aA1-lW_cardWithGear",
+			"cardTitle": "aA1-lW_cardTitle",
+			"desc": "aA1-lW_desc",
 			"switchTrack": "aA1-lW_switchTrack",
+			"intro": "aA1-lW_intro",
+			"cardMain": "aA1-lW_cardMain",
+			"percentInput": "aA1-lW_percentInput",
+			"switchInput": "aA1-lW_switchInput",
+			"section": "aA1-lW_section",
+			"pluginInstall": "aA1-lW_pluginInstall",
+			"pluginCopyBtn": "aA1-lW_pluginCopyBtn",
+			"groupHeading": "aA1-lW_groupHeading",
+			"pluginEntryActions": "aA1-lW_pluginEntryActions",
+			"cardOn": "aA1-lW_cardOn",
+			"pluginModal": "aA1-lW_pluginModal",
+			"pluginDesc": "aA1-lW_pluginDesc",
+			"switch": "aA1-lW_switch",
 			"addCard": "aA1-lW_addCard",
-			"groupHeading": "aA1-lW_groupHeading"
+			"grid": "aA1-lW_grid",
+			"typedInput": "aA1-lW_typedInput",
+			"pluginTopicBtn": "aA1-lW_pluginTopicBtn",
+			"popupRows": "aA1-lW_popupRows",
+			"cardDesc": "aA1-lW_cardDesc",
+			"error": "aA1-lW_error",
+			"switchThumb": "aA1-lW_switchThumb",
+			"control": "aA1-lW_control",
+			"title": "aA1-lW_title",
+			"typedInputNumber": "aA1-lW_typedInputNumber"
 		};
 		//#endregion
 		//#region src/client/add-plugin-modal.tsx
