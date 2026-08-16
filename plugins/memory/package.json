@@ -51,9 +51,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-name/hpptools_memory.git"
+    "url": "https://github.com/Hdaisen/hpptools-memory.git"
   },
-  "homepage": "https://github.com/your-name/hpptools_memory#readme",
+  "homepage": "https://github.com/Hdaisen/hpptools-memory#readme",
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-tools": "*",
