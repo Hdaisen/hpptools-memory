@@ -23,5 +23,5 @@ updated: 2026-01-01
 
 ---
 
-> **作用域提示 / Scope Tip**: 偏好通常跨项目通用，建议使用 `scope=global` 存储在 `~/.pi/agent/memory/personal/preferences.md`。
-> Preferences are usually cross-project. Use `scope=global` to store in `~/.pi/agent/memory/personal/preferences.md`.
+> **作用域提示 / Scope Tip**: 偏好通常跨项目通用，建议使用 `scope=global` 存储在 `<memory-root>/personal/preferences.md`。
+> Preferences are usually cross-project. Use `scope=global` to store in `<memory-root>/personal/preferences.md`.
