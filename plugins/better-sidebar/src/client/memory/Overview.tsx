@@ -7,7 +7,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import {
   IconAgentPresetOutline16, IconDataOutline16, IconFolderOpenOutline16,
-  IconRefreshOutline16, IconSparkle16, IconThinkOutline16, StateDot,
+  IconRefreshOutline16, IconSparkle16, IconThinkOutline16,
+  Button, StateDot,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { IconGlobeOutline16 } from '../icons.tsx'
 import { memoryApi, formatTime, type MemoryOverview } from './api.ts'
@@ -94,9 +95,9 @@ export function Overview(props: { visible: boolean }) {
         <div className={css.memBanner}>
           <StateDot state="warning" size={10} className={css.memDot} />
           <span className={css.memBannerText}>{t('memMigDetected', { n: d.legacy })}</span>
-          <button
-            type="button"
-            className={shellCss.iconButton}
+          <Button
+            variant="primary"
+            size="sm"
             disabled={migrating}
             onClick={() => {
               setMigrating(true)
@@ -106,8 +107,8 @@ export function Overview(props: { visible: boolean }) {
             }}
             title={t('memMigrateNow')}
           >
-            <IconRefreshOutline16 />
-          </button>
+            {t('memMigrateNow')}
+          </Button>
         </div>
       )}
       {d.migrated && (

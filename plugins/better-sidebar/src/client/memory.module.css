@@ -10,6 +10,29 @@
 }
 
 /* ── shared header: title + count + icon refresh (subagent header recipe) ── */
+.memSaveBtn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--dsw-alias-button-primary-fill, #5e81ac);
+  border-radius: 8px;
+  background: var(--dsw-alias-button-primary-fill, #5e81ac);
+  color: var(--dsw-alias-button-primary-ink, #fff);
+  font: var(--dsw-font-xxs-12);
+  cursor: pointer;
+}
+
+.memSaveBtn:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.memSaveBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
 .memHeader {
   flex: none;
   display: flex;
