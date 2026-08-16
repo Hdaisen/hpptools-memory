@@ -29,9 +29,12 @@ install_package() {
   # src / tests / build configs stay in the repo. Copying (not symlinking)
   # keeps the resolved module path inside the profile, so node_modules
   # hoisting resolves the plugin's runtime dependencies.
+  # agents/*.md (subagent prompt files) MUST be included — they ship inside
+  # the package and are required for the consolidation subagent.
   mkdir -p "$dest"
   cp -r "$pkg_dir"/lib "$pkg_dir"/node_modules "$dest"/ 2>/dev/null || true
   cp -r "$pkg_dir"/*.js "$pkg_dir"/*.html "$pkg_dir"/*.json "$pkg_dir"/*.yml "$pkg_dir"/LICENSE "$dest"/ 2>/dev/null || true
+  cp -r "$pkg_dir"/agents "$dest"/ 2>/dev/null || true
   echo "==> installed $name -> $dest"
 }
 

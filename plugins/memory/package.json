@@ -36,9 +36,24 @@
     "runs.js",
     "webui.js",
     "webui.html",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "agents/"
+  ],
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "memory",
+    "pi-memory-system",
+    "subagent",
+    "consolidation",
+    "hippocampus"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-name/hpptools_memory.git"
+  },
+  "homepage": "https://github.com/your-name/hpptools_memory#readme",
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-tools": "*",

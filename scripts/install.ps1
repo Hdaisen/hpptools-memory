@@ -37,9 +37,10 @@ function Install-Package {
     Remove-Item $dest -Recurse -Force
   }
   # Copy the runtime surface only (lib + package metadata + vendored deps);
-  # src / tests / build configs stay in the repo.
+  # src / tests / build configs stay in the repo. agents/*.md (subagent prompt
+  # files) MUST be included — they ship inside the package.
   New-Item -ItemType Directory -Force -Path $dest | Out-Null
-  robocopy $PkgDir $dest /E /XD src tests docs .git .github node_modules /XF *.map *.md tsconfig*.json tsdown.config.ts /NFL /NDL /NJH /NJS /NP | Out-Null
+  robocopy $PkgDir $dest /E /XD src tests docs .git .github node_modules /XF *.map tsconfig*.json tsdown.config.ts /NFL /NDL /NJH /NJS /NP | Out-Null
   if (Test-Path (Join-Path $PkgDir 'node_modules')) {
     robocopy (Join-Path $PkgDir 'node_modules') (Join-Path $dest 'node_modules') /E /NFL /NDL /NJH /NJS /NP | Out-Null
   }
