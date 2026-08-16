@@ -108,6 +108,28 @@ hpptools-memory 由**两个包**组成：
 > cd ~/.dsh && dsh plugin --profile web add hpptools-memory
 > ```
 
+### 没有 `dsh` CLI？先装它
+
+`dsh plugin add` 是官方 CLI（内部 = 在 profile 里 pnpm 安装 + 写入 `cordis.patch.yml`）。没有 CLI 的机器先全局安装：
+
+```bash
+npm install -g @deepseek-ai/dsh
+# 之后 dsh plugin --profile web add ... 即可；手动方式见下文
+```
+
+**手动等价步骤（无 CLI / 不想装）**——装后端：
+
+```powershell
+cd <DSH_HOME>\profiles          # 如 C:\Users\10342\.dsh\profiles
+npm install hpptools-memory
+# 然后手动在 <DSH_HOME>\profiles\web\cordis.patch.yml 追加挂载行：
+# - insert:
+#     - id: hpptools-memory
+#       name: 'hpptools-memory'
+```
+
+> ⚠️ 面板（dsh-better-sidebar）官方 npm 包在 PR #143 合并前**没有记忆 tab**——完整面板目前只能从本仓库源码安装（方式一）。
+
 ### 方式一：完整安装（后端 + 面板）——从源码（当前可用）
 
 上游 PR 合并前，完整记忆控制台需从本仓库安装（内置 vendored 面板）：
