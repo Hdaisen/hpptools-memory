@@ -58,12 +58,23 @@ assert(html.includes('hpptools-ui-nav-width'), 'nav width persistence')
 assert(html.includes('hpptools-ui-focus'), 'focus persistence')
 // 轮询节流
 assert(html.includes('visibilitychange'), 'visibility-based polling throttle')
+// 宿主侧边栏嵌入定位（?view= / ?embed=1）
+assert(html.includes('urlParams.get("view")'), 'view query param handling')
+assert(html.includes('body.dataset.embed'), 'embed query param handling')
+assert(html.includes('body[data-embed] .tabbar'), 'embed hides inner tabbar')
 
 // ---- client.js 关键结构 ----
 const client = fs.readFileSync(path.join(pkgDir, 'client.js'), 'utf-8')
-for (const want of ['PanelBoundary', 'hpptools-locale', 'sidebar.footer.action', 'data-hpptools-memory', 'hpptools-pulse']) {
+for (const want of [
+  'PanelBoundary', 'hpptools-locale', 'sidebar.footer.action', 'data-hpptools-memory',
+  'hpptools-pulse', 'hpptools-panel', 'hpptools-tabbar', 'hpptools-split',
+  'moveTabToEdge', 'insertLeafAt', 'removeLeafAt', 'resizeSplit', 'openView',
+  'STORE-START', 'ViewFrame', 'TAB_DRAG_TYPE',
+]) {
   assert(client.includes(want), `client.js has ${want}`)
 }
+// 不再注册宿主 details slot（面板自主管理）
+assert(!client.includes('slots.inject("details"'), 'client no longer shadows host details slot')
 
 if (failures.length > 0) {
   console.error(`\nFAILED (${failures.length}):\n  - ${failures.join('\n  - ')}`)

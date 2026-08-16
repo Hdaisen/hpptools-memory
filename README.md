@@ -16,8 +16,15 @@
 
 不是独立页面，而是 **DSH 界面内的原生入口**（Client 半边插件）：
 
-- **侧边栏底部 🧠 按钮**（`sidebar.footer.action`）：点击打开右侧详情列；有子代理运行时按钮右上角显示橙色呼吸活动点（5s 轮询）
-- **右侧详情列面板**（`details` slot，替换宿主工具详情面板）：iframe 嵌入控制台页面（同源，与独立访问同一实现），可关闭 / 新标签页打开
+- **侧边栏底部 🧠 按钮**（`sidebar.footer.action`）：点击开合右侧工作台；有子代理运行时按钮右上角显示橙色呼吸活动点（5s 轮询）
+- **右侧工作台**（client 自主挂载的 fixed 面板，不占宿主 details 列）：VSCode 风格可拖拽分栏侧边栏，可关闭 / 拖宽
+
+**工作台交互（参考 [dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 的双工作台 / 分栏模型）**：
+
+- **面板**：右侧固定，左缘拖拽调宽（280–640px），✕ 关闭 / 🧠 按钮开合；开合与宽度持久化
+- **tabBar**：5 个控制台视图（概览 / 文件 / 模型 / 运行 / 设置），滚轮横向滚动、HTML5 拖拽重排、中键关闭
+- **分栏**：拖 Tab 到 pane 边缘（左 / 右 / 上 / 下）**拆分**出新分栏并排显示，拖到中心**合并**回分栏；分栏间 Divider 拖拽调整大小；分栏树持久化 localStorage，刷新/重开恢复布局
+- 每个视图内容是 iframe（`/hpptools-memory/?view=<id>&embed=1`），复用 Host 渲染的控制台页面（与独立访问同一实现，零重复）；`?embed=1` 时隐藏 iframe 内部 tab 条（宿主 tabBar 承载视图切换）
 
 面板内容（iframe 内控制台，与独立页面一致）：
 
@@ -29,15 +36,15 @@
 | **子代理运行** | 最近运行列表（类型/状态/耗时/终态原因），点击行查看**实时活动日志**（每 3 秒刷新），一键「运行记忆清理」 |
 | **设置** | 存储路径修改（可复制现有数据）、Pi 记忆迁移、打开存储文件夹 |
 
-**UI 工程（2026-08-15 重设计，视觉参考 [dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar)）**：
+**UI 工程（2026-08-15 重设计，视觉参考 dsh-better-sidebar）**：
 
 - **DSH 语义 token 体系**：全部视觉走 `--dsw-alias-*`（背景/边框/文字/交互/品牌色）+ `--ds-*` 动效，跟随宿主主题实时切换；扁平无阴影、hairline 边框、28px 圆形图标控件、紧凑间距
 - **i18n（zh/en）**：界面文案跟随 DSH locale 偏好实时切换（client 经 postMessage 推送），独立打开时回退 `navigator.language`
 - **错误兜底**：页面 JS 崩溃 / 未处理 Promise 拒绝 → 顶部红色错误条（可重新加载），不再白屏；client 面板包错误边界，渲染崩溃显示错误条而非空白面板
 - **现场恢复**：当前 tab、文件树宽度、条目导航宽度、选中文件、专注模式均持久化 localStorage，重开面板恢复现场
-- **轮询节流**：页面不可见时暂停概览 / 运行轮询，降低 iframe 后台开销
+- **轮询节流**：页面不可见时暂停概览 / 运行轮询，降低多 iframe 后台开销
 
-实现：Host 端 `webui.js` 通过 `webServer` 注册同源路由（页面 + JSON API）；Client 端 `client.js`（DSH `__ModuleLoader__` 入口格式）注册侧边栏按钮与详情列面板。独立访问完整版：`/memory-ui` 命令打印 URL。
+实现：Host 端 `webui.js` 通过 `webServer` 注册同源路由（页面 + JSON API）；Client 端 `client.js`（DSH `__ModuleLoader__` 入口格式）注册侧边栏按钮 + 自主挂载工作台面板。独立访问完整版：`/memory-ui` 命令打印 URL。
 
 > 记忆统计口径：`walkMarkdownFiles` 排除 `skills/` 技能库目录（SKILL.md 是程序性技能，有独立的注入机制），技能数量单独显示——避免把技能库文件算进"记忆条目"。
 
@@ -86,15 +93,18 @@ hpptools_memory/
 │   ├── models.js            # 固化/海马体模型分离配置（models.json）
 │   ├── runs.js              # 子代理运行登记 + 实时活动日志（session/event 观察）
 │   ├── webui.js             # webServer 路由（页面 + JSON API）
-│   ├── webui.html           # 控制台页面（自包含单页，悬浮窗 iframe 嵌入）
-│   ├── client.js            # 浏览器半边：侧边栏 🧠 按钮 + 悬浮窗（__ModuleLoader__ 入口格式）
+│   ├── webui.html           # 控制台页面（自包含单页，工作台 iframe 嵌入；?view=/embed= 定位）
+│   ├── client.js            # 浏览器半边：侧边栏 🧠 按钮 + 右侧分栏工作台（__ModuleLoader__ 入口格式）
 │   └── cordis.patch.yml     # 插件行（安装脚本会合并进 profile）
 ├── agents/                  # 子代理提示词（memory-extractor / memory-cleaner，DSH 适配）
 ├── templates/               # core-prompt.md / rules.md / notebook.md / memories/*（初始化用）
 ├── cordis.patch.yml         # 插件行（安装脚本会合并进 profile）
 ├── scripts/install.ps1      # Windows 安装（junction + patch 合并）
 ├── scripts/install.sh       # Linux/macOS 安装（symlink + patch 合并）
-└── tests/integration.test.mjs  # 集成冒烟测试（mock Cordis ctx，38 项断言）
+└── tests/
+    ├── integration.test.mjs    # 集成冒烟测试（mock Cordis ctx，38 项断言；迁移段待更新）
+    ├── verify-webui.mjs        # WebUI 静态验证（路由/结构/i18n/错误兜底/现场恢复，47 项断言）
+    └── sidebar-store.test.mjs  # 分栏树 store 单元测试（拆分/合并/关闭/重排/调整大小，25 项断言）
 ```
 
 ## 安装
@@ -141,6 +151,7 @@ node tests/integration.test.mjs
   - 控制台页面 200 + API 全通：模型列表（2 provider / 18 模型，来自真实配置）、模型设置写入 `models.json`、**真实海马体子代理经 UI 按钮触发，runs 实时显示其工具活动（read/工具完成）与最终报告**
   - 统计口径修正实测：全局记忆 811 文件/3494 条目（含技能库）→ **27 文件/62 条目 + 99 技能**（排除 `personal/skills/` 技能库后）
 - ✅ 2026-08-15 UI 重设计回归：webui.html 内联 JS 语法检查通过、i18n 键完整性校验通过（zh/en 对齐）、元素 ID 引用全解析、webui.js 12 条路由注册正常、client.js 语法通过（`tests/verify-webui.mjs`，47 项断言）
+- ✅ 2026-08-15 侧边栏工作台：分栏树 store 单元测试 25/25（`tests/sidebar-store.test.mjs`：拆分/合并/关闭/重排/大小调整/全局去重）——修复 `resizeSplit` clamp 后归一化破坏最小值的 bug
 - ⏳ Client 半边（侧边栏按钮 + 详情列）重设计后需**安装后重启 DSH** 验证（动态 client 插件需要授权，本会话审批策略为 never）
 
 ## 已知限制

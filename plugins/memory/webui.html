@@ -305,6 +305,9 @@ tr.run-row.active td { background: var(--active); }
 
 /* ---------- 模型页 ---------- */
 .model-select { min-width: 280px; }
+/* 宿主侧边栏嵌入模式（?embed=1）：隐藏内部 tab 条（宿主 tabBar 承载视图切换） */
+body[data-embed] .tabbar { display: none; }
+body[data-embed] .appbar { position: static; }
 </style>
 </head>
 <body>
@@ -1362,10 +1365,17 @@ document.addEventListener("visibilitychange", () => {
    ============================================================ */
 LANG = detectLang();
 applyStaticI18n();
-const savedTab = (() => {
-  try { return localStorage.getItem(TAB_KEY); } catch { return null; }
-})();
-switchTab(savedTab && ["overview", "files", "models", "runs", "settings"].includes(savedTab) ? savedTab : "overview", true);
+// 宿主侧边栏嵌入：?view= 强制定位视图（不读 localStorage tab，避免多 iframe 互相覆盖）；
+// ?embed=1 隐藏内部 tab 条（宿主 tabBar 承载视图切换）
+const urlParams = new URLSearchParams(location.search);
+const forcedView = urlParams.get("view");
+if (urlParams.get("embed") === "1") document.body.dataset.embed = "1";
+const initialTab = forcedView && ["overview", "files", "models", "runs", "settings"].includes(forcedView)
+  ? forcedView
+  : (() => {
+      try { return localStorage.getItem(TAB_KEY); } catch { return null; }
+    })();
+switchTab(initialTab && ["overview", "files", "models", "runs", "settings"].includes(initialTab) ? initialTab : "overview", true);
 
 // 现场恢复：上次选中的文件
 (() => {
