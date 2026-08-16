@@ -1,9 +1,14 @@
 // tools.js — Port of pi-memory-system extensions/memory/tools.ts
 // 9 LLM tools registered as DSH ToolDefinitions via ctx.tools.register(defineTool({...})).
 // Business logic and comments are preserved from the pi original.
+//
+// defineTool 来自本地 ./tool-schema.js（把参数 DSL 编译成标准 JSON Schema），
+// 不用 @deepseek-ai/dsh-tools：junction 装载后 ESM 解析会命中项目根目录的测试 stub，
+// 其 defineTool 原样返回导致 parameters 里的 per-property `required: true` 泄漏给上游
+// provider（Invalid schema for function 'confirm' ...）。详见 tool-schema.js 头部注释。
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { defineTool } from "@deepseek-ai/dsh-tools";
+import { defineTool } from "./tool-schema.js";
 import { PATHS, setProjectName } from "./config.js";
 import { safeRead, extractLinks, walkMarkdownFiles, extractKeywords } from "./utils.js";
 import { diversitySort } from "./diversity.js";

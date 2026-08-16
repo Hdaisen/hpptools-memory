@@ -60,6 +60,14 @@ const expectedTools = ['remember', 'recall', 'forget', 'supersede', 'notebook', 
 assert(expectedTools.every((n) => toolNames.includes(n)), 'all 9 tools registered')
 assert(registered.tools.every((t) => t.output && t.output.schema && t.output.render && typeof t.execute === 'function'), 'every tool has output/render/execute')
 
+// 参数 DSL 必须已编译成标准 JSON Schema（回归：stub defineTool 原样返回曾导致
+// per-property `required: true` 泄漏给上游 provider）
+const confirmTool = registered.tools.find((t) => t.name === 'confirm')
+assert(confirmTool.parameters.type === 'object', 'confirm.parameters compiled to object root')
+assert(Array.isArray(confirmTool.parameters.required) && confirmTool.parameters.required.includes('title') && confirmTool.parameters.required.includes('message'), 'confirm required moved to top-level array')
+assert(confirmTool.parameters.properties.title.required === undefined, 'no per-property required leaks into property schema')
+assert(registered.tools.every((t) => t.parameters && t.parameters.type === 'object' && !Object.values(t.parameters.properties).some((p) => p.required === true)), 'every tool parameters compiled (no per-property required)')
+
 console.log(`\n== prompt sections (${registered.sections.length})`)
 assert(registered.sections.some((s) => s.name === 'memory:core' && s.order === -90), 'memory:core section (order -90)')
 assert(registered.sections.some((s) => s.name === 'memory:context' && s.order === 65), 'memory:context section (order 65)')
