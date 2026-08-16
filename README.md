@@ -40,6 +40,10 @@
 
 > 架构图是交互式 HTML（可缩放、聚焦、切换明暗主题），由 archify 生成。
 
+## 致谢
+
+记忆管理面板（右侧栏 🧠 记忆管理 tab）的 UI 基于 **[DSH-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar)** 开发（fork 并内置了 memory tab 与记忆控制台五视图），感谢其作者与社区。后端记忆管线（工具 / 生命周期 / 子代理）为独立实现。
+
 ### 一轮对话的记忆机制
 
 1. **会话开始**（`agent/session-start`）→ 建立会话短期记忆目录 `turns/sessions/<id>`，刷新记忆索引
@@ -115,7 +119,7 @@ DeepSeek Harness **没有官方中央插件市场**——插件通过 npm / GitH
 | **npm 发布**（推荐） | `cd plugins/memory && npm publish` | 包名 `hpptools-memory`（已含 `agents/` 提示词目录与 `cordis.patch.yml`，`npm pack --dry-run` 可预览内容） |
 | **GitHub 直装** | `cd ~/.dsh && dsh plugin --profile web add github:<user>/hpptools_memory#v0.1.0` | 需先推仓库并打 tag |
 | **npm 安装** | `cd ~/.dsh && dsh plugin --profile web add hpptools-memory` | 用户侧 `dsh plugin` 会转发 pnpm 安装并把插件行写入 profile 的 `cordis.patch.yml` |
-| **社区发现目录** | 提交 PR 到 `rwubarhblp516/DSH-better-sidebar` 的 `src/client/plugins-tabs.ts` | better-sidebar 设置页「添加插件」弹窗的内置目录——事实上的"插件市场"入口，条目 = npm 包名 + GitHub 链接 + 一键安装脚本（数据完整性由 `tests/plugin-list.spec.ts` 守护） |
+| **社区发现目录** | 提交 PR 到 `omdsh-dev/DSH-better-sidebar` 的 `src/client/plugins-tabs.ts` | better-sidebar 设置页「添加插件」弹窗的内置目录——事实上的"插件市场"入口，条目 = npm 包名 + GitHub 链接 + 一键安装脚本（数据完整性由 `tests/plugin-list.spec.ts` 守护） |
 
 发布前检查清单：
 - [ ] `plugins/memory/package.json` 的 `files` 含 `agents/`（固化子代理提示词，缺失会导致固化静默失败）

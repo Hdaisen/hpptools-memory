@@ -74,7 +74,7 @@ description: <描述，≤1024字符，说明做什么和什么时候用>
 | 类型 | 路径 | 判断标准 |
 |------|------|----------|
 | **全局 skills** | `~/.pi/agent/memory/personal/skills/` | 换项目仍然适用（"先写复现测试再修bug"） |
-| **项目 skills** | `~/.pi/agent/memory/projects/<name>/skills/` | 仅本项目有用（"pi-memory-system的固化流程"） |
+| **项目 skills** | `~/.pi/agent/memory/projects/<name>/skills/` | 仅本项目有用（"本项目的固化流程"） |
 
 ### 写入逻辑
 - 遍历 memories/ 下所有文件，识别符合标准的模式

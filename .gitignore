@@ -16,3 +16,6 @@ scripts/.installed-*
 # 临时测试目录（克隆的参考仓库等）
 .tmp-test/
 
+# archify 可视化验证产物（含本地绝对路径，不入库）
+docs/*.visual-check.*
+
