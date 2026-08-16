@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "hpptools-memory 架构",
+    "output": "docs/architecture.zh.html",
+    "quality_profile": "showcase",
+    "viewBox": [1180, 700]
+  },
+  "components": [
+    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM · 工具调用", "pos": [400, 30], "size": [160, 70] },
+    { "id": "prompt", "type": "backend", "label": "提示词注入", "sublabel": "prompt.js · core / context", "pos": [180, 220], "size": [190, 70] },
+    { "id": "webui", "type": "backend", "label": "Web 控制台", "sublabel": "webui.js · 页面 + API", "pos": [620, 220], "size": [190, 70] },
+    { "id": "runs", "type": "backend", "label": "运行登记", "sublabel": "runs.js · 实时日志", "pos": [620, 330], "size": [150, 64] },
+    { "id": "tools", "type": "backend", "label": "记忆工具", "sublabel": "tools.js · 9 个工具", "pos": [180, 400], "size": [190, 70] },
+    { "id": "lifecycle", "type": "backend", "label": "生命周期管线", "sublabel": "lifecycle.js · 提取 / 固化", "pos": [180, 580], "size": [190, 70] },
+    { "id": "subagents", "type": "backend", "label": "固化 / 海马体子代理", "sublabel": "subagents.js · fork", "pos": [620, 580], "size": [190, 70] },
+    { "id": "store", "type": "database", "label": "Markdown 记忆库", "sublabel": "<DSH_HOME>/memory", "pos": [900, 410], "size": [240, 100] },
+    { "id": "panel", "type": "frontend", "label": "记忆管理面板", "sublabel": "better-sidebar fork · 五视图", "pos": [900, 90], "size": [190, 80] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "DeepSeek Harness 宿主（Cordis 插件运行时）", "wraps": ["prompt", "webui", "runs", "tools", "lifecycle", "subagents"] }
+  ],
+  "connections": [
+    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "调用记忆工具", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [275, 380]], "labelAt": [442, 372] },
+    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "注入提示段", "fromSide": "top", "toSide": "bottom", "via": [[275, 150], [480, 150]], "labelAt": [378, 142] },
+    { "id": "tools-store", "from": "tools", "to": "store", "label": "读写记忆条目", "fromSide": "right", "toSide": "left", "via": [[700, 435], [700, 460]], "labelAt": [800, 452] },
+    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "每 5 轮触发固化", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [495, 607] },
+    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "沉淀长期记忆", "fromSide": "right", "toSide": "bottom", "via": [[870, 615], [870, 560], [1020, 560]], "labelAt": [945, 552] },
+    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[850, 130], [850, 210], [715, 210]], "labelAt": [852, 180] },
+    { "id": "webui-store", "from": "webui", "to": "store", "label": "读写文件 / 状态", "fromSide": "right", "toSide": "top", "via": [[860, 255], [860, 390], [1020, 390]], "labelAt": [940, 382] },
+    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "读取实时日志", "fromSide": "bottom", "toSide": "top", "via": [[715, 310], [695, 310]], "labelAt": [700, 300] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "记忆三层", "items": ["core-prompt.md + rules.md + Memory Index 每轮注入", "notebook.md 主 LLM 每轮维护", "memories/ + personal/ 由子代理沉淀"] },
+    { "dot": "emerald", "title": "自动化管线", "items": ["每 5 轮触发固化子代理", "会话结束补固化（余数 ≥ 3）", "二进制文件自动 MarkItDown"] },
+    { "dot": "violet", "title": "可视化控制台", "items": ["概览 / 文件 / 模型 / 运行 / 设置 五视图", "better-sidebar 内置记忆管理 tab"] }
+  ]
+}

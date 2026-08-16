@@ -1,0 +1,131 @@
+# hpptools-memory
+
+**A Markdown memory system plugin for DeepSeek Harness** — persistent, cross-session memory for your agent.
+
+Core belief: *Brains are for thinking, not for remembering.* Knowledge produced in each session is distilled into searchable, maintainable Markdown files, so the agent still remembers in the next turn and the next session.
+
+## What problem does it solve
+
+LLM conversations are stateless — when a session ends, the context is gone. hpptools-memory hooks into the DeepSeek Harness agent lifecycle and provides three memory layers, making memory a persistent infrastructure:
+
+| Layer | Backing | Purpose |
+|---|---|---|
+| **Core Prompt** | `core-prompt.md` + `rules.md` + Memory Index | Stable prefix injected into the system prompt every turn (cache-friendly); defines identity, behavioral rules and the memory directory |
+| **Session Notebook** | `projects/<name>/notebook.md` | Active whiteboard maintained by the main LLM each turn: current task, todos, cross-turn constraints |
+| **Long-term Memory** | `projects/<name>/memories/` + `personal/` | Facts / preferences / decisions / events distilled by the consolidation subagent; persists across sessions |
+
+## Features
+
+- **9 memory tools**: `remember` / `recall` / `forget` / `supersede` / `notebook` / `memory_status` / `convert_file` / `confirm` / `set_project` — read/write memory, per-project isolation, wiki-link related retrieval
+- **Prompt injection**: two system prompt sections — `memory:core` (stable, order -90) and `memory:context` (dynamic, order 65) — automatically inject the current notebook, recent dialogue summaries and linked memories
+- **Lifecycle pipeline**:
+  - Session start → create a session working-memory directory (`turns/sessions/<id>`, anchored by sessionId and reused across restarts)
+  - Each turn end → write `raw-<n>.md` backup + append `dialogue-summary.md`
+  - Every 5 turns → trigger the consolidation subagent to distill dialogue into long-term memory
+  - Session end → catch-up consolidation when remainder ≥ 3
+  - Binary read failure → automatic MarkItDown conversion
+- **Two memory subagents** (in-process `fork`, tool whitelist, no shell access):
+  - **Consolidation subagent**: distills incremental dialogue into facts / preferences / decisions / events
+  - **Hippocampus subagent**: manual trigger (`/memory-clean`) — dedupe, fix pollution, supersede stale entries, report dead links
+- **Visual console** (Web UI + sidebar panel):
+  - **Overview**: storage root, core-prompt/rules/notebook status, project & global memory stats (skills excluded), last maintenance time, active subagents, current model config
+  - **Files**: memory vault file tree (core files / session notebooks / global memory / current project memory) + Markdown preview / edit / save + entry navigation
+  - **Models**: dropdown to pick consolidation / hippocampus subagent models — options come directly from DeepSeek Harness configured models
+  - **Runs**: subagent run list (type / status / duration / terminal reason) + live activity logs
+  - **Settings**: change storage path (with data copy), open the storage folder
+
+## Architecture
+
+![hpptools-memory architecture](docs/architecture.en.html)
+
+> The diagram is an interactive HTML file (zoom, focus, light/dark themes) — open `docs/architecture.en.html` in a browser.
+
+The plugin runs inside the DeepSeek Harness host as a Cordis plugin (ESM JS, zero build):
+
+| Module | Responsibility |
+|---|---|
+| `index.js` | Plugin entry, wires all modules |
+| `config.js` | Storage path resolution (default `<DSH_HOME>/memory`) + project name detection (`.dsh-project` marker / git directory) |
+| `prompt.js` | Two system prompt sections (stable + dynamic) |
+| `tools.js` | 9 LLM memory tools |
+| `lifecycle.js` | Lifecycle event hooks: session dir, raw backup, summaries, consolidation trigger, MarkItDown |
+| `extract.js` | Dialogue extraction pipeline (pure JS, zero deps): raw formatting, secret redaction, large-output hash truncation, key-action extraction |
+| `subagents.js` | Consolidation / hippocampus subagent spawn (in-process fork + tool whitelist) |
+| `runs.js` | Subagent run registry + live activity logs |
+| `commands.js` | `/memory-clean`, `/memory-subagent-model`, `/memory-ui` |
+| `webui.js` + `webui.html` | webServer routes: console page + JSON API |
+| `models.js` | Separate model config for consolidation / hippocampus (`models.json`) |
+| `client.js` | Browser half (sidebar entry) |
+
+### Storage layout
+
+```
+<DSH_HOME>/memory/
+├── core-prompt.md            # identity & thinking framework
+├── rules.md                  # unconditional behavioral rules
+├── projects/<name>/          # per-project isolation
+│   ├── notebook.md           # session notebook (maintained by the main LLM)
+│   ├── memories/             # long-term memory (facts / preferences / decisions / events)
+│   │   └── _index.md         # memory index
+│   └── turns/sessions/<id>/  # session working memory (raw-<n>.md + dialogue-summary.md)
+├── personal/                 # cross-project knowledge
+└── maintenance/              # hippocampus cleanup logs
+```
+
+## Installation
+
+### Windows
+
+```powershell
+.\scripts\install.ps1        # DSH_HOME defaults to $env:DSH_HOME or ~/.dsh
+```
+
+### Linux / macOS
+
+```bash
+./scripts/install.sh
+```
+
+The script copies `plugins/memory` into `<DSH_HOME>/profiles/node_modules/hpptools-memory` and merges the plugin entry into `<DSH_HOME>/profiles/web/cordis.patch.yml`. **Restart DeepSeek Harness to load the plugin** — verify that tools like `remember` / `recall` / `memory_status` appear and `memory:core` / `memory:context` sections show up in the prompt.
+
+Customize the storage location via `config.root` (see comments in `cordis.patch.yml`).
+
+### Local tests (without the host)
+
+```bash
+node tests/integration.test.mjs
+node tests/verify-webui.mjs
+```
+
+(`node_modules/@deepseek-ai/dsh-tools` is a local test stub, gitignored; the host runtime provides the real implementation.)
+
+## Usage
+
+**Commands**:
+
+| Command | Purpose |
+|---|---|
+| `/memory-ui` | Print the visual console URL |
+| `/memory-clean` | Manually trigger the hippocampus subagent |
+| `/memory-subagent-model extractor\|cleaner <provider/model>` | Set the subagent model (prefer the console Models tab) |
+
+**Tools** (called by the agent):
+
+| Tool | Purpose |
+|---|---|
+| `remember` | Write to long-term memory (auto-sorted into fact / preference / decision / event) |
+| `recall` | Search memory (confidence filter, fuzzy matching) |
+| `forget` / `supersede` | Delete / mark stale memory entries |
+| `notebook` | View / update the session notebook |
+| `memory_status` | Inspect memory file status and entry counts |
+| `convert_file` | Convert binary files to Markdown (MarkItDown) |
+| `confirm` | Interactive y/n prompt |
+| `set_project` | Correct the current project name (writes `.dsh-project`) |
+
+## Known limitations
+
+- The console API is a loopback same-origin route (no auth) — acceptable for local single-machine use; do not expose the port to the public internet
+
+## License
+
+MIT

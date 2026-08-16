@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "hpptools-memory Architecture",
+    "output": "docs/architecture.en.html",
+    "quality_profile": "showcase",
+    "viewBox": [1180, 700]
+  },
+  "components": [
+    { "id": "agent", "type": "external", "label": "DSH Agent", "sublabel": "LLM · tool calls", "pos": [400, 30], "size": [160, 70] },
+    { "id": "prompt", "type": "backend", "label": "Prompt Injection", "sublabel": "prompt.js · core / context", "pos": [180, 220], "size": [190, 70] },
+    { "id": "webui", "type": "backend", "label": "Web Console", "sublabel": "webui.js · page + API", "pos": [620, 220], "size": [190, 70] },
+    { "id": "runs", "type": "backend", "label": "Run Registry", "sublabel": "runs.js · live logs", "pos": [620, 330], "size": [150, 64] },
+    { "id": "tools", "type": "backend", "label": "Memory Tools", "sublabel": "tools.js · 9 tools", "pos": [180, 400], "size": [190, 70] },
+    { "id": "lifecycle", "type": "backend", "label": "Lifecycle Pipeline", "sublabel": "lifecycle.js · extract / consolidate", "pos": [180, 580], "size": [190, 70] },
+    { "id": "subagents", "type": "backend", "label": "Consolidation / Hippocampus", "sublabel": "subagents.js · fork", "pos": [620, 580], "size": [190, 70] },
+    { "id": "store", "type": "database", "label": "Markdown Memory Vault", "sublabel": "<DSH_HOME>/memory", "pos": [900, 410], "size": [240, 100] },
+    { "id": "panel", "type": "frontend", "label": "Memory Panel", "sublabel": "better-sidebar fork · five views", "pos": [900, 90], "size": [190, 80] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "DeepSeek Harness host (Cordis plugin runtime)", "wraps": ["prompt", "webui", "runs", "tools", "lifecycle", "subagents"] }
+  ],
+  "connections": [
+    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "Call memory tools", "variant": "emphasis", "fromSide": "right", "toSide": "top", "via": [[610, 65], [610, 380], [275, 380]], "labelAt": [442, 372] },
+    { "id": "prompt-agent", "from": "prompt", "to": "agent", "label": "Inject prompt sections", "fromSide": "top", "toSide": "bottom", "via": [[275, 150], [480, 150]], "labelAt": [378, 142] },
+    { "id": "tools-store", "from": "tools", "to": "store", "label": "Read / write entries", "fromSide": "right", "toSide": "left", "via": [[700, 435], [700, 460]], "labelAt": [800, 452] },
+    { "id": "lifecycle-subagents", "from": "lifecycle", "to": "subagents", "label": "Consolidate every 5 turns", "variant": "dashed", "fromSide": "right", "toSide": "left", "labelAt": [495, 607] },
+    { "id": "subagents-store", "from": "subagents", "to": "store", "label": "Persist long-term memory", "fromSide": "right", "toSide": "bottom", "via": [[870, 615], [870, 560], [1020, 560]], "labelAt": [945, 552] },
+    { "id": "panel-webui", "from": "panel", "to": "webui", "label": "fetch /hpptools-memory/api/*", "fromSide": "left", "toSide": "top", "via": [[850, 130], [850, 210], [715, 210]], "labelAt": [852, 180] },
+    { "id": "webui-store", "from": "webui", "to": "store", "label": "Read / write files", "fromSide": "right", "toSide": "top", "via": [[860, 255], [860, 390], [1020, 390]], "labelAt": [940, 382] },
+    { "id": "webui-runs", "from": "webui", "to": "runs", "label": "Read live logs", "fromSide": "bottom", "toSide": "top", "via": [[715, 310], [695, 310]], "labelAt": [700, 300] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Three memory layers", "items": ["core-prompt.md + rules.md + Memory Index injected every turn", "notebook.md maintained by the main LLM each turn", "memories/ + personal/ written by subagents"] },
+    { "dot": "emerald", "title": "Automation pipeline", "items": ["Consolidation subagent every 5 turns", "Catch-up consolidation when a session ends (remainder >= 3)", "Automatic MarkItDown for binary files"] },
+    { "dot": "violet", "title": "Visual console", "items": ["Overview / Files / Models / Runs / Settings views", "Built-in memory tab in better-sidebar"] }
+  ]
+}
