@@ -12,34 +12,29 @@
 **Pi 记忆迁移是保守的**：只有当 `~/.pi/agent/memory` 存在**且含实质记忆内容**（core-prompt.md 或 personal/projects 下有 .md 文件）时才复制一次（幂等、非破坏、跳过符号链接，完成后写 `.migrated-from-pi.json` 标记）。99% 没有用过 Pi 记忆系统的用户完全零打扰。
 可通过组合行 `config.root` 自定义存储位置。
 
-## 🖥️ 可视化 — 基于 dsh-better-sidebar 的记忆管理面板
+## 🖥️ 可视化 — 记忆管理面板（在 dsh-better-sidebar fork 内）
 
-记忆控制台作为 **[dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 的一个侧边栏 tab** 提供（`ctx.betterSidebar.registerTab`）——侧边栏框架、拖拽分栏、面板宽度、布局持久化全部由 better-sidebar 负责，本插件只贡献面板内容：
+记忆管理面板已**按 dsh-better-sidebar 源码风格内置进它的 fork**（[`.tmp-test/DSH-better-sidebar`](.tmp-test/DSH-better-sidebar)，分支 `feat/memory-console`）——原生 React 组件 + 内置 tab 注册，与 explorer / git / 终端同等的拖拽分栏体验：
 
-- **前置**：先安装 dsh-better-sidebar（`dsh plugin --profile web add dsh-better-sidebar`）
-- **🧠 记忆管理 tab**：出现在 better-sidebar 的 `+` 菜单（order 60，单实例），内容为 iframe 嵌入的控制台页面（`/hpptools-memory/?embed=1`）；可与 explorer / 文件 tab 拖拽分栏并排，宽度 / 布局随 better-sidebar 持久化
-- **侧边栏底部 🧠 按钮**（`sidebar.footer.action`）：快捷打开——有 betterSidebar 时 `openTab`（内容型，自动展开面板并聚焦记忆 tab）；未安装时降级为在新标签页打开控制台
-- **未安装 better-sidebar 时**：client 半自动跳过 tab 注册（可选服务，20s 超时），`/memory-ui` 命令仍可独立访问控制台
+- **🧠 记忆管理 tab**（内置，`+` 菜单 order 25）：概览（记忆统计卡片 + Pi 迁移）/ 文件（记忆 vault 树 + Markdown 预览编辑）/ 模型（子代理模型配置）/ 运行（子代理日志 + 清理）/ 设置（存储路径 / 迁移 / 文件夹）
+- 本插件（hpptools-memory）作为**记忆后端**：提供 `/hpptools-memory/api/*`（同源 loopback 路由，面板数据来源）+ agent 记忆工具（remember / recall / notebook 等）+ 生命周期沉淀管线
+- fork 的 `src/client/memory/` 面板通过 `fetch('/hpptools-memory/api/*')` 消费本插件的 API；两插件共享 `<DSH_HOME>/memory` 存储
 
-面板内容（iframe 内控制台，与独立页面一致）：
+面板内容（fork 内置 tab，原生 React）：
 
-| 标签 | 内容 |
+| 视图 | 内容 |
 |------|------|
 | **概览** | 存储根路径、迁移信息、core-prompt/rules/notebook 状态、项目/全局记忆统计（**已排除技能库**）、最近整理时间、活动子代理数、当前模型配置（每 5 秒刷新） |
-| **文件** | 文件树（核心文件 / 会话小本本 / 全局记忆 / 当前项目记忆，分组折叠状态持久化）+ Markdown 预览 / 编辑 / 保存 + 条目导航 + 宽度拖拽 + 专注模式 |
-| **模型配置** | 固化子代理 / 海马体模型下拉选择——选项直接来自 **DeepSeek Harness 已配置的模型**（`llm.listProviders` + `listModels`），选 `(default)` 用会话默认模型 |
-| **子代理运行** | 最近运行列表（类型/状态/耗时/终态原因），点击行查看**实时活动日志**（每 3 秒刷新），一键「运行记忆清理」 |
+| **文件** | 文件树（核心文件 / 会话小本本 / 全局记忆 / 当前项目记忆，分组折叠状态持久化）+ Markdown 预览 / 编辑 / 保存 + 条目导航 |
+| **模型** | 固化子代理 / 海马体模型下拉选择——选项直接来自 **DeepSeek Harness 已配置的模型**（`llm.listProviders` + `listModels`） |
+| **运行** | 最近运行列表（类型/状态/耗时/终态原因），点击行查看**实时活动日志**（每 3 秒刷新），一键「运行记忆清理」 |
 | **设置** | 存储路径修改（可复制现有数据）、Pi 记忆迁移、打开存储文件夹 |
 
-**UI 工程（2026-08-15 重设计，视觉参考 dsh-better-sidebar）**：
+**UI 工程（fork 内实现，风格与 dsh-better-sidebar 完全一致）**：DSH 语义 token（`--dsw-alias-*`）全程、SideCard 卡片网格、扁平 hairline、图标控件 hover 填充；i18n 走 better-sidebar 的 `locales.ts` 词典（zh/en 跟随 DSH locale）；错误兜底（面板错误边界）；轮询随 `visible` 暂停。
 
-- **DSH 语义 token 体系**：全部视觉走 `--dsw-alias-*`（背景/边框/文字/交互/品牌色）+ `--ds-*` 动效，跟随宿主主题实时切换；扁平无阴影、hairline 边框、28px 圆形图标控件、紧凑间距
-- **i18n（zh/en）**：界面文案跟随 DSH locale 偏好实时切换（client 经 postMessage 推送），独立打开时回退 `navigator.language`
-- **错误兜底**：页面 JS 崩溃 / 未处理 Promise 拒绝 → 顶部红色错误条（可重新加载），不再白屏；tab 内容包错误边界，渲染崩溃显示错误条而非空白面板
-- **现场恢复**：当前 tab、文件树宽度、条目导航宽度、选中文件、专注模式均持久化 localStorage，重开面板恢复现场
-- **轮询节流**：页面不可见时暂停概览 / 运行轮询，降低 iframe 后台开销
+> 注：hpptools-memory 插件自身的 `client.js` 仍保留一个「消费 betterSidebar 服务」的 iframe 版 tab 注册作为兜底——若使用 fork 内置面板，两者会各出现一个入口（`记忆管理` 原生版 + `hpptools-memory:console` iframe 版），可卸载本插件的 client 半边或删除该注册避免重复。
 
-实现：Host 端 `webui.js` 通过 `webServer` 注册同源路由（页面 + JSON API）；Client 端 `client.js`（DSH `__ModuleLoader__` 入口格式）注册侧边栏按钮 + betterSidebar tab。独立访问完整版：`/memory-ui` 命令打印 URL。
+独立访问完整版控制台（不含 fork）：`/memory-ui` 命令打印 URL。
 
 > 记忆统计口径：`walkMarkdownFiles` 排除 `skills/` 技能库目录（SKILL.md 是程序性技能，有独立的注入机制），技能数量单独显示——避免把技能库文件算进"记忆条目"。
 
